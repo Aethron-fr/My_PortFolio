@@ -170,13 +170,50 @@ export default function App() {
             style={{
               background: 'transparent',
               border: 'none',
-              color: '#fff',
               cursor: 'pointer',
               display: 'none', // Controlled by CSS media queries
+              width: '28px',
+              height: '20px',
+              position: 'relative',
+              zIndex: 10000,
             }}
             className="mobile-only-block"
+            aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <span style={{
+              position: 'absolute',
+              width: '100%',
+              height: '2px',
+              background: '#fff',
+              borderRadius: '2px',
+              left: 0,
+              top: mobileMenuOpen ? '50%' : '20%',
+              transform: mobileMenuOpen ? 'translateY(-50%) rotate(45deg)' : 'none',
+              transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)'
+            }} />
+            <span style={{
+              position: 'absolute',
+              width: '100%',
+              height: '2px',
+              background: '#fff',
+              borderRadius: '2px',
+              left: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              opacity: mobileMenuOpen ? 0 : 1,
+              transition: 'all 0.2s'
+            }} />
+            <span style={{
+              position: 'absolute',
+              width: '100%',
+              height: '2px',
+              background: '#fff',
+              borderRadius: '2px',
+              left: 0,
+              bottom: mobileMenuOpen ? '50%' : '20%',
+              transform: mobileMenuOpen ? 'translateY(50%) rotate(-45deg)' : 'none',
+              transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)'
+            }} />
           </button>
         </div>
       </header>

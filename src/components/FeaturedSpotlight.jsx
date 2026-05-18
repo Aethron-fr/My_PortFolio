@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Sparkles, Terminal, Activity, ArrowUpRight, Cpu, Heart, CheckCircle2 } from 'lucide-react';
 
 export default function FeaturedSpotlight() {
-  const [selectedProject, setSelectedProject] = useState('onelastsmile'); // Default is set to OneLastSmile to highlight it immediately!
+  const [selectedProject, setSelectedProject] = useState('onelastsmile'); // Default set to OneLastSmile to highlight it immediately!
   const [activeTab, setActiveTab] = useState('overview');
 
   const projectStats = selectedProject === 'onelastsmile' ? [
@@ -11,10 +11,10 @@ export default function FeaturedSpotlight() {
     { label: "Audio Stream", value: "320kbps Granular", color: "var(--accent-cyber)" },
     { label: "Relay Protocol", value: "Secure SMTP/TLS", color: "#22c55e" }
   ] : [
-    { label: "Lighthouse Performance", value: "99%", color: "var(--accent-cyber)" },
-    { label: "Security Encryption", value: "SSL / JWT", color: "var(--accent-violet)" },
-    { label: "System Core", value: "React + Node", color: "var(--accent-primary)" },
-    { label: "Docker Status", value: "Operational", color: "#22c55e" }
+    { label: "Core Architecture", value: "React + Vite", color: "var(--accent-cyber)" },
+    { label: "Render Engine", value: "60 FPS GPU", color: "var(--accent-violet)" },
+    { label: "Assets Base Link", value: "Relative './'", color: "var(--accent-primary)" },
+    { label: "Bundle Weight", value: "<270KB Gzip", color: "#22c55e" }
   ];
 
   return (
@@ -54,7 +54,7 @@ export default function FeaturedSpotlight() {
       }}>
         {[
           { id: 'onelastsmile', label: 'OneLastSmile Memorial', icon: '❤️', activeColor: 'var(--accent-primary)', accentBorder: 'rgba(225, 48, 108, 0.5)' },
-          { id: 'portfoliomaker', label: 'PortFolioMaker Engine', icon: '⚡', activeColor: 'var(--accent-cyber)', accentBorder: 'rgba(0, 247, 255, 0.5)' }
+          { id: 'myportfolio', label: 'My_PortFolio Repo', icon: '📁', activeColor: 'var(--accent-cyber)', accentBorder: 'rgba(0, 247, 255, 0.5)' }
         ].map(proj => (
           <button
             key={proj.id}
@@ -195,9 +195,9 @@ export default function FeaturedSpotlight() {
               </div>
             </div>
           ) : (
-            /* Mock Browser Panel for PortFolioMaker */
+            /* Custom Source Directory Console for My_PortFolio */
             <>
-              {/* Browser header */}
+              {/* Directory Browser Header */}
               <div style={{
                 background: 'rgba(255,255,255,0.03)',
                 padding: '12px 18px',
@@ -222,61 +222,48 @@ export default function FeaturedSpotlight() {
                   border: '1px solid rgba(255,255,255,0.03)',
                   fontFamily: 'var(--font-mono)'
                 }}>
-                  https://portfoliomaker.swapnadip.dev
+                  https://github.com/Aethron-fr/My_PortFolio
                 </div>
                 <Activity size={12} style={{ color: 'var(--accent-cyber)' }} />
               </div>
 
-              {/* Browser Body Screen */}
+              {/* Terminal Directory listing */}
               <div style={{
                 flex: 1,
-                padding: '24px',
+                padding: '20px 24px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                fontFamily: 'var(--font-heading)',
-                position: 'relative'
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.73rem',
+                color: 'var(--text-dim)',
+                textAlign: 'left',
+                lineHeight: '1.45',
+                overflow: 'hidden'
               }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyber)', marginBottom: '8px' }}>
                     <Cpu size={14} />
-                    <span style={{ fontSize: '0.65rem', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>COMPILING_MERN_CORE</span>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>INDEXING_WORKSPACE_CORE</span>
                   </div>
-                  <h4 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#fff', lineHeight: '1.2', marginBottom: '8px' }}>
-                    PortFolioMaker Engine
-                  </h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4', maxWidth: '90%' }}>
-                    An automated rendering platform to compile clean portfolios on Docker grids.
-                  </p>
+                  
+                  {/* File tree */}
+                  <div style={{ color: '#fff', fontSize: '0.7rem' }}>
+                    <span style={{ color: 'var(--accent-primary)' }}>📁 src/</span><br />
+                    &nbsp;&nbsp;<span style={{ color: 'var(--accent-violet)' }}>📁 components/</span><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;📄 CanvasBackground.jsx <span style={{ color: '#22c55e' }}>( constellations )</span><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;📄 CustomCursor.jsx <span style={{ color: '#eab308' }}>( click_physics )</span><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;📄 DeveloperJourney.jsx <span style={{ color: 'var(--accent-cyber)' }}>( timeline )</span><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;📄 FeaturedSpotlight.jsx <span style={{ color: 'var(--accent-primary)' }}>( spotlight_tabs )</span><br />
+                    &nbsp;&nbsp;📄 App.jsx <span style={{ color: 'var(--accent-violet)' }}>( orchestrator )</span><br />
+                    &nbsp;&nbsp;📄 index.css <span style={{ color: 'var(--text-dim)' }}>( tokens )</span><br />
+                    📄 vite.config.js <span style={{ color: '#22c55e' }}>( base: './' )</span>
+                  </div>
                 </div>
 
-                {/* Dynamic Visual Code block inside browser body */}
-                <div style={{
-                  background: 'rgba(0,0,0,0.5)',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.02)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.65rem',
-                  color: 'var(--accent-cyber)',
-                  textAlign: 'left'
-                }}>
-                  <span style={{ color: 'var(--accent-violet)' }}>const</span> portfolio = <span style={{ color: 'var(--accent-secondary)' }}>new</span> MernArchitect({`{`}<br />
-                  &nbsp;&nbsp;owner: <span style={{ color: '#22c55e' }}>"Swapnadip Ghosh"</span>,<br />
-                  &nbsp;&nbsp;performance: <span style={{ color: '#fbbf24' }}>"60fps"</span>,<br />
-                  &nbsp;&nbsp;optimized: <span style={{ color: 'var(--accent-cyber)' }}>true</span><br />
-                  {`})`};
-                </div>
-
-                {/* Live active connection ping */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#22c55e', fontWeight: 'bold' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'ping 1.5s infinite' }} />
-                    EDGE_CLUSTER_SECURED
-                  </span>
-                  <span style={{ color: 'var(--text-dim)' }}>
-                    Response time: 14ms
-                  </span>
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: '#22c55e' }}>
+                  <span>● VITE_COMPILER_READY</span>
+                  <span style={{ color: 'var(--text-dim)' }}>Asset check: Complete</span>
                 </div>
               </div>
             </>
@@ -295,12 +282,12 @@ export default function FeaturedSpotlight() {
             }}>
               <Sparkles size={16} />
               <span style={{ fontSize: '0.8rem', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                {selectedProject === 'onelastsmile' ? "CINEMATIC MASTERPIECE" : "CORE SYSTEM COMPILER"}
+                {selectedProject === 'onelastsmile' ? "CINEMATIC MASTERPIECE" : "SYSTEM ARCHITECTURE"}
               </span>
             </div>
 
             <h3 style={{ fontSize: '2.2rem', fontWeight: '800', color: '#fff', marginBottom: '14px', letterSpacing: '-0.5px' }}>
-              {selectedProject === 'onelastsmile' ? "OneLastSmile" : "PortFolioMaker"}
+              {selectedProject === 'onelastsmile' ? "OneLastSmile" : "My_PortFolio"}
             </h3>
 
             {/* Selector tabs */}
@@ -353,10 +340,10 @@ export default function FeaturedSpotlight() {
                 ) : (
                   <>
                     <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '20px' }}>
-                      **PortFolioMaker** is a premier cloud developer system engineered to compile, pack, and deploy production-ready full-stack developer profiles in containers automatically. 
+                      **My_PortFolio** is an elite, fully responsive Vite-based developer portal built on React, operating on a hardware-accelerated **60 FPS visual rendering loop**.
                     </p>
                     <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
-                      It solves layout jank by bundling optimized CSS grids, custom 2D visual loops, and dynamic GitHub integrations, packaging them in under 20KB for high-performance indexing.
+                      It integrates sleek CSS cyberpunk grid meshes, direct DOM-referenced scroll progress trackers, dynamic timeline toggle roadmaps, and an elastic custom cursor with click physics.
                     </p>
                   </>
                 )}
@@ -371,10 +358,10 @@ export default function FeaturedSpotlight() {
                   "Secure client feedback middleware sanitizing input sequences.",
                   "SMTP server gateway routing private replies safely with TLS encryption."
                 ] : [
-                  "React Context global state pipeline for visual components management.",
-                  "Express routing controllers validating inputs and parsing schema files.",
-                  "MongoDB document collection clusters archiving project coordinates.",
-                  "Docker containers spinning container nodes dynamically."
+                  "Vite build config with relative base path mappings for zero-jank serving.",
+                  "Constellation visual particles rendering constellation structures dynamically.",
+                  "Scroll Progress listener executing dynamically via direct DOM tracking references.",
+                  "Chronological Milestone Roadmap built on responsive container toggles."
                 ]).map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <CheckCircle2 size={14} style={{ color: selectedProject === 'onelastsmile' ? 'var(--accent-primary)' : 'var(--accent-cyber)', flexShrink: 0 }} />
@@ -415,7 +402,9 @@ export default function FeaturedSpotlight() {
               Inspect Codebase
             </a>
             <a 
-              href={selectedProject === 'onelastsmile' ? "#" : "#"} 
+              href={selectedProject === 'onelastsmile' ? "#" : "https://aethron-fr.github.io/My_PortFolio/"} 
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-neon-outline" 
               style={{ 
                 padding: '10px 24px', 
