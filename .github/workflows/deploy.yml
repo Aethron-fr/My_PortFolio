@@ -34,7 +34,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Project Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Compile Production Bundle
         run: npm run build
