@@ -282,7 +282,7 @@ export default function App() {
           {/* Social icons */}
           <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
             {[
-              { icon: <i className="fa-brands fa-github" style={{ fontSize: '20px' }}></i>, link: 'https://github.com/ghoshswapnadip7-coder' },
+              { icon: <i className="fa-brands fa-github" style={{ fontSize: '20px' }}></i>, link: 'https://github.com/Aethron-fr' },
               { icon: <i className="fa-brands fa-linkedin-in" style={{ fontSize: '20px' }}></i>, link: 'https://www.linkedin.com/in/swapnadip-ghosh-3669b33a1/' },
               { icon: <i className="fa-brands fa-instagram" style={{ fontSize: '20px' }}></i>, link: 'https://www.instagram.com/its_swapnadip108/' },
               { icon: <i className="fa-brands fa-x-twitter" style={{ fontSize: '20px' }}></i>, link: 'https://x.com/swapnadip_108' },

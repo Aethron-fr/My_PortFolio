@@ -5,56 +5,38 @@ const FALLBACK_PROJECTS = [
   {
     id: 1,
     name: "PortFolioMaker",
-    description: "An advanced, fully responsive MERN and standard templates engine to create stunning developer portfolios in minutes.",
+    description: "An elite, automated MERN stack and modular CSS compiler engine allowing developers to package high-performance portfolio sites in under 20KB.",
     language: "JavaScript",
-    stargazers_count: 14,
-    forks_count: 5,
-    html_url: "https://github.com/ghoshswapnadip7-coder/PortFolioMaker"
+    stargazers_count: 32,
+    forks_count: 8,
+    html_url: "https://github.com/Aethron-fr/My_PortFolio"
   },
   {
     id: 2,
-    name: "rock-paper-scissor-python",
-    description: "A Python interactive game with rich terminal feedback, keeping track of scores and executing smart machine algorithms.",
-    language: "Python",
-    stargazers_count: 8,
-    forks_count: 2,
-    html_url: "https://github.com/ghoshswapnadip7-coder/rock-paper-scissor-python"
+    name: "OneLastSmile",
+    description: "A gorgeous, deeply cinematic emotional memory portfolio web application built with Framer Motion, JWT token authorization, and custom background particles.",
+    language: "React",
+    stargazers_count: 28,
+    forks_count: 6,
+    html_url: "https://github.com/Aethron-fr"
   },
   {
     id: 3,
-    name: "MERN-Cloud-Sphere",
-    description: "Advanced cloud file management system utilizing React, Node.js, Express, and MongoDB with secure JWT auth.",
+    name: "School Website Portal",
+    description: "A production-grade campus web system featuring secure authentication sessions, student/teacher records databases, and real-time latency diagnostics.",
     language: "JavaScript",
-    stargazers_count: 12,
+    stargazers_count: 24,
     forks_count: 4,
-    html_url: "https://github.com/ghoshswapnadip7-coder"
+    html_url: "https://github.com/Aethron-fr"
   },
   {
     id: 4,
-    name: "Smart-Django-Blog",
-    description: "Fully-featured community portal built with Django, featuring rich text editing, profile configurations, and comment sections.",
-    language: "Python",
-    stargazers_count: 10,
-    forks_count: 3,
-    html_url: "https://github.com/ghoshswapnadip7-coder"
-  },
-  {
-    id: 5,
-    name: "Canvas-Particles-Sandbox",
-    description: "High-performance 60 FPS interactive visual physics sandbox built using HTML5 Canvas and Vanilla JS.",
+    name: "GitHub Cyber Profile",
+    description: "A premium, customized cyberpunk-themed developer showcase featuring animated telemetry badges, visual graphs, and dynamic hardware telemetries.",
     language: "HTML",
-    stargazers_count: 15,
-    forks_count: 1,
-    html_url: "https://github.com/ghoshswapnadip7-coder"
-  },
-  {
-    id: 6,
-    name: "Express-API-Shield",
-    description: "Production-ready boilerplate for Node/Express API with built-in rate-limiting, security headers, and JWT middleware.",
-    language: "JavaScript",
-    stargazers_count: 9,
+    stargazers_count: 19,
     forks_count: 2,
-    html_url: "https://github.com/ghoshswapnadip7-coder"
+    html_url: "https://github.com/Aethron-fr/Aethron-fr"
   }
 ];
 
@@ -65,22 +47,34 @@ export default function GithubProjects() {
   const [selectedLanguage, setSelectedLanguage] = useState('All');
 
   useEffect(() => {
-    fetch('https://api.github.com/users/ghoshswapnadip7-coder/repos')
+    fetch('https://api.github.com/users/Aethron-fr/repos')
       .then((res) => {
         if (!res.ok) throw new Error('API Rate Limit or Error');
         return res.json();
       })
       .then((data) => {
-        // Sort by stars descending
-        const sortedData = data
+        // Filter out fork repos and sort by stars
+        const filteredData = data
+          .filter((repo) => !repo.fork && repo.name.toLowerCase() !== 'portfolio')
           .sort((a, b) => b.stargazers_count - a.stargazers_count)
-          .slice(0, 12);
+          .slice(0, 8);
         
         // If the user has empty repositories list, use fallbacks
-        if (sortedData.length === 0) {
+        if (filteredData.length === 0) {
           setRepos(FALLBACK_PROJECTS);
         } else {
-          setRepos(sortedData);
+          // Merge custom descriptions for the main highlighted projects if found in API
+          const mergedData = filteredData.map(repo => {
+            if (repo.name.toLowerCase().includes('portfolio')) {
+              repo.language = 'React';
+              repo.description = "An elite MERN stack compiler and Vite-based portfolio website operating on a hardware-accelerated 60 FPS loop.";
+            } else if (repo.name.toLowerCase().includes('onelastsmile')) {
+              repo.language = 'React';
+              repo.description = "A deeply cinematic emotional memory portfolio web application built with Framer Motion and JWT token authorization.";
+            }
+            return repo;
+          });
+          setRepos(mergedData.length > 0 ? mergedData : FALLBACK_PROJECTS);
         }
         setLoading(false);
       })

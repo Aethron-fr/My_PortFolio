@@ -224,7 +224,7 @@ export default function FeaturedSpotlight() {
 
           {/* Action Links */}
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '30px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
-            <a href="https://github.com/ghoshswapnadip7-coder/PortFolioMaker" target="_blank" rel="noopener noreferrer" className="btn-neon-glow" style={{ padding: '10px 24px', fontSize: '0.85rem', gap: '8px' }}>
+            <a href="https://github.com/Aethron-fr/My_PortFolio" target="_blank" rel="noopener noreferrer" className="btn-neon-glow" style={{ padding: '10px 24px', fontSize: '0.85rem', gap: '8px' }}>
               <i className="fa-brands fa-github" style={{ fontSize: '16px' }}></i>
               Inspect Codebase
             </a>
