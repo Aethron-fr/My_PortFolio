@@ -134,20 +134,20 @@ export default function FeaturedSpotlight() {
               }} />
 
               {/* Polaroid Frame */}
-              <div style={{
-                width: '170px',
-                background: '#fff',
-                padding: '12px 12px 24px 12px',
-                borderRadius: '8px',
-                boxShadow: '0 15px 40px rgba(0,0,0,0.6), 0 0 20px rgba(225, 48, 108, 0.15)',
-                transform: 'rotate(-4deg) scale(1.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                position: 'relative',
-                transition: 'all 0.3s',
-              }}>
+              <div 
+                className="polaroid-frame"
+                style={{
+                  width: '170px',
+                  background: '#fff',
+                  padding: '12px 12px 24px 12px',
+                  borderRadius: '8px',
+                  boxShadow: '0 15px 40px rgba(0,0,0,0.6), 0 0 20px rgba(225, 48, 108, 0.15)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  position: 'relative',
+                }}>
                 {/* Polaroid content space */}
                 <div style={{
                   width: '100%',

@@ -621,6 +621,7 @@ export default function App() {
                 <img 
                   src="/favicon.jpg" 
                   alt="Swapnadip Ghosh" 
+                  className="avatar-glow"
                   style={{
                     width: '60px',
                     height: '60px',
@@ -791,7 +792,7 @@ export default function App() {
           </p>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span>Constructed with React, Vite & framer-motion. Locked at 60 FPS</span>
-            <Heart size={10} style={{ color: 'var(--accent-primary)', fill: 'var(--accent-primary)' }} />
+            <Heart size={10} className="pulse-heart" />
           </p>
         </div>
       </footer>

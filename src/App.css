@@ -232,3 +232,66 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Premium Cinematic Micro-Animations
+   ========================================================================== */
+
+/* Polaroid Framed Snapshot Memory floating effect */
+.polaroid-frame {
+  animation: floatPolaroid 5s ease-in-out infinite alternate;
+  cursor: pointer;
+  transition: all 0.5s var(--transition-smooth) !important;
+}
+
+@keyframes floatPolaroid {
+  0% {
+    transform: rotate(-4deg) scale(1.05) translateY(0);
+  }
+  100% {
+    transform: rotate(-2deg) scale(1.07) translateY(-8px);
+  }
+}
+
+.polaroid-frame:hover {
+  transform: rotate(1deg) scale(1.12) translateY(-14px) !important;
+  box-shadow: 0 25px 50px rgba(225, 48, 108, 0.4), 0 0 30px rgba(225, 48, 108, 0.25) !important;
+}
+
+/* Avatar Breathing Glow Aura */
+.avatar-glow {
+  animation: avatarBreath 3.5s ease-in-out infinite alternate;
+  transition: transform 0.4s var(--transition-smooth) !important;
+}
+
+.avatar-glow:hover {
+  transform: scale(1.1) rotate(4deg) !important;
+}
+
+@keyframes avatarBreath {
+  0% {
+    box-shadow: 0 0 12px rgba(225, 48, 108, 0.4), 0 0 20px rgba(0, 247, 255, 0.15);
+    border-color: var(--accent-primary) !important;
+  }
+  100% {
+    box-shadow: 0 0 24px rgba(225, 48, 108, 0.7), 0 0 35px rgba(0, 247, 255, 0.4);
+    border-color: var(--accent-cyber) !important;
+  }
+}
+
+/* Heart Beat Pulse effect */
+.pulse-heart {
+  animation: heartPulse 1.6s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+  display: inline-block;
+  color: var(--accent-primary) !important;
+  fill: var(--accent-primary) !important;
+  filter: drop-shadow(0 0 6px rgba(225, 48, 108, 0.6));
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+}
