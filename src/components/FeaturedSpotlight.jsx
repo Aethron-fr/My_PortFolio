@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Terminal, Activity, ArrowUpRight, Cpu, Heart, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Activity, ArrowUpRight, Cpu, CheckCircle2 } from 'lucide-react';
 
 export default function FeaturedSpotlight() {
   const [selectedProject, setSelectedProject] = useState('onelastsmile'); // Default set to OneLastSmile to highlight it immediately!

@@ -11,7 +11,15 @@ export default function Typewriter({ words = [], speed = 100, delay = 2000 }) {
     let timer;
     const currentWord = words[currentWordIndex];
 
-    if (isDeleting) {
+    if (!isDeleting && currentText === currentWord) {
+      // Pause on the full word before deleting it.
+      timer = setTimeout(() => setIsDeleting(true), delay);
+    } else if (isDeleting && currentText === '') {
+      timer = setTimeout(() => {
+        setIsDeleting(false);
+        setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
+      }, 0);
+    } else if (isDeleting) {
       // Deleting speed is twice as fast
       timer = setTimeout(() => {
         setCurrentText((prev) => prev.slice(0, -1));
@@ -21,16 +29,6 @@ export default function Typewriter({ words = [], speed = 100, delay = 2000 }) {
       timer = setTimeout(() => {
         setCurrentText((prev) => currentWord.slice(0, prev.length + 1));
       }, speed);
-    }
-
-    // Handle full word typed
-    if (!isDeleting && currentText === currentWord) {
-      timer = setTimeout(() => setIsDeleting(true), delay);
-    } 
-    // Handle full word deleted
-    else if (isDeleting && currentText === '') {
-      setIsDeleting(false);
-      setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
     }
 
     return () => clearTimeout(timer);

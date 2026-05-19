@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Terminal, Database, Server, Cpu, CheckCircle2, ChevronRight, CornerDownLeft } from 'lucide-react';
+import { Play, Terminal, Database, Server, Cpu, CheckCircle2, CornerDownLeft } from 'lucide-react';
 
 export default function InteractiveSandbox() {
   const [frontend, setFrontend] = useState('React');

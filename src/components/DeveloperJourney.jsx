@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, Terminal, ShieldAlert, Rocket, Sparkles, Calendar, Award, Code2 } from 'lucide-react';
+import { BookOpen, Terminal, Rocket, Sparkles, Calendar, Award, Code2 } from 'lucide-react';
 
 const JOURNEY_STEPS = [
   {
