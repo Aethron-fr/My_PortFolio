@@ -82,7 +82,7 @@ export default function App() {
           Accept: "application/json"
         },
         body: JSON.stringify({
-          access_key: "04014102-8895-411b-90e3-db279b85eb44",
+          access_key: import.meta.env.VITE_W3FORMS_KEY,
           name: contactForm.name,
           email: contactForm.email,
           message: contactForm.message,
@@ -617,7 +617,24 @@ export default function App() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'start' }}>
             {/* Direct details */}
             <div className="glass-panel" style={{ padding: '36px' }}>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '20px', color: '#fff' }}>Swapnadip Ghosh</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                <img 
+                  src="/favicon.jpg" 
+                  alt="Swapnadip Ghosh" 
+                  style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    border: '2px solid var(--accent-primary)',
+                    boxShadow: '0 0 15px rgba(225, 48, 108, 0.45)',
+                    objectFit: 'cover'
+                  }}
+                />
+                <div>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: '700', color: '#fff', margin: 0 }}>Swapnadip Ghosh</h3>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--accent-cyber)', fontWeight: '700', letterSpacing: '0.5px' }}>FULL STACK ARCHITECT</span>
+                </div>
+              </div>
               <p style={{ fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '30px' }}>
                 Feel free to email me directly or launch a connect ping. I am always open to exploring cutting-edge product structures, open source systems, or MERN cloud integrations.
               </p>
