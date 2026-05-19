@@ -68,21 +68,45 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleContactSubmit = (e) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
     if (!contactForm.name || !contactForm.email || !contactForm.message) return;
     
     setIsSubmitting(true);
     
-    // Simulate API request
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
-      setContactForm({ name: '', email: '', message: '' });
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          access_key: "04014102-8895-411b-90e3-db279b85eb44",
+          name: contactForm.name,
+          email: contactForm.email,
+          message: contactForm.message,
+          subject: `New Portfolio Message from ${contactForm.name}`,
+          from_name: "Swapnadip Ghosh Portfolio"
+        })
+      });
       
-      // Auto close success notification
-      setTimeout(() => setSubmitSuccess(false), 5000);
-    }, 1500);
+      const data = await response.json();
+      
+      if (data.success) {
+        setSubmitSuccess(true);
+        setContactForm({ name: '', email: '', message: '' });
+        // Auto close success notification
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      } else {
+        alert("Oops! Something went wrong. Please check your submission or try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting contact form to Web3Forms:", error);
+      alert("Transmission pipeline interrupted. Please verify your connection or email me directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const skillsList = [
