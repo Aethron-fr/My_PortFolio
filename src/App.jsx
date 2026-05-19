@@ -34,6 +34,19 @@ export default function App() {
 
   const progressBarRef = useRef(null);
 
+  // Disable automatic scroll restoration, reset scroll to top on reload, and clear URL hash
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    
+    // Clear URL hash to make sure the site opens at Home on reload
+    if (window.location.hash) {
+      window.history.replaceState(null, null, window.location.pathname);
+    }
+  }, []);
+
   // Monitor scroll for header styling & progress
   useEffect(() => {
     const handleScroll = () => {
@@ -119,7 +132,7 @@ export default function App() {
         }}
       >
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <a href="#hero" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <a href="#home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{
               fontSize: '1.6rem',
               fontWeight: 800,
@@ -136,7 +149,7 @@ export default function App() {
 
           {/* Desktop Nav Links */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '30px' }} className="desktop-only-flex">
-            {['About', 'Journey', 'Skills', 'Architect', 'Projects', 'Contact'].map((item) => (
+            {['Home', 'About', 'Journey', 'Skills', 'Architect', 'Projects', 'Contact'].map((item) => (
               <a 
                 key={item}
                 href={`#${item.toLowerCase()}`}
@@ -230,7 +243,7 @@ export default function App() {
             animation: 'fadeIn 0.3s var(--transition-smooth)'
           }}
         >
-          {['About', 'Journey', 'Skills', 'Architect', 'Projects', 'Contact'].map((item) => (
+          {['Home', 'About', 'Journey', 'Skills', 'Architect', 'Projects', 'Contact'].map((item) => (
             <a 
               key={item}
               href={`#${item.toLowerCase()}`}
@@ -258,7 +271,7 @@ export default function App() {
       )}
 
       {/* HERO SECTION */}
-      <section id="hero" className="hero-section">
+      <section id="home" className="hero-section">
         <div className="hero-glow-blob" />
         <div className="hero-content">
           <div style={{
