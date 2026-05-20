@@ -1,4 +1,29 @@
 import { useState, useEffect, useRef } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import emailjs from '@emailjs/browser';
+
+let auth = null;
+let googleProvider = null;
+try {
+  const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID
+  };
+  
+  if (firebaseConfig.apiKey) {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+  }
+} catch (error) {
+  console.warn("Firebase initialization skipped:", error);
+}
+
 import { 
   Mail, 
   FileText, 
@@ -31,6 +56,8 @@ export default function App() {
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const progressBarRef = useRef(null);
 
@@ -49,24 +76,46 @@ export default function App() {
 
   // Monitor scroll for header styling & progress
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
-      // Direct DOM update for 60 FPS scroll progress tracking
-      const progressBar = progressBarRef.current;
-      if (progressBar) {
-        const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = totalScroll > 0 ? (window.scrollY / totalScroll) * 100 : 0;
-        progressBar.style.width = `${scrollPercent}%`;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 40);
+          
+          const progressBar = progressBarRef.current;
+          if (progressBar) {
+            const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = totalScroll > 0 ? (window.scrollY / totalScroll) * 100 : 0;
+            progressBar.style.width = `${scrollPercent}%`;
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleGoogleSignIn = async () => {
+    if (!auth) {
+      alert("Firebase configuration is missing in environment variables.");
+      return;
+    }
+    setIsAuthenticating(true);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result.user && result.user.email) {
+        setIsVerified(true);
+        setContactForm(prev => ({ ...prev, email: result.user.email }));
+      }
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      alert("Verification failed. Please try again.");
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
@@ -75,34 +124,27 @@ export default function App() {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json"
-        },
-        body: JSON.stringify({
-          access_key: import.meta.env.VITE_W3FORMS_KEY,
-          name: contactForm.name,
-          email: contactForm.email,
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || "YOUR_SERVICE_ID";
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "YOUR_TEMPLATE_ID";
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: contactForm.name,
+          reply_to: contactForm.email,
           message: contactForm.message,
-          subject: `New Portfolio Message from ${contactForm.name}`,
-          from_name: "Swapnadip Ghosh Portfolio"
-        })
-      });
+        },
+        publicKey
+      );
       
-      const data = await response.json();
-      
-      if (data.success) {
-        setSubmitSuccess(true);
-        setContactForm({ name: '', email: '', message: '' });
-        // Auto close success notification
-        setTimeout(() => setSubmitSuccess(false), 5000);
-      } else {
-        alert("Oops! Something went wrong. Please check your submission or try again.");
-      }
+      setSubmitSuccess(true);
+      setContactForm({ name: '', email: contactForm.email, message: '' });
+      // Auto close success notification
+      setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
-      console.error("Error submitting contact form to Web3Forms:", error);
+      console.error("Error submitting contact form:", error);
       alert("Transmission pipeline interrupted. Please verify your connection or email me directly.");
     } finally {
       setIsSubmitting(false);
@@ -590,9 +632,13 @@ export default function App() {
               <h3 style={{ fontSize: '1.25rem', color: '#fff', marginBottom: '8px' }}>
                 "Not too serious in life, very serious in coding."
               </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '16px' }}>
                 I believe that programming shouldn't just be about moving data around. It should be a creative craft. Elevating digital profiles and shaping user experiences is what drives me to log in every day.
               </p>
+              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: '3px solid var(--accent-cyber)' }}>
+                <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--accent-cyber)', marginBottom: '4px', textTransform: 'uppercase' }}>Current Learning Focus</span>
+                <span style={{ fontSize: '0.85rem', color: '#cbd5e1', fontFamily: 'var(--font-mono)' }}>Exploring WebGL shaders and advanced Framer Motion choreography for next-gen interactive storytelling.</span>
+              </div>
             </div>
           </div>
 
@@ -729,104 +775,134 @@ export default function App() {
             </div>
 
             {/* Interactive Form */}
-            <form onSubmit={handleContactSubmit} className="glass-panel" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                  Your Identifier Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Swarnadip Mitra"
-                  value={contactForm.name}
-                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '14px 18px',
-                    borderRadius: '12px',
-                    border: '1px solid var(--border-glass)',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    color: '#fff',
-                    outline: 'none',
-                    fontSize: '0.95rem',
-                    transition: 'border-color 0.3s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--border-glass)'}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                  Secure Return Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="e.g. client@agency.com"
-                  value={contactForm.email}
-                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '14px 18px',
-                    borderRadius: '12px',
-                    border: '1px solid var(--border-glass)',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    color: '#fff',
-                    outline: 'none',
-                    fontSize: '0.95rem',
-                    transition: 'border-color 0.3s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--border-glass)'}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                  Project Core Message
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Tell me about your MERN architecture or 60fps design system needs..."
-                  value={contactForm.message}
-                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '14px 18px',
-                    borderRadius: '12px',
-                    border: '1px solid var(--border-glass)',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    color: '#fff',
-                    outline: 'none',
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
-                    lineHeight: '1.5',
-                    resize: 'none',
-                    transition: 'border-color 0.3s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--border-glass)'}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="btn-neon-glow"
-                style={{ width: '100%', gap: '8px', marginTop: '10px' }}
-              >
-                <Send size={16} />
-                {isSubmitting ? 'TRANSMITTING SIGNAL...' : 'TRANSMIT CONTACT SIGNAL'}
-              </button>
-
-              {submitSuccess && (
-                <div style={{ padding: '12px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#22c55e', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center', animation: 'fadeIn 0.3s' }}>
-                  Signal successfully sent! Swapnadip will return contact soon. 🚀
+            <div className="glass-panel" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
+              
+              {!isVerified && (
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(6, 6, 10, 0.85)', backdropFilter: 'blur(8px)', zIndex: 10,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  borderRadius: '20px', textAlign: 'center', padding: '20px'
+                }}>
+                  <Lock size={32} style={{ color: 'var(--accent-primary)', marginBottom: '16px' }} />
+                  <h3 style={{ fontSize: '1.4rem', color: '#fff', marginBottom: '8px' }}>Verification Required</h3>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '24px', maxWidth: '300px' }}>
+                    To prevent spam, please verify your identity using Google before transmitting a message.
+                  </p>
+                  <button 
+                    onClick={handleGoogleSignIn}
+                    disabled={isAuthenticating}
+                    className="btn-neon-outline"
+                    style={{ background: '#fff', color: '#000', border: 'none' }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: '8px' }}>
+                      <path fill="#4285F4" d="M23.74 12.27c0-.85-.08-1.66-.21-2.45H12v4.63h6.58c-.29 1.49-1.12 2.76-2.38 3.61v3h3.86c2.26-2.09 3.68-5.17 3.68-8.79z"/>
+                      <path fill="#34A853" d="M12 24c3.31 0 6.08-1.09 8.11-2.94l-3.86-3c-1.1.74-2.51 1.18-4.25 1.18-3.27 0-6.04-2.21-7.03-5.18H1.02v3.12C3.04 21.2 7.18 24 12 24z"/>
+                      <path fill="#FBBC05" d="M4.97 14.06c-.25-.74-.39-1.54-.39-2.36s.14-1.62.39-2.36V6.22H1.02C.37 7.7 0 9.32 0 11.7s.37 4 .98 5.48l3.99-3.12z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.8 0 3.42.62 4.69 1.83l3.52-3.52C18.07 1.09 15.3 0 12 0 7.18 0 3.04 2.8 1.02 6.22l3.99 3.12c1-2.97 3.77-5.18 7.03-5.18z"/>
+                    </svg>
+                    {isAuthenticating ? 'VERIFYING...' : 'Sign in with Google'}
+                  </button>
                 </div>
               )}
-            </form>
+
+              <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', opacity: isVerified ? 1 : 0.4, pointerEvents: isVerified ? 'auto' : 'none', transition: 'opacity 0.4s' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                    Your Identifier Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Swarnadip Mitra"
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '14px 18px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--border-glass)',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      color: '#fff',
+                      outline: 'none',
+                      fontSize: '0.95rem',
+                      transition: 'border-color 0.3s'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border-glass)'}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                    Secure Return Email
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    readOnly
+                    placeholder="Verified Google Email"
+                    value={contactForm.email}
+                    style={{
+                      width: '100%',
+                      padding: '14px 18px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--border-glass)',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      color: '#a3a3a3',
+                      outline: 'none',
+                      fontSize: '0.95rem',
+                      cursor: 'not-allowed'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                    Project Core Message
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Tell me about your MERN architecture or 60fps design system needs..."
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '14px 18px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--border-glass)',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      color: '#fff',
+                      outline: 'none',
+                      fontSize: '0.95rem',
+                      fontFamily: 'inherit',
+                      lineHeight: '1.5',
+                      resize: 'none',
+                      transition: 'border-color 0.3s'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border-glass)'}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !isVerified}
+                  className="btn-neon-glow"
+                  style={{ width: '100%', gap: '8px', marginTop: '10px' }}
+                >
+                  <Send size={16} />
+                  {isSubmitting ? 'TRANSMITTING SIGNAL...' : 'TRANSMIT CONTACT SIGNAL'}
+                </button>
+
+                {submitSuccess && (
+                  <div style={{ padding: '12px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#22c55e', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center', animation: 'fadeIn 0.3s' }}>
+                    Signal successfully sent! Swapnadip will return contact soon. 🚀
+                  </div>
+                )}
+              </form>
+            </div>
           </div>
         </div>
       </section>
