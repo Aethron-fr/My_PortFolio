@@ -147,7 +147,7 @@ p {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-glass);
   border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.02);
   transition: border-color 0.4s var(--transition-smooth), 
               box-shadow 0.4s var(--transition-smooth),
               transform 0.4s var(--transition-smooth);
@@ -155,7 +155,7 @@ p {
 
 .glass-panel:hover {
   border-color: var(--border-glass-hover);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 /* Bento Grid */
@@ -240,17 +240,17 @@ p {
   cursor: pointer;
   overflow: hidden;
   z-index: 1;
-  transition: transform 0.3s var(--transition-elastic), box-shadow 0.3s;
+  transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
   animation: gradientFlow 5s ease infinite;
 }
 
 .btn-neon-glow:hover {
-  transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 12px 35px rgba(225, 48, 108, 0.45);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(225, 48, 108, 0.35);
 }
 
 .btn-neon-glow:active {
-  transform: translateY(-2px) scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-neon-outline {
@@ -269,7 +269,7 @@ p {
   background: transparent;
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.3s var(--transition-elastic), box-shadow 0.3s;
+  transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
   border: none;
 }
 
@@ -292,12 +292,12 @@ p {
   background: var(--bg-dark);
   border-radius: 48px;
   z-index: -1;
-  transition: background 0.3s;
+  transition: background 0.4s var(--transition-smooth);
 }
 
 .btn-neon-outline:hover {
-  transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 12px 30px rgba(0, 247, 255, 0.15);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 247, 255, 0.15);
 }
 
 .btn-neon-outline:hover::before {

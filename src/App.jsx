@@ -359,11 +359,12 @@ export default function App() {
           </div>
 
           <h1 style={{
-            fontSize: 'calc(2.2rem + 2.5vw)',
+            fontSize: 'clamp(2.5rem, 5vw + 1rem, 4.5rem)',
             fontWeight: 800,
             lineHeight: 1.15,
             marginBottom: '16px',
-            letterSpacing: '-1.5px',
+            letterSpacing: '-1px',
+            color: '#ffffff'
           }}>
             Hi, I'm Swapnadip Ghosh
           </h1>
