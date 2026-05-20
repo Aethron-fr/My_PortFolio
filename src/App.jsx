@@ -118,6 +118,8 @@ export default function App() {
     { name: 'Git & GitHub', level: '90%', icon: <i className="fa-brands fa-github" style={{ fontSize: '24px', color: '#fff' }}></i>, desc: 'Version pipelines & collaborative team integrations' }
   ];
 
+  const navItems = ['Home', 'Centerpiece', 'Projects', 'Journey', 'Contact'];
+
   return (
     <>
       {/* 60 FPS Particle Canvas and custom cursor */}
@@ -173,7 +175,7 @@ export default function App() {
 
           {/* Desktop Nav Links */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '30px' }} className="desktop-only-flex">
-            {['Home', 'About', 'Journey', 'Skills', 'Architect', 'Projects', 'Contact'].map((item) => (
+            {navItems.map((item) => (
               <a 
                 key={item}
                 href={`#${item.toLowerCase()}`}
@@ -267,7 +269,7 @@ export default function App() {
             animation: 'fadeIn 0.3s var(--transition-smooth)'
           }}
         >
-          {['Home', 'About', 'Journey', 'Skills', 'Architect', 'Projects', 'Contact'].map((item) => (
+          {navItems.map((item) => (
             <a 
               key={item}
               href={`#${item.toLowerCase()}`}
@@ -394,16 +396,102 @@ export default function App() {
         </div>
       </section>
 
-      {/* ABOUT ME & BENTO GRID SECTION */}
-      <section id="about" className="section-padding" style={{ position: 'relative', zIndex: 2 }}>
+      {/* CINEMATIC EMOTIONAL TRANSITION */}
+      <section style={{ 
+        position: 'relative', 
+        zIndex: 2, 
+        padding: '120px 0 80px', 
+        background: 'linear-gradient(to bottom, #06060a, #09090f)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center'
+      }}>
+        <div className="container" style={{ maxWidth: '800px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+            <span style={{
+              fontSize: '0.78rem',
+              fontWeight: '800',
+              color: 'var(--accent-primary)',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              animation: 'pulse 2s infinite alternate'
+            }}>
+              A Cinematic Shift
+            </span>
+            <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+            <h2 style={{ 
+              fontSize: '2.2rem', 
+              fontWeight: '300', 
+              color: '#f8fafc', 
+              fontFamily: 'var(--font-heading)',
+              lineHeight: '1.5',
+              letterSpacing: '-0.5px',
+              textShadow: '0 0 40px rgba(255,255,255,0.05)'
+            }}>
+              "Some projects are built with keyboard clicks. <br/>
+              Others are written with <span style={{ background: 'var(--insta-gradient)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: '800' }}>sleepless nights</span> and quiet memories."
+            </h2>
+            <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.1)', marginTop: '10px' }} />
+            <p style={{ 
+              fontSize: '0.98rem', 
+              color: 'var(--text-muted)', 
+              lineHeight: '1.8',
+              maxWidth: '620px',
+              margin: '10px auto 0',
+              fontStyle: 'italic'
+            }}>
+              The digital memorial ahead is my creative identity crafted in light and code—a sanctuary to preserve a smile indefinitely.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ONE LAST SMILE CENTERPIECE EXPERIENCE */}
+      <section id="centerpiece" className="section-padding" style={{ position: 'relative', zIndex: 2, background: '#09090f' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>About Me</h2>
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(225, 48, 108, 0.08)', border: '1px solid rgba(225, 48, 108, 0.2)', padding: '6px 16px', borderRadius: '50px', marginBottom: '12px' }}>
+              <Heart size={12} style={{ color: 'var(--accent-primary)', animation: 'heartPulse 1.2s infinite' }} />
+              <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#fff', letterSpacing: '1.5px', textTransform: 'uppercase' }}>THE HERO PROJECT</span>
+            </div>
+            <h2 style={{ fontSize: '2.8rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Flagship Showcase</h2>
+            <p style={{ maxWidth: '600px', margin: '12px auto 0', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+              Explore the live interactive theater of OneLastSmile, featuring Web Audio ambient synthesizers and secret casting channels.
+            </p>
+          </div>
+          <FeaturedSpotlight />
+        </div>
+      </section>
+
+      {/* OTHER PROJECTS & GIT CLUSTERS */}
+      <section id="projects" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(to bottom, #09090f, #06060a)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Additional Projects</h2>
             <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+              Full operational indexing queried directly from the live GitHub repository stream.
+            </p>
+          </div>
+          <GithubProjects />
+        </div>
+      </section>
+
+      {/* DEVELOPER JOURNEY & CREDENTIALS TOOLKIT */}
+      <section id="journey" className="section-padding" style={{ position: 'relative', zIndex: 2, background: '#06060a' }}>
+        <div className="container">
+          
+          {/* About Biography Bento */}
+          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Developer Journey</h2>
+            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+              Biography matrix and full-stack architecture stats locked at 60 FPS.
+            </p>
           </div>
 
-          {/* Bento Grid */}
-          <div className="bento-grid">
+          <div className="bento-grid" style={{ marginBottom: '60px' }}>
             {/* Panel 1: Profile bio */}
             <div 
               className="glass-panel" 
@@ -508,106 +596,67 @@ export default function App() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* CHRONOLOGY JOURNEY SECTION */}
-      <section id="journey" className="section-padding" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>Chronology Journey</h2>
-            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
-            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Interactive milestones tracing my full-stack evolution, technical shifts, and engineering upgrades.
-            </p>
-          </div>
-          <DeveloperJourney />
-        </div>
-      </section>
-
-      {/* SKILLS SECTION */}
-      <section id="skills" className="section-padding" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>Core Competencies</h2>
-            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
-            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              A curated snapshot of my operational full-stack engineering tools and technical stack layers.
-            </p>
-          </div>
-
-          <div className="skills-grid">
-            {skillsList.map((skill, idx) => (
-              <div key={idx} className="skill-card">
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '12px',
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid var(--border-glass)',
-                  marginBottom: '10px'
-                }}>
-                  {skill.icon}
+          {/* Competency Skills list */}
+          <div style={{ marginBottom: '80px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h3 style={{ fontSize: '2rem', fontWeight: '800', color: '#fff', fontFamily: 'var(--font-heading)' }}>Core Competencies</h3>
+              <div style={{ width: '40px', height: '3px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+            </div>
+            
+            <div className="skills-grid">
+              {skillsList.map((skill, idx) => (
+                <div key={idx} className="skill-card">
+                  <div style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '12px',
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid var(--border-glass)',
+                    marginBottom: '10px'
+                  }}>
+                    {skill.icon}
+                  </div>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#fff', margin: 0 }}>{skill.name}</h4>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', lineHeight: '1.4', margin: '4px 0 0 0' }}>{skill.desc}</p>
+                  
+                  <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', marginTop: '8px', overflow: 'hidden' }}>
+                    <div style={{ width: skill.level, height: '100%', background: 'var(--insta-gradient)' }} />
+                  </div>
                 </div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#fff' }}>{skill.name}</h3>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', lineHeight: '1.4' }}>{skill.desc}</p>
-                
-                {/* Visual level progress indicator */}
-                <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', marginTop: '8px', overflow: 'hidden' }}>
-                  <div style={{ width: skill.level, height: '100%', background: 'var(--insta-gradient)' }} />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* INTERACTIVE TECH BUILDER SANDBOX */}
-      <section id="architect" className="section-padding" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>Stack Architecture</h2>
-            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+          {/* Chronological Developer Roadmap Timeline */}
+          <div style={{ marginBottom: '80px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h3 style={{ fontSize: '2rem', fontWeight: '800', color: '#fff', fontFamily: 'var(--font-heading)' }}>Interactive Milestones</h3>
+              <div style={{ width: '40px', height: '3px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+            </div>
+            <DeveloperJourney />
           </div>
-          <InteractiveSandbox />
-        </div>
-      </section>
 
-      {/* PROJECT PORTAL */}
-      <section id="projects" className="section-padding" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>Featured Systems</h2>
-            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
-            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Spotlighting core full-stack creations and dynamic developer applications.
-            </p>
+          {/* Stack sandbox architect */}
+          <div>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h3 style={{ fontSize: '2rem', fontWeight: '800', color: '#fff', fontFamily: 'var(--font-heading)' }}>Stack Sandbox</h3>
+              <div style={{ width: '40px', height: '3px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+            </div>
+            <InteractiveSandbox />
           </div>
-          
-          {/* Core Flagship Application Showcase */}
-          <FeaturedSpotlight />
 
-          {/* Dynamically Fetched GitHub Repository Stream */}
-          <div style={{ marginTop: '60px', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '40px' }}>
-            <h3 style={{ fontSize: '1.8rem', fontWeight: '800', textAlign: 'center', marginBottom: '8px' }}>
-              Additional Repository Clusters
-            </h3>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', textAlign: 'center', marginBottom: '20px' }}>
-              Full operational index queried directly from the GitHub API pipeline.
-            </p>
-            <GithubProjects />
-          </div>
         </div>
       </section>
 
       {/* CONTACT SECTION */}
-      <section id="contact" className="section-padding" style={{ position: 'relative', zIndex: 2 }}>
+      <section id="contact" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(to bottom, #06060a, #040407)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>Get In Touch</h2>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Get In Touch</h2>
             <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
             <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
               Ready to construct a 60 FPS system or a microservices backend cluster? Fire a pipeline signal below.
@@ -784,7 +833,7 @@ export default function App() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ position: 'relative', zIndex: 2, padding: '60px 0 30px' }}>
+      <footer style={{ position: 'relative', zIndex: 2, padding: '60px 0 30px', background: '#040407' }}>
         <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div className="footer-accent" />
           <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>

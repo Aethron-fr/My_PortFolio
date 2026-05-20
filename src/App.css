@@ -295,3 +295,86 @@
   42% { transform: scale(1.15); }
   70% { transform: scale(1); }
 }
+
+/* ==========================================================================
+   Cinematic Enhancements — Memory Cards + Section Atmosphere
+   ========================================================================== */
+
+/* Scanline overlay for memory cards */
+@keyframes scanlineDrift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 80px; }
+}
+
+/* Cinematic grain pulse */
+@keyframes grainPulse {
+  0%, 100% { opacity: 0.05; transform: translate(0, 0); }
+  25% { opacity: 0.07; transform: translate(1px, -1px); }
+  50% { opacity: 0.04; transform: translate(-1px, 1px); }
+  75% { opacity: 0.06; transform: translate(1px, 1px); }
+}
+
+/* Cinematic ambient glow section divider */
+.cinematic-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(225,48,108,0.4) 50%, transparent 100%);
+  margin: 0;
+}
+
+.cinematic-divider::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: inherit;
+  filter: blur(6px);
+  opacity: 0.5;
+}
+
+/* Memory card grain layer */
+.memory-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: grainPulse 4s steps(1) infinite;
+}
+
+/* Floating depth layer for hero and theater panels */
+.depth-float {
+  animation: floatPolaroid 6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Premium hover lift */
+.lift-on-hover {
+  transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
+}
+
+.lift-on-hover:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.5), 0 0 30px rgba(225,48,108,0.08);
+}
+
+/* Bloom glow behind theater panels */
+.theater-glow {
+  position: relative;
+}
+
+.theater-glow::after {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 10%;
+  right: 10%;
+  height: 36px;
+  background: radial-gradient(ellipse, rgba(225,48,108,0.25) 0%, transparent 70%);
+  filter: blur(10px);
+  pointer-events: none;
+  border-radius: 50%;
+  transition: background 0.5s;
+}
+
