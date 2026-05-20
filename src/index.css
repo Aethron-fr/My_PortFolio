@@ -70,25 +70,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
+/* Custom Cinematic Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--bg-dark);
+  border-left: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(225, 48, 108, 0.2);
-  border-radius: 10px;
-  border: 2px solid var(--bg-dark);
-  transition: background 0.3s;
+  background: linear-gradient(180deg, rgba(225, 48, 108, 0.1), rgba(225, 48, 108, 0.3));
+  border-radius: 6px;
+  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(225, 48, 108, 0.6);
+  background: linear-gradient(180deg, rgba(225, 48, 108, 0.4), rgba(225, 48, 108, 0.7));
 }
 
 /* Text Selection */

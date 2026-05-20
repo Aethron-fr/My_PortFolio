@@ -171,6 +171,7 @@ const MEMORY_CHAPTERS = [
     secret: '✨ Tap the heart inside the preview to release synthesized light particles.',
     // Deep indigo → black atmosphere
     bg: 'radial-gradient(ellipse at 30% 20%, #2a1a4e 0%, #0e0518 40%, #080210 100%)',
+    image: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&q=80&w=800',
     glowColor: 'rgba(139, 92, 246, 0.4)',
     accentColor: '#a78bfa',
     scanColor: 'rgba(139, 92, 246, 0.06)',
@@ -186,6 +187,7 @@ const MEMORY_CHAPTERS = [
     secret: '🎵 The ambient soundscape plays Gmaj9 → Cadd9 progressions synthesized live in your browser.',
     // Deep crimson terminal aesthetic
     bg: 'radial-gradient(ellipse at 70% 80%, #4a0a0a 0%, #1a0505 45%, #080202 100%)',
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800',
     glowColor: 'rgba(225, 48, 108, 0.4)',
     accentColor: '#f87171',
     scanColor: 'rgba(225, 48, 108, 0.05)',
@@ -201,6 +203,7 @@ const MEMORY_CHAPTERS = [
     secret: '💌 Cast a message into the cosmos above to watch it float away as a shooting star.',
     // Warm amber / deep purple cinematic ending
     bg: 'radial-gradient(ellipse at 50% 100%, #3d1f00 0%, #1a0d1a 50%, #060208 100%)',
+    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=800',
     glowColor: 'rgba(245, 158, 11, 0.35)',
     accentColor: '#fcd34d',
     scanColor: 'rgba(245, 158, 11, 0.04)',
@@ -283,14 +286,14 @@ export default function FeaturedSpotlight() {
   // ── Project stats ─────────────────────────────────────────────────────────
   const stats = activeProject === 'onelastsmile'
     ? [
-        { label: 'Framerate',   value: '60 FPS',          color: '#f472b6' },
+        { label: 'Framerate',   value: 'Fluid Render',    color: '#f472b6' },
         { label: 'Encryption',  value: 'AES-256',         color: '#a78bfa' },
         { label: 'Audio',       value: '320kbps Synth',   color: '#22d3ee' },
         { label: 'Relay',       value: 'SMTP / TLS',      color: '#4ade80' },
       ]
     : [
         { label: 'Architecture', value: 'React 19 + Vite', color: '#22d3ee' },
-        { label: 'Render',       value: '60 FPS GPU',      color: '#a78bfa' },
+        { label: 'Render',       value: 'Hardware Accel',  color: '#a78bfa' },
         { label: 'Bundle',       value: '<280KB Gzip',     color: '#f472b6' },
         { label: 'Base Path',    value: "'./'",            color: '#4ade80' },
       ];
@@ -572,7 +575,7 @@ export default function FeaturedSpotlight() {
                   ) : (
                     <>
                       <p style={{ fontSize: '0.95rem', lineHeight: 1.7, marginBottom: 14, color: 'var(--text-muted)' }}>
-                        <strong style={{ color: '#fff' }}>My_PortFolio</strong> is a fully responsive developer portal built on React 19, operating on a hardware-accelerated <strong style={{ color: '#00F7FF' }}>60 FPS rendering loop</strong>.
+                        <strong style={{ color: '#fff' }}>My_PortFolio</strong> is a fully responsive developer portal built on React 19, operating on a hardware-accelerated <strong style={{ color: '#00F7FF' }}>fluid rendering loop</strong>.
                       </p>
                       <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'var(--text-muted)' }}>
                         Dynamic constellation particles, elastic custom cursor, direct DOM scroll progress tracking, and lazy-loaded modular components.
@@ -614,9 +617,9 @@ export default function FeaturedSpotlight() {
 
               {activeTab === 'metrics' && (
                 <motion.div
+                  className="metrics-grid"
                   variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
                   initial="hidden" animate="visible"
-                  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}
                 >
                   {stats.map((s, i) => (
                     <motion.div
@@ -838,7 +841,10 @@ function MemoryCard({ chapter: ch, index, isExpanded, onToggle }) {
       <motion.div
         style={{
           position: 'absolute', inset: 0,
-          background: ch.bg,
+          backgroundImage: `${ch.bg}, url(${ch.image})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundBlendMode: 'overlay',
           transition: 'opacity 0.5s',
         }}
         animate={{ scale: hovered ? 1.04 : 1 }}

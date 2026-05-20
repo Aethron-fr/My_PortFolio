@@ -67,7 +67,7 @@ export default function GithubProjects() {
           const mergedData = filteredData.map(repo => {
             if (repo.name.toLowerCase().includes('portfolio')) {
               repo.language = 'React';
-              repo.description = "An elite MERN stack compiler and Vite-based portfolio website operating on a hardware-accelerated 60 FPS loop.";
+              repo.description = "An elite MERN stack compiler and Vite-based portfolio website operating on a hardware-accelerated fluid render loop.";
             } else if (repo.name.toLowerCase().includes('onelastsmile')) {
               repo.language = 'React';
               repo.description = "A deeply cinematic emotional memory portfolio web application built with Framer Motion and JWT token authorization.";

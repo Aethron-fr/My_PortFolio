@@ -205,7 +205,6 @@ export default function App() {
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              display: 'none', // Controlled by CSS media queries
               width: '28px',
               height: '20px',
               position: 'relative',
@@ -487,7 +486,7 @@ export default function App() {
             <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Developer Journey</h2>
             <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
             <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Biography matrix and full-stack architecture stats locked at 60 FPS.
+              Biography matrix and full-stack architecture stats. Hardware accelerated.
             </p>
           </div>
 
@@ -509,7 +508,7 @@ export default function App() {
               </div>
               <h3 style={{ fontSize: '1.6rem', marginBottom: '16px', color: '#fff' }}>Swapnadip Ghosh</h3>
               <p style={{ lineHeight: '1.7', marginBottom: '18px' }}>
-                I am a Full Stack Developer located in West Bengal, India, deeply passionate about sculpting 60 FPS responsive animations, solid APIs, and high-performance React architectures.
+                I am a Full Stack Developer located in West Bengal, India, deeply passionate about sculpting silky-smooth responsive animations, solid APIs, and high-performance React architectures.
               </p>
               <p style={{ lineHeight: '1.7' }}>
                 My development core centers around writing clean, highly scalable codebase infrastructure. Whether orchestrating Node services or designing premium browser interactions, I aim to weave complex engineering logic into smooth human experiences.
@@ -560,7 +559,7 @@ export default function App() {
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
                 {[
-                  { label: 'React Engine', status: '60 FPS', color: 'var(--accent-cyber)' },
+                  { label: 'React Engine', status: 'Silky Smooth', color: 'var(--accent-cyber)' },
                   { label: 'Express Engine', status: 'STABLE', color: 'var(--accent-violet)' },
                   { label: 'Django Clusters', status: 'SECURED', color: 'var(--accent-secondary)' },
                   { label: 'Docker Services', status: 'ONLINE', color: '#22c55e' }
@@ -659,7 +658,7 @@ export default function App() {
             <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Get In Touch</h2>
             <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
             <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Ready to construct a 60 FPS system or a microservices backend cluster? Fire a pipeline signal below.
+              Ready to construct a high-performance system or a microservices backend cluster? Fire a pipeline signal below.
             </p>
           </div>
 
@@ -840,7 +839,7 @@ export default function App() {
             <span>© 2026 Swapnadip Ghosh. Handcrafted in India.</span>
           </p>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span>Constructed with React, Vite & framer-motion. Locked at 60 FPS</span>
+            <span>Constructed with React, Vite & framer-motion. Silky smooth rendering.</span>
             <Heart size={10} className="pulse-heart" />
           </p>
         </div>

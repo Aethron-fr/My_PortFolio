@@ -41,7 +41,7 @@ const JOURNEY_STEPS = [
     details: [
       "Built fluid, stateful web applications leveraging React Hooks, Context APIs, and modular designs.",
       "Integrated secure payment and email delivery channels inside full-stack pipelines.",
-      "Achieved locked 60 FPS visual outputs by shifting computational loads into canvas threads."
+      "Achieved hardware-accelerated fluid visual outputs by shifting computational loads into canvas threads."
     ]
   },
   {
