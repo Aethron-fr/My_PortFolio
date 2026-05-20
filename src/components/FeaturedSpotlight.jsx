@@ -231,7 +231,52 @@ export default function FeaturedSpotlight() {
     else             { synthRef.current.start(); setSoundActive(true); }
   };
 
-  useEffect(() => () => { synthRef.current?.stop(); }, []);
+  // Autoplay logic: Try on mount, fallback to first user interaction
+  useEffect(() => {
+    let interactionListenerAdded = false;
+
+    const startAudio = async () => {
+      if (!synthRef.current) synthRef.current = new AmbientSynth();
+      if (!soundActive && !synthRef.current.isPlaying) {
+        // Try starting the synth
+        synthRef.current.start();
+        
+        // Check if the AudioContext is actually running (not suspended by browser policy)
+        if (synthRef.current.ctx && synthRef.current.ctx.state === 'running') {
+          setSoundActive(true);
+          // Remove listeners if successfully started
+          if (interactionListenerAdded) {
+            window.removeEventListener('click', startAudio);
+            window.removeEventListener('keydown', startAudio);
+            window.removeEventListener('touchstart', startAudio);
+            window.removeEventListener('scroll', startAudio);
+          }
+        }
+      }
+    };
+
+    // Attempt immediately (might work if user has high Media Engagement Index)
+    startAudio();
+
+    // Fallback: wait for the very first interaction anywhere on the page
+    if (!soundActive) {
+      interactionListenerAdded = true;
+      window.addEventListener('click', startAudio, { once: true });
+      window.addEventListener('keydown', startAudio, { once: true });
+      window.addEventListener('touchstart', startAudio, { once: true });
+      window.addEventListener('scroll', startAudio, { once: true });
+    }
+
+    return () => {
+      synthRef.current?.stop();
+      if (interactionListenerAdded) {
+        window.removeEventListener('click', startAudio);
+        window.removeEventListener('keydown', startAudio);
+        window.removeEventListener('touchstart', startAudio);
+        window.removeEventListener('scroll', startAudio);
+      }
+    };
+  }, []);
 
   // ── Cosmos caster ─────────────────────────────────────────────────────────
   const handleCast = (e) => {
