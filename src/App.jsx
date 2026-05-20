@@ -39,7 +39,8 @@ import {
   Activity,
   Award,
   User,
-  Heart
+  Heart,
+  Lock
 } from 'lucide-react';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
