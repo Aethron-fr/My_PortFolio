@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import StoryMode from './StoryMode';
 import {
   motion,
   AnimatePresence,
@@ -85,8 +86,8 @@ class AmbientSynth {
         try {
           o.gain.gain.setValueAtTime(o.gain.gain.value, now);
           o.gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.5);
-          setTimeout(() => { try { o.stop(); } catch (_) {} }, 4500);
-        } catch (_) {}
+          setTimeout(() => { try { o.stop(); } catch (e) { void e; } }, 4500);
+        } catch (e) { void e; }
       });
       this.oscillators = [];
       chords[idx].forEach((freq) => {
@@ -118,7 +119,7 @@ class AmbientSynth {
       this.gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 2);
     }
     setTimeout(() => {
-      this.oscillators.forEach((o) => { try { o.stop(); } catch (_) {} });
+      this.oscillators.forEach((o) => { try { o.stop(); } catch (e) { void e; } });
       this.oscillators = [];
       if (this.ctx && this.ctx.state !== 'closed') this.ctx.close();
     }, 2200);
@@ -164,51 +165,48 @@ function TiltCard({ children, style, className, onClick, disabled = false }) {
 const MEMORY_CHAPTERS = [
   {
     id: 'midnight',
-    title: 'Midnight Spark',
-    subtitle: 'Why It Was Born',
+    title: 'The Quiet Experiment',
+    subtitle: 'Late Night Audio',
     date: 'OCT 2025',
-    story: 'Born in the quiet, sleepless hours when the world goes dark and the mind finally speaks. A tribute to thoughts left unspoken — too complex for words but perfectly legible in code.',
-    secret: '✨ Tap the heart inside the preview to release synthesized light particles.',
-    // Deep indigo → black atmosphere
-    bg: 'radial-gradient(ellipse at 30% 20%, #2a1a4e 0%, #0e0518 40%, #080210 100%)',
+    story: 'I didn\'t plan for this to be a centerpiece. It was just a late-night experiment. I was testing how the browser handled synthesized audio frequencies. Around 3 AM, I tweaked a reverb node, and the sound just... echoed. It felt like a memory you can\'t quite place. That\'s when I realized code doesn\'t just have to process data. If you write it carefully enough, it can hold silence.',
+    secret: 'SYSTEM.LOG // Audio context initialized at 03:14 AM.',
+    bg: 'radial-gradient(ellipse at 30% 20%, #1a0505 0%, #060205 40%, #020002 100%)',
     image: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&q=80&w=800',
-    glowColor: 'rgba(139, 92, 246, 0.4)',
-    accentColor: '#a78bfa',
-    scanColor: 'rgba(139, 92, 246, 0.06)',
-    icon: '🕯️',
-    label: '01',
+    glowColor: 'rgba(225, 48, 108, 0.25)',
+    accentColor: '#e1306c',
+    scanColor: 'rgba(225, 48, 108, 0.04)',
+    icon: '01',
+    label: 'INIT',
   },
   {
     id: 'craft',
-    title: 'The Craftsmanship',
-    subtitle: 'Code & Obsession',
+    title: 'Debugging Atmosphere',
+    subtitle: 'The Exhaustion',
     date: 'DEC 2025',
-    story: 'Every pixel placed with intent. GPU-accelerated canvases, hand-tuned spring curves, and obsessive micro-detail — engineered not for a deadline, but for a person.',
-    secret: '🎵 The ambient soundscape plays Gmaj9 → Cadd9 progressions synthesized live in your browser.',
-    // Deep crimson terminal aesthetic
-    bg: 'radial-gradient(ellipse at 70% 80%, #4a0a0a 0%, #1a0505 45%, #080202 100%)',
+    story: 'The process was exhausting. I lost count of how many nights I spent staring at the same layout. I\'d build a beautiful animation, realize it felt fake, and immediately delete it. I was testing mobile smoothness endlessly. Trying to make a transition feel natural, not just mathematically correct. It was a weird mix of creative passion and deep fatigue—chasing atmosphere instead of features.',
+    secret: 'MEM_ALLOC // Physics engine restricted to 60fps.',
+    bg: 'radial-gradient(ellipse at 70% 80%, #2a0815 0%, #0a0205 45%, #020002 100%)',
     image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800',
-    glowColor: 'rgba(225, 48, 108, 0.4)',
-    accentColor: '#f87171',
-    scanColor: 'rgba(225, 48, 108, 0.05)',
-    icon: '⌨️',
-    label: '02',
+    glowColor: 'rgba(255, 94, 58, 0.25)',
+    accentColor: '#FF5E3A',
+    scanColor: 'rgba(255, 94, 58, 0.04)',
+    icon: '02',
+    label: 'CORE',
   },
   {
     id: 'gift',
-    title: 'A Gift Unopened',
-    subtitle: 'The Final Release',
+    title: 'The Takeaway',
+    subtitle: 'Protecting the Feeling',
     date: 'MAY 2026',
-    story: 'Preserved forever on the open web. Not a product. Not a portfolio piece. A quiet monument built for one person — coded with the patience only real emotion can produce.',
-    secret: '💌 Cast a message into the cosmos above to watch it float away as a shooting star.',
-    // Warm amber / deep purple cinematic ending
-    bg: 'radial-gradient(ellipse at 50% 100%, #3d1f00 0%, #1a0d1a 50%, #060208 100%)',
+    story: 'I don\'t usually talk about my work like this. But this project changed me. I slowly learned why emotional experiences fail when technical execution breaks. If a single frame drops during a transition, the illusion shatters. Ensuring that a 60fps physics simulation ran smoothly wasn\'t just optimization anymore. It was about protecting the feeling.',
+    secret: 'RENDER_COMPLETE // The final frame stabilized.',
+    bg: 'radial-gradient(ellipse at 50% 100%, #1a1a2e 0%, #0f0f1a 50%, #020205 100%)',
     image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=800',
-    glowColor: 'rgba(245, 158, 11, 0.35)',
-    accentColor: '#fcd34d',
-    scanColor: 'rgba(245, 158, 11, 0.04)',
-    icon: '🎁',
-    label: '03',
+    glowColor: 'rgba(0, 247, 255, 0.2)',
+    accentColor: '#00F7FF',
+    scanColor: 'rgba(0, 247, 255, 0.04)',
+    icon: '03',
+    label: 'ECHO',
   },
 ];
 
@@ -221,6 +219,7 @@ export default function FeaturedSpotlight() {
   const [castStars, setCastStars]               = useState([]);
   const [expandedChapter, setExpandedChapter]   = useState(null);
   const [secretEcho, setSecretEcho]             = useState(false);
+  const [showComingSoon, setShowComingSoon]     = useState(false);
 
   const synthRef = useRef(null);
 
@@ -276,6 +275,7 @@ export default function FeaturedSpotlight() {
         window.removeEventListener('scroll', startAudio);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Cosmos caster ─────────────────────────────────────────────────────────
@@ -298,7 +298,7 @@ export default function FeaturedSpotlight() {
         osc.start(ctx.currentTime + i * 0.1);
         osc.stop(ctx.currentTime + i * 0.1 + 0.9);
       });
-    } catch (_) {}
+    } catch (e) { void e; }
 
     const stars = Array.from({ length: 20 }, (_, i) => ({
       id: Date.now() + i,
@@ -324,7 +324,7 @@ export default function FeaturedSpotlight() {
       g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
       osc.connect(g); g.connect(ctx.destination);
       osc.start(); osc.stop(ctx.currentTime + 0.8);
-    } catch (_) {}
+    } catch (e) { void e; }
     setSecretEcho(!secretEcho);
   };
 
@@ -706,31 +706,46 @@ export default function FeaturedSpotlight() {
               href="https://github.com/Aethron-fr/My_PortFolio"
               target="_blank" rel="noopener noreferrer"
               className="btn-neon-glow"
-              whileHover={{ scale: 1.04, y: -3 }}
-              whileTap={{ scale: 0.97 }}
-              transition={SPRING_SNAPPY}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={SPRING_FLOAT}
               style={{
                 padding: '10px 24px', fontSize: '0.85rem', gap: 8,
                 background: activeProject === 'onelastsmile'
-                  ? 'linear-gradient(135deg, #E1306C, #FF5E3A)'
+                  ? 'linear-gradient(135deg, #1a0505, #4a0a0a)'
                   : 'linear-gradient(135deg, #00F7FF, #0088FF)',
+                border: activeProject === 'onelastsmile' ? '1px solid rgba(225, 48, 108, 0.3)' : 'none',
               }}
             >
               <Code2 size={15} />
               <span>Inspect Source</span>
             </motion.a>
-            <motion.a
-              href={activeProject === 'onelastsmile' ? 'https://one-last-smile.vercel.app/' : 'https://swapnadip-ghosh.vercel.app/'}
-              target="_blank" rel="noopener noreferrer"
-              className="btn-neon-outline"
-              whileHover={{ scale: 1.04, y: -3 }}
-              whileTap={{ scale: 0.97 }}
-              transition={SPRING_SNAPPY}
-              style={{ padding: '10px 24px', fontSize: '0.85rem', gap: 8 }}
-            >
-              <span>Live Demo</span>
-              <ExternalLink size={15} />
-            </motion.a>
+            {activeProject === 'onelastsmile' ? (
+              <motion.button
+                onClick={() => setShowComingSoon(true)}
+                className="btn-neon-outline"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={SPRING_FLOAT}
+                style={{ padding: '10px 24px', fontSize: '0.85rem', gap: 8 }}
+              >
+                <span>Enter Story Mode</span>
+                <ExternalLink size={15} />
+              </motion.button>
+            ) : (
+              <motion.a
+                href="https://swapnadip-ghosh.vercel.app/"
+                target="_blank" rel="noopener noreferrer"
+                className="btn-neon-outline"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={SPRING_FLOAT}
+                style={{ padding: '10px 24px', fontSize: '0.85rem', gap: 8 }}
+              >
+                <span>Live Demo</span>
+                <ExternalLink size={15} />
+              </motion.a>
+            )}
           </motion.div>
         </div>
       </div>
@@ -747,25 +762,100 @@ export default function FeaturedSpotlight() {
             style={{ marginTop: 60, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 44 }}
           >
             {/* Section heading */}
-            <div style={{ textAlign: 'center', marginBottom: 36 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 10 }}>
+            {/* Section heading */}
+            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 12 }}>
                 <BookOpen size={16} style={{ color: '#E1306C' }} />
                 <span style={{
                   fontSize: '0.72rem', fontWeight: 800, letterSpacing: '2px',
                   textTransform: 'uppercase', color: '#E1306C',
                 }}>
-                  BEHIND THE PROJECT
+                  THE STORY BEHIND ONELASTSMILE
                 </span>
               </div>
               <h4 style={{
-                fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: 800,
-                color: '#fff', margin: 0, fontFamily: 'var(--font-heading)',
+                fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800,
+                color: '#fff', margin: 0, fontFamily: 'var(--font-heading)', letterSpacing: '-0.5px'
               }}>
-                The Memory Archive
+                A Developer's Reflection
               </h4>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', marginTop: 8 }}>
-                Click any polaroid to reveal the story behind it.
-              </p>
+            </div>
+
+            {/* Cinematic text section */}
+            <div style={{
+              position: 'relative', maxWidth: 840, margin: '0 auto 80px auto',
+              padding: '40px 20px', textAlign: 'center',
+            }}>
+              {/* Floating ambient grain and dark gradient behind text */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 50% 50%, rgba(225,48,108,0.03) 0%, transparent 70%)',
+                filter: 'blur(30px)', pointerEvents: 'none', zIndex: -1
+              }} />
+
+              <motion.p
+                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
+                style={{
+                  fontSize: '1.05rem', color: '#e2e8f0',
+                  lineHeight: 1.9, marginBottom: 32,
+                  fontFamily: 'var(--font-body)', fontWeight: 300,
+                  textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                }}
+              >
+                OneLastSmile wasn't supposed to be a massive undertaking. It started quietly—from overthinking, and the weight of unfinished conversations. The idea was simple: even when people leave, sometimes one last smile still remains somewhere inside us.
+              </motion.p>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.1 }}
+                style={{
+                  fontSize: '1.05rem', color: 'rgba(255,255,255,0.75)',
+                  lineHeight: 1.9, marginBottom: 32,
+                  fontFamily: 'var(--font-body)', fontWeight: 300
+                }}
+              >
+                Building it became an obsession. I rebuilt the animations more times than I can count. Removing effects because they felt too loud. Staying awake fixing tiny blur transitions. It was a constant fight to balance raw emotion with clean engineering.
+              </motion.p>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.2 }}
+                style={{
+                  fontSize: '1.05rem', color: 'rgba(255,255,255,0.65)',
+                  lineHeight: 1.9, marginBottom: 40,
+                  fontFamily: 'var(--font-body)', fontWeight: 300
+                }}
+              >
+                Technically, it forced me into the deep end. I had to learn immersive frontend architecture, cinematic interaction systems, and atmosphere-driven development. I realized that performance optimization—ensuring GPU-friendly rendering—is exactly what makes emotional UX possible. The emotion doesn't work if the interface stutters.
+              </motion.p>
+
+              <motion.p
+                initial={{ opacity: 0, filter: 'blur(5px)' }}
+                whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+                viewport={{ once: true, margin: '-20px' }}
+                transition={{ duration: 1.5, ease: 'easeOut', delay: 0.4 }}
+                style={{
+                  fontSize: '0.9rem', color: '#E1306C',
+                  lineHeight: 1.8, paddingTop: 30,
+                  fontFamily: 'var(--font-mono)', fontStyle: 'italic',
+                  borderTop: '1px solid rgba(225,48,108,0.15)',
+                  display: 'inline-block'
+                }}
+              >
+                "Built slowly across countless nights of overthinking, redesigning, debugging, and feeling."
+              </motion.p>
+            </div>
+
+            <div style={{ textAlign: 'center', marginBottom: 36 }}>
+              <h5 style={{ fontSize: '0.8rem', color: 'var(--text-dim)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 10 }}>The Memory Archive</h5>
+              <div style={{ width: 40, height: 1, background: '#E1306C', margin: '0 auto', opacity: 0.5 }} />
             </div>
 
             {/* Cards row */}
@@ -853,12 +943,18 @@ export default function FeaturedSpotlight() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {showComingSoon && (
+          <StoryMode onClose={() => setShowComingSoon(false)} />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
 // ─── Memory Card Sub-component ────────────────────────────────────────────────
-function MemoryCard({ chapter: ch, index, isExpanded, onToggle }) {
+function MemoryCard({ chapter: ch, isExpanded, onToggle }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -871,13 +967,13 @@ function MemoryCard({ chapter: ch, index, isExpanded, onToggle }) {
         overflow: 'hidden',
         position: 'relative',
         aspectRatio: '3/4',
-        border: `1px solid ${isExpanded ? ch.accentColor + '55' : 'rgba(255,255,255,0.06)'}`,
+        border: `1px solid ${isExpanded ? ch.accentColor + '44' : 'rgba(255,255,255,0.015)'}`,
         boxShadow: isExpanded
-          ? `0 0 35px ${ch.glowColor}, 0 20px 50px rgba(0,0,0,0.6)`
+          ? `0 0 30px ${ch.glowColor.replace('0.25', '0.15')}, 0 20px 40px rgba(0,0,0,0.8)`
           : hovered
-            ? `0 0 25px ${ch.glowColor.replace('0.4', '0.2')}, 0 12px 30px rgba(0,0,0,0.5)`
-            : '0 8px 24px rgba(0,0,0,0.4)',
-        transition: 'border-color 0.4s, box-shadow 0.4s',
+            ? `0 0 20px ${ch.glowColor.replace('0.25', '0.1')}, 0 12px 30px rgba(0,0,0,0.6)`
+            : '0 8px 24px rgba(0,0,0,0.5)',
+        transition: 'border-color 0.6s ease, box-shadow 0.6s ease',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -1008,7 +1104,7 @@ function OLSPreview({ castStars, secretEcho, onEchoClick, secretText, setSecretT
       g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.45);
       osc.connect(g); g.connect(ctx.destination);
       osc.start(); osc.stop(ctx.currentTime + 0.5);
-    } catch (_) {}
+    } catch (e) { void e; }
     setTimeout(() => setHeartPopped(false), 600);
   };
 
