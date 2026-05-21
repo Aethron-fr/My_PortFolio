@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { auth, googleProvider } from './firebase';
 import { signInWithPopup } from 'firebase/auth';
 import emailjs from '@emailjs/browser';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mail, 
   FileText, 
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
+import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
 import InteractiveSandbox from './components/InteractiveSandbox';
 import GithubProjects from './components/GithubProjects';
@@ -33,6 +34,7 @@ import './App.css';
 
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -145,9 +147,12 @@ export default function App() {
 
   return (
     <>
-      {/* 60 FPS Particle Canvas and custom cursor */}
-      <CanvasBackground />
       <CustomCursor />
+      <CanvasBackground />
+
+      <AnimatePresence>
+        {!hasEntered && <WelcomeModal key="welcome" onEnter={() => setHasEntered(true)} />}
+      </AnimatePresence>
 
       {/* 60 FPS Dynamic Scroll Progress Indicator */}
       <div 
