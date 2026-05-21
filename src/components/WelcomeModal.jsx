@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function WelcomeModal({ onEnter }) {
-  const [step, setStep] = useState(1);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [step, setStep] = useState(isMobile ? 0 : 1);
+
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -52,7 +54,60 @@ export default function WelcomeModal({ onEnter }) {
           }} />
 
           <AnimatePresence mode="wait">
-            {step === 1 ? (
+            {step === 0 ? (
+              <motion.div
+                key="step0"
+                initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+                animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
+                transition={{ duration: 0.8, ease: 'easeInOut' }}
+              >
+                <div style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+                  letterSpacing: '5px', color: 'rgba(200,80,60,0.8)',
+                  textTransform: 'uppercase', marginBottom: 24,
+                }}>
+                  Hardware Notice
+                </div>
+
+                <h2 style={{
+                  fontSize: '1.8rem', fontWeight: 300, color: '#fff',
+                  letterSpacing: '-0.5px', marginBottom: 20,
+                  lineHeight: 1.3,
+                }}>
+                  Designed for <br/> Desktop GPUs.
+                </h2>
+
+                <p style={{
+                  fontSize: '0.95rem', color: 'rgba(255,255,255,0.45)',
+                  lineHeight: 1.8, fontWeight: 300, marginBottom: 40,
+                  maxWidth: 400, margin: '0 auto 40px',
+                }}>
+                  This cinematic experience uses heavy rendering. While it will work on your phone, it may not perfectly convey the intended atmosphere.
+                </p>
+
+                <motion.button
+                  whileHover={{ 
+                    opacity: 1, 
+                    boxShadow: '0 0 25px rgba(255,255,255,0.1)',
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    backgroundColor: 'rgba(255,255,255,0.08)'
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setStep(1)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#fff', fontFamily: 'var(--font-mono)',
+                    fontSize: '0.65rem', letterSpacing: '3px', textTransform: 'uppercase',
+                    padding: '14px 32px', borderRadius: 30, cursor: 'pointer',
+                    transition: 'all 0.4s ease',
+                  }}
+                >
+                  Continue Anyway →
+                </motion.button>
+              </motion.div>
+            ) : step === 1 ? (
               <motion.div
                 key="step1"
                 initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
