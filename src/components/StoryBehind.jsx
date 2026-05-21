@@ -79,6 +79,7 @@ export default function StoryBehind() {
       <div style={{
         position: 'absolute', inset: 0, backgroundImage: GRAIN,
         opacity: 0.04, mixBlendMode: 'overlay', pointerEvents: 'none', zIndex: 10,
+        transform: 'translateZ(0)', willChange: 'transform',
       }} />
 
       {/* Ambient background glow — barely visible */}
@@ -90,7 +91,7 @@ export default function StoryBehind() {
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(140,22,50,0.05) 0%, transparent 70%)',
-        zIndex: 5,
+        zIndex: 5, transform: 'translateZ(0)',
       }} />
 
       {/* Drifting background particles — very subtle */}

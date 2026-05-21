@@ -113,13 +113,14 @@ export default function StoryMode({ onClose, userEmail }) {
       <div style={{
         position: 'absolute', inset: 0, backgroundImage: GRAIN,
         opacity: 0.05, mixBlendMode: 'overlay', pointerEvents: 'none', zIndex: 60,
+        transform: 'translateZ(0)', willChange: 'transform',
       }} />
 
       {/* Vignette */}
       <div style={{
         position: 'absolute', inset: 0,
         background: 'radial-gradient(ellipse at center, transparent 28%, rgba(0,0,0,0.98) 100%)',
-        pointerEvents: 'none', zIndex: 55,
+        pointerEvents: 'none', zIndex: 55, transform: 'translateZ(0)',
       }} />
 
       {/* Breathing ambient glow (changes per chapter) */}

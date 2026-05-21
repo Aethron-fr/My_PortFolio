@@ -89,6 +89,9 @@ export default function CanvasBackground() {
 
     // Connect particles with translucent threads if they're close
     const connectParticles = () => {
+      // MASSIVE MOBILE OPTIMIZATION: skip O(n^2) calculations on phones
+      if (window.innerWidth < 768) return;
+      
       const len = particles.length;
       for (let i = 0; i < len; i++) {
         for (let j = i + 1; j < len; j++) {
@@ -168,6 +171,9 @@ export default function CanvasBackground() {
         height: '100vh',
         zIndex: -1,
         pointerEvents: 'none',
+        // GPU Acceleration for 60fps
+        transform: 'translateZ(0)',
+        willChange: 'transform',
       }}
     />
   );
