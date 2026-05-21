@@ -912,6 +912,36 @@ export default function App() {
         </div>
       </footer>
 
+      {/* ── WORK IN PROGRESS BADGE ── */}
+      <div 
+        className="desktop-only-flex"
+        style={{
+          position: 'fixed', bottom: 32, right: 32, zIndex: 90,
+          background: 'rgba(255,255,255,0.015)',
+          border: '1px solid rgba(255,255,255,0.04)',
+          borderRadius: 30, padding: '8px 18px',
+          alignItems: 'center', gap: 10,
+          backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+          pointerEvents: 'none',
+        }}
+      >
+        <motion.div
+          animate={{ opacity: [0.15, 0.7, 0.15], scale: [1, 1.1, 1] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ 
+            width: 5, height: 5, borderRadius: '50%', 
+            background: 'rgba(180,40,70,0.8)', 
+            boxShadow: '0 0 12px rgba(180,40,70,0.5)' 
+          }}
+        />
+        <span style={{ 
+          fontFamily: 'var(--font-mono)', fontSize: '0.65rem', 
+          color: 'rgba(255,255,255,0.35)', letterSpacing: '1px' 
+        }}>
+          Still being crafted
+        </span>
+      </div>
+
       {/* Embedded CSS for responsive elements and dynamic fades */}
       <style>{`
         .desktop-only-flex {

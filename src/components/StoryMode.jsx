@@ -42,6 +42,15 @@ export default function StoryMode({ onClose, userEmail }) {
   const [chapter, setChapter] = useState(1);
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
+  // Lock body scroll while StoryMode is open to prevent layout/viewport bugs
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   // Stable advance
   const advanceChapter = useCallback(() => {
     setChapter(c => Math.min(c + 1, 4));
