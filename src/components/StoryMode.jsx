@@ -53,7 +53,12 @@ export default function StoryMode({ onClose, userEmail }) {
   const fogX = useSpring(mouseX, { stiffness: 28, damping: 20 });
   const fogY = useSpring(mouseY, { stiffness: 28, damping: 20 });
 
+  // Throttled mouse tracking — no need to update faster than 60fps
+  const lastMouse = useRef(0);
   const handleMouseMove = (e) => {
+    const now = Date.now();
+    if (now - lastMouse.current < 16) return;
+    lastMouse.current = now;
     mouseX.set(e.clientX);
     mouseY.set(e.clientY);
   };
@@ -168,27 +173,56 @@ export default function StoryMode({ onClose, userEmail }) {
         {chapter === 4 && <Chapter04 key="ch4" userEmail={userEmail} onClose={onClose} />}
       </AnimatePresence>
 
-      {/* Exit button — appears after 2s, more visible than before */}
+      {/* ── LEFT: Exit Story Mode ── */}
       <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.28 }}
-        whileHover={{ opacity: 0.85, backdropFilter: 'blur(20px)' }}
-        transition={{ delay: 2, duration: 2 }}
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 0.3, x: 0 }}
+        whileHover={{
+          opacity: 0.9, y: -2,
+          boxShadow: '0 0 22px rgba(180,28,62,0.18)',
+          borderColor: 'rgba(180,28,62,0.4)',
+        }}
+        transition={{ delay: 2, duration: 1.8 }}
         onClick={onClose}
         style={{
-          position: 'absolute', top: 28, right: 32,
-          background: 'rgba(255,255,255,0.03)',
+          position: 'absolute', top: 28, left: 32,
+          background: 'rgba(255,255,255,0.02)',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: 20, padding: '8px 18px',
           color: '#fff', fontFamily: 'var(--font-mono)',
-          fontSize: '0.6rem', letterSpacing: '3px',
+          fontSize: '0.6rem', letterSpacing: '2px',
           cursor: 'pointer', zIndex: 90,
-          backdropFilter: 'blur(8px)',
-          transition: 'opacity 0.4s ease, background 0.4s ease',
+          backdropFilter: 'blur(10px)',
+          display: 'flex', alignItems: 'center', gap: 8,
+          transition: 'border-color 0.5s ease, box-shadow 0.5s ease',
         }}
       >
-        [ exit ]
+        ← Exit Story Mode
       </motion.button>
+
+      {/* ── RIGHT: Skip Story ── */}
+      <AnimatePresence>
+        {chapter < 4 && (
+          <motion.button
+            key="skip"
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 0.22, x: 0 }}
+            exit={{ opacity: 0, x: 8 }}
+            whileHover={{ opacity: 0.75 }}
+            transition={{ delay: 3, duration: 1.8 }}
+            onClick={() => setChapter(4)}
+            style={{
+              position: 'absolute', top: 28, right: 32,
+              background: 'none', border: 'none',
+              color: '#fff', fontFamily: 'var(--font-mono)',
+              fontSize: '0.6rem', letterSpacing: '2px',
+              cursor: 'pointer', zIndex: 90,
+            }}
+          >
+            Skip Story →
+          </motion.button>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -244,8 +278,12 @@ function Chapter01({ onDone }) {
         01 — The Quiet
       </motion.div>
 
-      {/* Cycling lines — crossfade, no mode="wait" so transitions don't stack */}
-      <div style={{ position: 'relative', height: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Cycling lines — crossfade, position:absolute so enter+exit overlap cleanly */}
+      <div style={{
+        position: 'relative', height: 80,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: '100%',
+      }}>
         <AnimatePresence>
           <motion.p
             key={idx}
@@ -254,14 +292,14 @@ function Chapter01({ onDone }) {
             exit={{ opacity: 0, y: -18, filter: 'blur(16px)' }}
             transition={{ duration: 1.35, ease: [0.22, 1, 0.36, 1] }}
             style={{
-              position: 'absolute',
-              margin: 0, padding: 0,
-              fontSize: idx === 0 || idx === 7 ? '1.4rem' : '1.1rem',
+              position: 'absolute', left: 0, right: 0,
+              margin: 0, padding: '0 8px',
+              fontSize: idx === 0 || idx === 7 ? '1.35rem' : '1.05rem',
               fontWeight: 300,
               color: '#fff',
               letterSpacing: '0.4px',
-              lineHeight: 1.6,
-              whiteSpace: 'nowrap',
+              lineHeight: 1.65,
+              textAlign: 'center',
             }}
           >
             {QUIET_LINES[idx]}
@@ -467,7 +505,11 @@ function Chapter03({ onDone }) {
       </motion.div>
 
       {/* Cycling lines — same pattern as ch01 */}
-      <div style={{ position: 'relative', height: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{
+        position: 'relative', height: 80,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: '100%',
+      }}>
         <AnimatePresence>
           <motion.p
             key={idx}
@@ -476,15 +518,13 @@ function Chapter03({ onDone }) {
             exit={{ opacity: 0, y: -18, filter: 'blur(16px)' }}
             transition={{ duration: 1.35, ease: [0.22, 1, 0.36, 1] }}
             style={{
-              position: 'absolute',
-              margin: 0,
-              fontSize: idx === 2 ? '1.5rem' : '1.1rem',
+              position: 'absolute', left: 0, right: 0,
+              margin: 0, padding: '0 8px',
+              fontSize: idx === 2 ? '1.45rem' : '1.05rem',
               fontWeight: idx === 2 ? 400 : 300,
               color: idx === 5 ? 'rgba(200,70,90,0.85)' : '#fff',
               letterSpacing: idx === 2 ? '1px' : '0.4px',
-              lineHeight: 1.6,
-              whiteSpace: idx < 3 ? 'nowrap' : 'normal',
-              maxWidth: 560,
+              lineHeight: 1.65,
               textAlign: 'center',
             }}
           >

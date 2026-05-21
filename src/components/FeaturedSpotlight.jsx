@@ -1,7 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '../firebase';
 import StoryMode from './StoryMode';
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
@@ -11,14 +9,18 @@ const MEMORY_PHRASES = [
   'draft unsaved', 'still here', 'maybe later', 'i almost sent this',
 ];
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function FeaturedSpotlight() {
-  const [showStory, setShowStory] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
-  const [userEmail, setUserEmail] = useState(null);
-  const [authLoading, setAuthLoading] = useState(false);
-  const [authError, setAuthError] = useState('');
-  const [artifacts, setArtifacts] = useState([]);
+  const [showStory, setShowStory]             = useState(false);
+  const [showAbout, setShowAbout]             = useState(false);
+  const [showCapture, setShowCapture]         = useState(false);
+  const [userEmail, setUserEmail]             = useState('');
+  const [emailInput, setEmailInput]           = useState('');
+  const [emailError, setEmailError]           = useState('');
+  const [captureSubmitting, setCaptureSubmitting] = useState(false);
+  const [artifacts, setArtifacts]             = useState([]);
+  const inputRef = useRef(null);
 
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
@@ -51,131 +53,122 @@ export default function FeaturedSpotlight() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Handle "Enter Story Mode" click
+  // Auto-focus email input when capture modal opens
+  useEffect(() => {
+    if (showCapture) {
+      const t = setTimeout(() => inputRef.current?.focus(), 600);
+      return () => clearTimeout(t);
+    }
+  }, [showCapture]);
+
   const handleEnterStory = useCallback(() => {
-    if (auth) {
-      // Firebase is configured — show cinematic auth modal
-      setAuthError('');
-      setShowAuth(true);
-    } else {
-      // Firebase not configured — enter directly (graceful fallback)
-      setShowStory(true);
-    }
+    setEmailError('');
+    setEmailInput('');
+    setShowCapture(true);
   }, []);
 
-  // Google Sign-In
-  const handleGoogleSignIn = useCallback(async () => {
-    if (!auth || !googleProvider) return;
-    setAuthLoading(true);
-    setAuthError('');
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      setUserEmail(result.user.email);
-      setShowAuth(false);
-      // Small pause before opening Story Mode — keeps the transition cinematic
-      setTimeout(() => setShowStory(true), 400);
-    } catch (err) {
-      if (err.code !== 'auth/popup-closed-by-user') {
-        setAuthError('Something went wrong. Try again.');
-      }
-    } finally {
-      setAuthLoading(false);
+  const handleEmailSubmit = useCallback((e) => {
+    e.preventDefault();
+    const trimmed = emailInput.trim();
+    if (!EMAIL_RE.test(trimmed)) {
+      setEmailError('That doesn\'t look like a valid email.');
+      return;
     }
-  }, []);
+    setCaptureSubmitting(true);
+    setUserEmail(trimmed);
+    setTimeout(() => {
+      setCaptureSubmitting(false);
+      setShowCapture(false);
+      setTimeout(() => setShowStory(true), 350);
+    }, 700);
+  }, [emailInput]);
 
-  // Skip auth (for guests or fallback)
-  const handleSkipAuth = useCallback(() => {
-    setShowAuth(false);
+  const handleSkipCapture = useCallback(() => {
+    setShowCapture(false);
     setTimeout(() => setShowStory(true), 200);
   }, []);
 
   return (
     <>
-      {/* Story Mode fullscreen overlay */}
+      {/* ── Story Mode overlay ── */}
       <AnimatePresence>
         {showStory && (
-          <StoryMode
-            key="story"
-            userEmail={userEmail}
-            onClose={() => setShowStory(false)}
-          />
+          <StoryMode key="story" userEmail={userEmail} onClose={() => setShowStory(false)} />
         )}
       </AnimatePresence>
 
-      {/* ── Cinematic Auth Modal ─────────────────────────────────────────── */}
+      {/* ── Email Capture Modal ── */}
       <AnimatePresence>
-        {showAuth && (
+        {showCapture && (
           <motion.div
-            key="auth-overlay"
+            key="capture-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.7, ease: 'easeInOut' }}
-            onClick={e => { if (e.target === e.currentTarget) setShowAuth(false); }}
+            transition={{ duration: 0.65, ease: 'easeInOut' }}
+            onClick={e => { if (e.target === e.currentTarget) setShowCapture(false); }}
             style={{
               position: 'fixed', inset: 0, zIndex: 99998,
-              background: 'rgba(2,0,2,0.9)',
+              background: 'rgba(2,0,2,0.92)',
               backdropFilter: 'blur(28px)',
               WebkitBackdropFilter: 'blur(28px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               padding: 24,
             }}
           >
-            {/* Ambient glow behind modal */}
+            {/* Ambient crimson glow */}
             <motion.div
-              animate={{ opacity: [0.06, 0.14, 0.06] }}
+              animate={{ opacity: [0.06, 0.13, 0.06] }}
               transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
               style={{
-                position: 'absolute', inset: 0,
-                background: 'radial-gradient(circle at 50% 45%, rgba(160,28,60,0.15) 0%, transparent 65%)',
-                filter: 'blur(60px)', pointerEvents: 'none',
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                background: 'radial-gradient(circle at 50% 45%, rgba(150,25,55,0.18) 0%, transparent 65%)',
+                filter: 'blur(60px)',
               }}
             />
 
+            {/* Dust particles */}
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+              {[...Array(10)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ y: [0, -(14 + i % 6), 0], opacity: [0.03, 0.1, 0.03] }}
+                  transition={{ duration: 9 + (i % 4), repeat: Infinity, ease: 'easeInOut', delay: i * 0.55 }}
+                  style={{
+                    position: 'absolute', width: 1.5, height: 1.5,
+                    background: '#fff', borderRadius: '50%',
+                    left: `${8 + i * 8}%`, top: `${18 + i * 7}%`,
+                    filter: 'blur(0.8px)',
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Glass card */}
             <motion.div
               initial={{ opacity: 0, y: 28, filter: 'blur(16px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, y: -16, filter: 'blur(16px)' }}
-              transition={{ duration: 1.1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.1, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                maxWidth: 400, width: '100%',
+                maxWidth: 420, width: '100%',
                 background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: 22,
-                padding: '52px 40px 44px',
-                textAlign: 'center',
-                position: 'relative',
-                overflow: 'hidden',
+                border: '1px solid rgba(255,255,255,0.055)',
+                borderRadius: 22, padding: '52px 40px 44px',
+                textAlign: 'center', position: 'relative', overflow: 'hidden',
               }}
             >
-              {/* Top accent line */}
+              {/* Top crimson accent */}
               <div style={{
-                position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px',
-                background: 'linear-gradient(90deg, transparent, rgba(180,40,70,0.5), transparent)',
+                position: 'absolute', top: 0, left: '18%', right: '18%', height: '1px',
+                background: 'linear-gradient(90deg, transparent, rgba(180,38,68,0.55), transparent)',
               }} />
 
-              {/* Grain on modal */}
+              {/* Grain */}
               <div style={{
                 position: 'absolute', inset: 0, backgroundImage: GRAIN,
                 opacity: 0.04, mixBlendMode: 'overlay', pointerEvents: 'none',
               }} />
-
-              {/* Dust particles */}
-              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-                {[...Array(8)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ y: [0, -(12 + i % 6), 0], opacity: [0.03, 0.12, 0.03] }}
-                    transition={{ duration: 8 + (i % 4), repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
-                    style={{
-                      position: 'absolute', width: 1.5, height: 1.5,
-                      background: '#fff', borderRadius: '50%',
-                      left: `${10 + i * 10}%`, top: `${20 + i * 8}%`,
-                      filter: 'blur(0.8px)',
-                    }}
-                  />
-                ))}
-              </div>
 
               {/* Label */}
               <div style={{
@@ -189,89 +182,109 @@ export default function FeaturedSpotlight() {
 
               {/* Headline */}
               <p style={{
-                fontSize: '1.1rem', color: 'rgba(255,255,255,0.85)',
-                fontWeight: 300, lineHeight: 1.7, marginBottom: 12,
+                fontSize: '1.05rem', color: 'rgba(255,255,255,0.82)',
+                fontWeight: 300, lineHeight: 1.8, marginBottom: 10,
                 position: 'relative',
               }}>
-                Some memories are meant to be personal.
+                Before entering,<br />
+                leave behind a name<br />
+                the silence can remember.
               </p>
 
               {/* Subtext */}
               <p style={{
-                fontSize: '0.88rem', color: 'rgba(255,255,255,0.32)',
-                fontWeight: 300, lineHeight: 1.8, marginBottom: 40,
+                fontSize: '0.82rem', color: 'rgba(255,255,255,0.27)',
+                fontWeight: 300, lineHeight: 1.8, marginBottom: 36,
                 position: 'relative',
               }}>
-                Sign in to enter. Your thought will be tied to your identity.
+                Your email connects your thought to the experience.
               </p>
 
-              {/* Error */}
-              <AnimatePresence>
-                {authError && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 0.7, y: 0 }}
-                    exit={{ opacity: 0 }}
+              {/* Form */}
+              <form onSubmit={handleEmailSubmit} style={{ position: 'relative' }}>
+                <div style={{ position: 'relative', marginBottom: 14 }}>
+                  <input
+                    ref={inputRef}
+                    type="email"
+                    value={emailInput}
+                    onChange={e => { setEmailInput(e.target.value); setEmailError(''); }}
+                    placeholder="your@email.com"
+                    autoComplete="email"
                     style={{
-                      fontSize: '0.8rem', color: 'rgba(220,80,80,0.9)',
-                      marginBottom: 16, position: 'relative',
+                      width: '100%', padding: '13px 18px',
+                      background: 'rgba(255,255,255,0.035)',
+                      border: `1px solid ${emailError ? 'rgba(200,60,60,0.4)' : 'rgba(255,255,255,0.07)'}`,
+                      borderRadius: 12, color: 'rgba(255,255,255,0.88)',
+                      fontFamily: 'var(--font-body)', fontSize: '0.9rem',
+                      outline: 'none', backdropFilter: 'blur(12px)',
+                      transition: 'border-color 0.5s ease',
+                      boxSizing: 'border-box',
                     }}
-                  >
-                    {authError}
-                  </motion.p>
-                )}
-              </AnimatePresence>
+                  />
+                </div>
 
-              {/* Google Button */}
-              <motion.button
-                onClick={handleGoogleSignIn}
-                disabled={authLoading}
-                whileHover={{ scale: 1.02, borderColor: 'rgba(255,255,255,0.14)' }}
-                whileTap={{ scale: 0.98 }}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: 12, width: '100%',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 12, padding: '14px 20px',
-                  color: authLoading ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.82)',
-                  fontFamily: 'var(--font-body)', fontSize: '0.9rem',
-                  cursor: authLoading ? 'not-allowed' : 'pointer',
-                  backdropFilter: 'blur(12px)',
-                  transition: 'border-color 0.5s ease, color 0.4s ease',
-                  position: 'relative', marginBottom: 16,
-                }}
-              >
-                {/* Google 'G' SVG */}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                {authLoading ? 'Signing in...' : 'Continue with Google'}
-              </motion.button>
+                {/* Error */}
+                <AnimatePresence>
+                  {emailError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 0.75, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      style={{
+                        fontSize: '0.78rem', color: 'rgba(210,70,70,0.9)',
+                        marginBottom: 14, position: 'relative', textAlign: 'left',
+                      }}
+                    >
+                      {emailError}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
 
-              {/* Skip auth */}
+                {/* Continue button */}
+                <motion.button
+                  type="submit"
+                  disabled={captureSubmitting}
+                  whileHover={{ scale: 1.02, borderColor: 'rgba(200,50,80,0.35)' }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    width: '100%', padding: '13px 20px',
+                    background: captureSubmitting ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.09)',
+                    borderRadius: 12,
+                    color: captureSubmitting ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.85)',
+                    fontFamily: 'var(--font-mono)', fontSize: '0.8rem', letterSpacing: '3px',
+                    cursor: captureSubmitting ? 'not-allowed' : 'pointer',
+                    backdropFilter: 'blur(14px)',
+                    marginBottom: 20,
+                    transition: 'border-color 0.5s, color 0.3s',
+                    position: 'relative',
+                  }}
+                >
+                  {captureSubmitting ? '...' : '[ Continue ]'}
+                </motion.button>
+              </form>
+
+              {/* Skip option */}
               <motion.button
-                onClick={handleSkipAuth}
+                onClick={handleSkipCapture}
                 whileHover={{ opacity: 0.6 }}
                 style={{
                   background: 'none', border: 'none',
-                  color: 'rgba(255,255,255,0.22)',
-                  fontFamily: 'var(--font-mono)', fontSize: '0.62rem',
-                  letterSpacing: '2px', cursor: 'pointer',
+                  color: 'rgba(255,255,255,0.2)',
+                  fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+                  letterSpacing: '1.5px', cursor: 'pointer',
                   position: 'relative',
                 }}
               >
-                Maybe later
+                enter without a name →
               </motion.button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── About Overlay ────────────────────────────────────────────────── */}
+      {/* ── About Overlay ── */}
       <AnimatePresence>
         {showAbout && (
           <motion.div
@@ -309,7 +322,7 @@ export default function FeaturedSpotlight() {
                 style={{
                   position: 'absolute', top: 24, right: 28,
                   background: 'none', border: 'none',
-                  color: 'rgba(255,255,255,0.3)',
+                  color: 'rgba(255,255,255,0.28)',
                   fontFamily: 'var(--font-mono)', fontSize: '0.62rem',
                   letterSpacing: '3px', cursor: 'pointer',
                 }}
@@ -350,7 +363,7 @@ export default function FeaturedSpotlight() {
                   body: `Smoothness itself carries emotion. The way something moves communicates just as much as what it says. A transition that's too fast feels dismissive. One that's too slow feels melodramatic. The right speed feels like honesty.\n\nThis project isn't publicly open yet. Everything that matters already exists.`,
                 },
               ].map((section, i) => (
-                <div key={i} style={{ marginBottom: i < 3 ? 34 : 0 }}>
+                <div key={i} style={{ marginBottom: i < 3 ? 32 : 0 }}>
                   <div style={{
                     fontFamily: 'var(--font-mono)', fontSize: '0.56rem',
                     letterSpacing: '4px', color: 'rgba(170,48,68,0.55)',
@@ -360,7 +373,7 @@ export default function FeaturedSpotlight() {
                   </div>
                   {section.body.split('\n\n').map((para, j) => (
                     <p key={j} style={{
-                      fontSize: '0.95rem', color: 'rgba(255,255,255,0.52)',
+                      fontSize: '0.95rem', color: 'rgba(255,255,255,0.5)',
                       lineHeight: 1.9, fontWeight: 300,
                       marginBottom: j < section.body.split('\n\n').length - 1 ? 14 : 0,
                     }}>
@@ -374,7 +387,7 @@ export default function FeaturedSpotlight() {
         )}
       </AnimatePresence>
 
-      {/* ── The Artifact Card ────────────────────────────────────────────── */}
+      {/* ── The Artifact Card ── */}
       <motion.div
         onMouseMove={handleMouseMove}
         style={{
@@ -509,7 +522,8 @@ export default function FeaturedSpotlight() {
               lineHeight: 1.85, fontWeight: 300,
             }}
           >
-            A quiet interactive experience built from memory, atmosphere, unfinished conversations, and emotional UX.
+            A quiet interactive experience built from memory, atmosphere,
+            unfinished conversations, and emotional UX.
           </motion.p>
 
           {/* Buttons */}
@@ -519,7 +533,6 @@ export default function FeaturedSpotlight() {
             transition={{ delay: 1.7, duration: 2 }}
             style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}
           >
-            {/* Enter Story Mode */}
             <motion.button
               onClick={handleEnterStory}
               whileHover={{ scale: 1.02, borderColor: 'rgba(200,55,90,0.4)' }}
@@ -527,7 +540,8 @@ export default function FeaturedSpotlight() {
               style={{
                 background: 'rgba(255,255,255,0.025)',
                 border: '1px solid rgba(255,255,255,0.09)',
-                borderRadius: 30, padding: 'clamp(12px, 2vw, 15px) clamp(24px, 3vw, 34px)',
+                borderRadius: 30,
+                padding: 'clamp(12px, 2vw, 15px) clamp(24px, 3vw, 34px)',
                 color: '#fff', fontSize: 'clamp(0.78rem, 2vw, 0.88rem)',
                 fontFamily: 'var(--font-mono)', letterSpacing: '2px',
                 cursor: 'pointer', backdropFilter: 'blur(20px)',
@@ -548,7 +562,6 @@ export default function FeaturedSpotlight() {
               [ Enter Story Mode ]
             </motion.button>
 
-            {/* About */}
             <motion.button
               onClick={() => setShowAbout(true)}
               whileHover={{ scale: 1.02, color: 'rgba(255,255,255,0.85)' }}
