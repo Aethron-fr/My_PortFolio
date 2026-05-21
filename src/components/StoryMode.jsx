@@ -176,22 +176,22 @@ export default function StoryMode({ onClose, userEmail }) {
       {/* ── LEFT: Exit Story Mode ── */}
       <motion.button
         initial={{ opacity: 0, x: -8 }}
-        animate={{ opacity: 0.3, x: 0 }}
+        animate={{ opacity: 0.7, x: 0 }}
         whileHover={{
-          opacity: 0.9, y: -2,
-          boxShadow: '0 0 22px rgba(180,28,62,0.18)',
-          borderColor: 'rgba(180,28,62,0.4)',
+          opacity: 1, y: -2,
+          boxShadow: '0 0 22px rgba(180,28,62,0.3)',
+          borderColor: 'rgba(180,28,62,0.6)',
         }}
-        transition={{ delay: 2, duration: 1.8 }}
+        transition={{ delay: 1, duration: 1.2 }}
         onClick={onClose}
         style={{
           position: 'absolute', top: 28, left: 32,
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 20, padding: '8px 18px',
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: 20, padding: '10px 20px',
           color: '#fff', fontFamily: 'var(--font-mono)',
-          fontSize: '0.6rem', letterSpacing: '2px',
-          cursor: 'pointer', zIndex: 90,
+          fontSize: '0.7rem', letterSpacing: '2px',
+          cursor: 'pointer', zIndex: 9999,
           backdropFilter: 'blur(10px)',
           display: 'flex', alignItems: 'center', gap: 8,
           transition: 'border-color 0.5s ease, box-shadow 0.5s ease',
@@ -206,17 +206,20 @@ export default function StoryMode({ onClose, userEmail }) {
           <motion.button
             key="skip"
             initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 0.22, x: 0 }}
+            animate={{ opacity: 0.6, x: 0 }}
             exit={{ opacity: 0, x: 8 }}
-            whileHover={{ opacity: 0.75 }}
-            transition={{ delay: 3, duration: 1.8 }}
+            whileHover={{ opacity: 1 }}
+            transition={{ delay: 2, duration: 1.2 }}
             onClick={() => setChapter(4)}
             style={{
               position: 'absolute', top: 28, right: 32,
-              background: 'none', border: 'none',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 20, padding: '10px 20px',
               color: '#fff', fontFamily: 'var(--font-mono)',
-              fontSize: '0.6rem', letterSpacing: '2px',
-              cursor: 'pointer', zIndex: 90,
+              fontSize: '0.7rem', letterSpacing: '2px',
+              cursor: 'pointer', zIndex: 9999,
+              backdropFilter: 'blur(10px)',
             }}
           >
             Skip Story →
