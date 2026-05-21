@@ -492,7 +492,9 @@ export default function App() {
               Projects that exist but are not yet public. Built privately, released intentionally.
             </p>
           </div>
-          <FeaturedSpotlight />
+          <div id="centerpiece">
+            <FeaturedSpotlight />
+          </div>
         </div>
       </section>
 
