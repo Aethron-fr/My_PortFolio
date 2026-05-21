@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { auth, googleProvider } from './firebase';
 import { signInWithPopup } from 'firebase/auth';
 import emailjs from '@emailjs/browser';
-
+import { motion } from 'framer-motion';
 import { 
   Mail, 
   FileText, 
