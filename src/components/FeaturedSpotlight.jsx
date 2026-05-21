@@ -1,1431 +1,589 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
 import StoryMode from './StoryMode';
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from 'framer-motion';
-import {
-  Sparkles,
-  Activity,
-  ArrowUpRight,
-  Cpu,
-  CheckCircle2,
-  Volume2,
-  VolumeX,
-  Heart,
-  Send,
-  BookOpen,
-  Calendar,
-  Lock,
-  ExternalLink,
-  Code2,
-} from 'lucide-react';
 
-// ─── Spring Config Presets ───────────────────────────────────────────────────
-const SPRING_GENTLE = { type: 'spring', stiffness: 80, damping: 20 };
-const SPRING_SNAPPY = { type: 'spring', stiffness: 200, damping: 24 };
-const SPRING_FLOAT  = { type: 'spring', stiffness: 40, damping: 14 };
+const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
-// ─── Ambient Synthesizer ─────────────────────────────────────────────────────
-class AmbientSynth {
-  constructor() {
-    this.ctx = null;
-    this.isPlaying = false;
-    this.oscillators = [];
-    this.gainNode = null;
-    this.filterNode = null;
-    this.delayNode = null;
-    this.chordTimeout = null;
-  }
-
-  start() {
-    if (this.isPlaying) return;
-    try {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      this.gainNode = this.ctx.createGain();
-      this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
-      this.gainNode.gain.linearRampToValueAtTime(0.055, this.ctx.currentTime + 3);
-
-      this.filterNode = this.ctx.createBiquadFilter();
-      this.filterNode.type = 'lowpass';
-      this.filterNode.frequency.setValueAtTime(380, this.ctx.currentTime);
-
-      this.delayNode = this.ctx.createDelay(1.0);
-      this.delayNode.delayTime.setValueAtTime(0.72, this.ctx.currentTime);
-      const fb = this.ctx.createGain();
-      fb.gain.setValueAtTime(0.64, this.ctx.currentTime);
-      this.delayNode.connect(fb);
-      fb.connect(this.delayNode);
-
-      this.filterNode.connect(this.gainNode);
-      this.filterNode.connect(this.delayNode);
-      this.delayNode.connect(this.gainNode);
-      this.gainNode.connect(this.ctx.destination);
-
-      this.isPlaying = true;
-      this._playChordLoop();
-    } catch (e) {
-      console.warn('Web Audio blocked:', e);
-    }
-  }
-
-  _playChordLoop() {
-    if (!this.isPlaying) return;
-    const chords = [
-      [196.0, 246.94, 293.66, 369.99, 440.0],
-      [130.81, 164.81, 196.0, 293.66, 392.0],
-    ];
-    let idx = 0;
-    const play = () => {
-      if (!this.isPlaying) return;
-      const now = this.ctx.currentTime;
-      this.oscillators.forEach((o) => {
-        try {
-          o.gain.gain.setValueAtTime(o.gain.gain.value, now);
-          o.gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.5);
-          setTimeout(() => { try { o.stop(); } catch (e) { void e; } }, 4500);
-        } catch (e) { void e; }
-      });
-      this.oscillators = [];
-      chords[idx].forEach((freq) => {
-        const osc = this.ctx.createOscillator();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, now);
-        const g = this.ctx.createGain();
-        g.gain.setValueAtTime(0, now);
-        g.gain.linearRampToValueAtTime(0.11, now + 2.5);
-        osc.connect(g);
-        g.connect(this.filterNode);
-        osc.start(now);
-        osc.gain = g;
-        this.oscillators.push(osc);
-      });
-      idx = (idx + 1) % chords.length;
-      this.chordTimeout = setTimeout(play, 9000);
-    };
-    play();
-  }
-
-  stop() {
-    if (!this.isPlaying) return;
-    this.isPlaying = false;
-    clearTimeout(this.chordTimeout);
-    if (this.gainNode && this.ctx) {
-      const now = this.ctx.currentTime;
-      this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
-      this.gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 2);
-    }
-    setTimeout(() => {
-      this.oscillators.forEach((o) => { try { o.stop(); } catch (e) { void e; } });
-      this.oscillators = [];
-      if (this.ctx && this.ctx.state !== 'closed') this.ctx.close();
-    }, 2200);
-  }
-}
-
-// ─── Cinematic Tilt Card (mouse-follow 3D tilt) ─────────────────────────────
-function TiltCard({ children, style, className, onClick, disabled = false }) {
-  const ref = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [6, -6]), SPRING_FLOAT);
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), SPRING_FLOAT);
-
-  const handleMove = useCallback((e) => {
-    if (disabled) return;
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
-  }, [disabled, x, y]);
-
-  const handleLeave = useCallback(() => {
-    x.set(0);
-    y.set(0);
-  }, [x, y]);
-
-  return (
-    <motion.div
-      ref={ref}
-      style={{ ...style, rotateX, rotateY, transformStyle: 'preserve-3d', willChange: 'transform' }}
-      className={className}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      onClick={onClick}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// ─── Cinematic Memory Chapter Data ───────────────────────────────────────────
-const MEMORY_CHAPTERS = [
-  {
-    id: 'midnight',
-    title: 'The Quiet Experiment',
-    subtitle: 'Late Night Audio',
-    date: 'OCT 2025',
-    story: 'I didn\'t plan for this to be a centerpiece. It was just a late-night experiment. I was testing how the browser handled synthesized audio frequencies. Around 3 AM, I tweaked a reverb node, and the sound just... echoed. It felt like a memory you can\'t quite place. That\'s when I realized code doesn\'t just have to process data. If you write it carefully enough, it can hold silence.',
-    secret: 'SYSTEM.LOG // Audio context initialized at 03:14 AM.',
-    bg: 'radial-gradient(ellipse at 30% 20%, #1a0505 0%, #060205 40%, #020002 100%)',
-    image: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&q=80&w=800',
-    glowColor: 'rgba(225, 48, 108, 0.25)',
-    accentColor: '#e1306c',
-    scanColor: 'rgba(225, 48, 108, 0.04)',
-    icon: '01',
-    label: 'INIT',
-  },
-  {
-    id: 'craft',
-    title: 'Debugging Atmosphere',
-    subtitle: 'The Exhaustion',
-    date: 'DEC 2025',
-    story: 'The process was exhausting. I lost count of how many nights I spent staring at the same layout. I\'d build a beautiful animation, realize it felt fake, and immediately delete it. I was testing mobile smoothness endlessly. Trying to make a transition feel natural, not just mathematically correct. It was a weird mix of creative passion and deep fatigue—chasing atmosphere instead of features.',
-    secret: 'MEM_ALLOC // Physics engine restricted to 60fps.',
-    bg: 'radial-gradient(ellipse at 70% 80%, #2a0815 0%, #0a0205 45%, #020002 100%)',
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800',
-    glowColor: 'rgba(255, 94, 58, 0.25)',
-    accentColor: '#FF5E3A',
-    scanColor: 'rgba(255, 94, 58, 0.04)',
-    icon: '02',
-    label: 'CORE',
-  },
-  {
-    id: 'gift',
-    title: 'The Takeaway',
-    subtitle: 'Protecting the Feeling',
-    date: 'MAY 2026',
-    story: 'I don\'t usually talk about my work like this. But this project changed me. I slowly learned why emotional experiences fail when technical execution breaks. If a single frame drops during a transition, the illusion shatters. Ensuring that a 60fps physics simulation ran smoothly wasn\'t just optimization anymore. It was about protecting the feeling.',
-    secret: 'RENDER_COMPLETE // The final frame stabilized.',
-    bg: 'radial-gradient(ellipse at 50% 100%, #1a1a2e 0%, #0f0f1a 50%, #020205 100%)',
-    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=800',
-    glowColor: 'rgba(0, 247, 255, 0.2)',
-    accentColor: '#00F7FF',
-    scanColor: 'rgba(0, 247, 255, 0.04)',
-    icon: '03',
-    label: 'ECHO',
-  },
+const MEMORY_PHRASES = [
+  '2:14 AM', 'typing...', 'never mind', 'seen',
+  'draft unsaved', 'still here', 'maybe later', 'i almost sent this',
 ];
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function FeaturedSpotlight() {
-  const [activeProject, setActiveProject]       = useState('onelastsmile');
-  const [activeTab, setActiveTab]               = useState('overview');
-  const [soundActive, setSoundActive]           = useState(false);
-  const [secretText, setSecretText]             = useState('');
-  const [castStars, setCastStars]               = useState([]);
-  const [expandedChapter, setExpandedChapter]   = useState(null);
-  const [secretEcho, setSecretEcho]             = useState(false);
-  const [showComingSoon, setShowComingSoon]     = useState(false);
+  const [showStory, setShowStory] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [artifacts, setArtifacts] = useState([]);
 
-  const synthRef = useRef(null);
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const fogX = useSpring(rawX, { stiffness: 28, damping: 20 });
+  const fogY = useSpring(rawY, { stiffness: 28, damping: 20 });
 
-  // ── Sound toggle ──────────────────────────────────────────────────────────
-  const toggleSound = () => {
-    if (!synthRef.current) synthRef.current = new AmbientSynth();
-    if (soundActive) { synthRef.current.stop(); setSoundActive(false); }
-    else             { synthRef.current.start(); setSoundActive(true); }
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    rawX.set(e.clientX - rect.left);
+    rawY.set(e.clientY - rect.top);
   };
 
-  // Autoplay logic: Try on mount, fallback to first user interaction
+  // Memory fragment spawner
   useEffect(() => {
-    let interactionListenerAdded = false;
-
-    const startAudio = async () => {
-      if (!synthRef.current) synthRef.current = new AmbientSynth();
-      if (!soundActive && !synthRef.current.isPlaying) {
-        // Try starting the synth
-        synthRef.current.start();
-        
-        // Check if the AudioContext is actually running (not suspended by browser policy)
-        if (synthRef.current.ctx && synthRef.current.ctx.state === 'running') {
-          setSoundActive(true);
-          // Remove listeners if successfully started
-          if (interactionListenerAdded) {
-            window.removeEventListener('click', startAudio);
-            window.removeEventListener('keydown', startAudio);
-            window.removeEventListener('touchstart', startAudio);
-            window.removeEventListener('scroll', startAudio);
-          }
-        }
-      }
+    let timeout;
+    const spawn = () => {
+      const id = Date.now();
+      const artifact = {
+        id,
+        text: MEMORY_PHRASES[Math.floor(Math.random() * MEMORY_PHRASES.length)],
+        x: 10 + Math.random() * 72,
+        y: 10 + Math.random() * 72,
+        duration: 3500 + Math.random() * 3000,
+      };
+      setArtifacts(prev => [...prev.slice(-4), artifact]);
+      setTimeout(() => setArtifacts(prev => prev.filter(a => a.id !== id)), artifact.duration);
+      timeout = setTimeout(spawn, 2800 + Math.random() * 3500);
     };
-
-    // Attempt immediately (might work if user has high Media Engagement Index)
-    startAudio();
-
-    // Fallback: wait for the very first interaction anywhere on the page
-    if (!soundActive) {
-      interactionListenerAdded = true;
-      window.addEventListener('click', startAudio, { once: true });
-      window.addEventListener('keydown', startAudio, { once: true });
-      window.addEventListener('touchstart', startAudio, { once: true });
-      window.addEventListener('scroll', startAudio, { once: true });
-    }
-
-    return () => {
-      synthRef.current?.stop();
-      if (interactionListenerAdded) {
-        window.removeEventListener('click', startAudio);
-        window.removeEventListener('keydown', startAudio);
-        window.removeEventListener('touchstart', startAudio);
-        window.removeEventListener('scroll', startAudio);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    spawn();
+    return () => clearTimeout(timeout);
   }, []);
 
-  // ── Cosmos caster ─────────────────────────────────────────────────────────
-  const handleCast = (e) => {
-    e.preventDefault();
-    if (!secretText.trim()) return;
+  // Handle "Enter Story Mode" click
+  const handleEnterStory = useCallback(() => {
+    if (auth) {
+      // Firebase is configured — show cinematic auth modal
+      setAuthError('');
+      setShowAuth(true);
+    } else {
+      // Firebase not configured — enter directly (graceful fallback)
+      setShowStory(true);
+    }
+  }, []);
 
-    // Arpeggio chime
+  // Google Sign-In
+  const handleGoogleSignIn = useCallback(async () => {
+    if (!auth || !googleProvider) return;
+    setAuthLoading(true);
+    setAuthError('');
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      [329.63, 415.3, 493.88, 659.25].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.1);
-        g.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
-        g.gain.linearRampToValueAtTime(0.05, ctx.currentTime + i * 0.1 + 0.05);
-        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.1 + 0.7);
-        osc.connect(g); g.connect(ctx.destination);
-        osc.start(ctx.currentTime + i * 0.1);
-        osc.stop(ctx.currentTime + i * 0.1 + 0.9);
-      });
-    } catch (e) { void e; }
+      const result = await signInWithPopup(auth, googleProvider);
+      setUserEmail(result.user.email);
+      setShowAuth(false);
+      // Small pause before opening Story Mode — keeps the transition cinematic
+      setTimeout(() => setShowStory(true), 400);
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user') {
+        setAuthError('Something went wrong. Try again.');
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  }, []);
 
-    const stars = Array.from({ length: 20 }, (_, i) => ({
-      id: Date.now() + i,
-      left: 8 + Math.random() * 84,
-      size: 7 + Math.random() * 10,
-      delay: Math.random() * 0.5,
-      dur: 2 + Math.random() * 1.5,
-      type: Math.random() > 0.45 ? '⭐' : '❤️',
-    }));
-    setCastStars(stars);
-    setSecretText('');
-    setTimeout(() => setCastStars([]), 3500);
-  };
-
-  // ── Echo dot click ────────────────────────────────────────────────────────
-  const handleEchoClick = () => {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const g = ctx.createGain();
-      osc.type = 'sine'; osc.frequency.setValueAtTime(440, ctx.currentTime);
-      g.gain.setValueAtTime(0.05, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime + 0.8);
-    } catch (e) { void e; }
-    setSecretEcho(!secretEcho);
-  };
-
-  // ── Project stats ─────────────────────────────────────────────────────────
-  const stats = activeProject === 'onelastsmile'
-    ? [
-        { label: 'Framerate',   value: 'Fluid Render',    color: '#f472b6' },
-        { label: 'Encryption',  value: 'AES-256',         color: '#a78bfa' },
-        { label: 'Audio',       value: '320kbps Synth',   color: '#22d3ee' },
-        { label: 'Relay',       value: 'SMTP / TLS',      color: '#4ade80' },
-      ]
-    : [
-        { label: 'Architecture', value: 'React 19 + Vite', color: '#22d3ee' },
-        { label: 'Render',       value: 'Hardware Accel',  color: '#a78bfa' },
-        { label: 'Bundle',       value: '<280KB Gzip',     color: '#f472b6' },
-        { label: 'Base Path',    value: "'./'",            color: '#4ade80' },
-      ];
-
-  const architecturePoints = activeProject === 'onelastsmile'
-    ? [
-        'Interactive HTML5 Canvas constellation space tracking cursor vectors',
-        'Reactive Polaroid snapshot grids supporting dynamic touch matrices',
-        'Secure client feedback middleware sanitizing input sequences',
-        'SMTP server gateway routing private replies safely with TLS',
-      ]
-    : [
-        'Vite build config with relative base path for zero-jank serving',
-        'Constellation visual particles rendering GPU-accelerated structures',
-        'Scroll Progress listener executing via direct DOM tracking references',
-        'Chronological Milestone Roadmap with responsive container toggles',
-      ];
-
-  // ── Project selector data ─────────────────────────────────────────────────
-  const projects = [
-    { id: 'onelastsmile', label: 'OneLastSmile',  icon: '❤️', accent: '#E1306C', glow: 'rgba(225,48,108,0.35)' },
-    { id: 'myportfolio',  label: 'My_PortFolio',  icon: '📂', accent: '#00F7FF', glow: 'rgba(0,247,255,0.35)'  },
-  ];
+  // Skip auth (for guests or fallback)
+  const handleSkipAuth = useCallback(() => {
+    setShowAuth(false);
+    setTimeout(() => setShowStory(true), 200);
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ ...SPRING_GENTLE, duration: 0.8 }}
-      style={{
-        marginTop: 40,
-        padding: '44px 40px',
-        background: 'linear-gradient(160deg, rgba(14,10,25,0.95) 0%, rgba(6,6,10,0.98) 100%)',
-        border: '1px solid rgba(225,48,108,0.12)',
-        boxShadow: '0 32px 80px rgba(0,0,0,0.75), inset 0 0 60px rgba(225,48,108,0.025)',
-        borderRadius: 28,
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* ── Ambient background orb ─────────────────────────────────────── */}
-      <div style={{
-        position: 'absolute', top: '-20%', right: '-10%',
-        width: 500, height: 500,
-        background: 'var(--insta-gradient)',
-        filter: 'blur(180px)', opacity: 0.08,
-        borderRadius: '50%', pointerEvents: 'none',
-        animation: 'pulseBlob 12s ease-in-out infinite alternate',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: '-15%', left: '-10%',
-        width: 380, height: 380,
-        background: 'radial-gradient(#8F00FF, #E1306C)',
-        filter: 'blur(160px)', opacity: 0.05,
-        borderRadius: '50%', pointerEvents: 'none',
-        animation: 'pulseBlob 16s ease-in-out infinite alternate-reverse',
-      }} />
+    <>
+      {/* Story Mode fullscreen overlay */}
+      <AnimatePresence>
+        {showStory && (
+          <StoryMode
+            key="story"
+            userEmail={userEmail}
+            onClose={() => setShowStory(false)}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* ── Header: project selector + soundscape ─────────────────────── */}
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        marginBottom: 36, borderBottom: '1px solid rgba(255,255,255,0.05)',
-        paddingBottom: 22, flexWrap: 'wrap', gap: 14,
-      }}>
-        {/* Project selector pills */}
-        <div style={{ display: 'flex', gap: 10 }}>
-          {projects.map((proj) => (
-            <motion.button
-              key={proj.id}
-              onClick={() => { setActiveProject(proj.id); setActiveTab('overview'); }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              transition={SPRING_SNAPPY}
-              style={{
-                background: activeProject === proj.id ? 'rgba(255,255,255,0.045)' : 'transparent',
-                border: `1px solid ${activeProject === proj.id ? proj.accent : 'rgba(255,255,255,0.06)'}`,
-                padding: '9px 22px', borderRadius: 50,
-                color: '#fff', fontSize: '0.87rem', fontWeight: 700,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: activeProject === proj.id ? `0 0 18px ${proj.glow}` : 'none',
-                transition: 'background 0.35s, border-color 0.35s, box-shadow 0.35s',
-                fontFamily: 'var(--font-heading)',
-              }}
-            >
-              <span>{proj.icon}</span>
-              <span>{proj.label}</span>
-            </motion.button>
-          ))}
-        </div>
-
-        {/* Soundscape toggle */}
-        <AnimatePresence>
-          {activeProject === 'onelastsmile' && (
-            <motion.button
-              key="sound-btn"
-              initial={{ opacity: 0, scale: 0.85, x: 20 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.85, x: 20 }}
-              transition={SPRING_SNAPPY}
-              onClick={toggleSound}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.93 }}
-              style={{
-                background: soundActive ? 'rgba(225,48,108,0.12)' : 'rgba(255,255,255,0.03)',
-                border: `1px solid ${soundActive ? 'rgba(225,48,108,0.35)' : 'rgba(255,255,255,0.07)'}`,
-                padding: '9px 20px', borderRadius: 50,
-                color: soundActive ? '#E1306C' : 'var(--text-muted)',
-                fontSize: '0.8rem', fontWeight: 700,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: soundActive ? '0 0 20px rgba(225,48,108,0.22)' : 'none',
-                transition: 'background 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s',
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              {soundActive
-                ? <><Volume2 size={14} style={{ animation: 'heartPulse 1.2s infinite' }} /><span>SOUNDSCAPE ON</span></>
-                : <><VolumeX size={14} /><span>PLAY SOUNDSCAPE</span></>
-              }
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* ── Main 2-column layout ───────────────────────────────────────── */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: 48, alignItems: 'center',
-      }}>
-        {/* LEFT: Preview Theater */}
-        <div style={{ position: 'relative' }}>
-          <AnimatePresence mode="wait">
+      {/* ── Cinematic Auth Modal ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showAuth && (
+          <motion.div
+            key="auth-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
+            onClick={e => { if (e.target === e.currentTarget) setShowAuth(false); }}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 99998,
+              background: 'rgba(2,0,2,0.9)',
+              backdropFilter: 'blur(28px)',
+              WebkitBackdropFilter: 'blur(28px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 24,
+            }}
+          >
+            {/* Ambient glow behind modal */}
             <motion.div
-              key={activeProject}
-              initial={{ opacity: 0, scale: 0.96, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.02, y: -12 }}
-              transition={{ ...SPRING_GENTLE, duration: 0.55 }}
+              animate={{ opacity: [0.06, 0.14, 0.06] }}
+              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
               style={{
-                background: '#07070d',
-                borderRadius: 18,
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 50% 45%, rgba(160,28,60,0.15) 0%, transparent 65%)',
+                filter: 'blur(60px)', pointerEvents: 'none',
+              }}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 28, filter: 'blur(16px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -16, filter: 'blur(16px)' }}
+              transition={{ duration: 1.1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                maxWidth: 400, width: '100%',
+                background: 'rgba(255,255,255,0.02)',
                 border: '1px solid rgba(255,255,255,0.06)',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.9)',
+                borderRadius: 22,
+                padding: '52px 40px 44px',
+                textAlign: 'center',
+                position: 'relative',
                 overflow: 'hidden',
-                aspectRatio: '16 / 11',
+              }}
+            >
+              {/* Top accent line */}
+              <div style={{
+                position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px',
+                background: 'linear-gradient(90deg, transparent, rgba(180,40,70,0.5), transparent)',
+              }} />
+
+              {/* Grain on modal */}
+              <div style={{
+                position: 'absolute', inset: 0, backgroundImage: GRAIN,
+                opacity: 0.04, mixBlendMode: 'overlay', pointerEvents: 'none',
+              }} />
+
+              {/* Dust particles */}
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ y: [0, -(12 + i % 6), 0], opacity: [0.03, 0.12, 0.03] }}
+                    transition={{ duration: 8 + (i % 4), repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
+                    style={{
+                      position: 'absolute', width: 1.5, height: 1.5,
+                      background: '#fff', borderRadius: '50%',
+                      left: `${10 + i * 10}%`, top: `${20 + i * 8}%`,
+                      filter: 'blur(0.8px)',
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Label */}
+              <div style={{
+                fontFamily: 'var(--font-mono)', fontSize: '0.56rem',
+                letterSpacing: '5px', color: 'rgba(180,48,72,0.6)',
+                textTransform: 'uppercase', marginBottom: 28,
+                position: 'relative',
+              }}>
+                Story Mode
+              </div>
+
+              {/* Headline */}
+              <p style={{
+                fontSize: '1.1rem', color: 'rgba(255,255,255,0.85)',
+                fontWeight: 300, lineHeight: 1.7, marginBottom: 12,
+                position: 'relative',
+              }}>
+                Some memories are meant to be personal.
+              </p>
+
+              {/* Subtext */}
+              <p style={{
+                fontSize: '0.88rem', color: 'rgba(255,255,255,0.32)',
+                fontWeight: 300, lineHeight: 1.8, marginBottom: 40,
+                position: 'relative',
+              }}>
+                Sign in to enter. Your thought will be tied to your identity.
+              </p>
+
+              {/* Error */}
+              <AnimatePresence>
+                {authError && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 0.7, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    style={{
+                      fontSize: '0.8rem', color: 'rgba(220,80,80,0.9)',
+                      marginBottom: 16, position: 'relative',
+                    }}
+                  >
+                    {authError}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
+              {/* Google Button */}
+              <motion.button
+                onClick={handleGoogleSignIn}
+                disabled={authLoading}
+                whileHover={{ scale: 1.02, borderColor: 'rgba(255,255,255,0.14)' }}
+                whileTap={{ scale: 0.98 }}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  gap: 12, width: '100%',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12, padding: '14px 20px',
+                  color: authLoading ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.82)',
+                  fontFamily: 'var(--font-body)', fontSize: '0.9rem',
+                  cursor: authLoading ? 'not-allowed' : 'pointer',
+                  backdropFilter: 'blur(12px)',
+                  transition: 'border-color 0.5s ease, color 0.4s ease',
+                  position: 'relative', marginBottom: 16,
+                }}
+              >
+                {/* Google 'G' SVG */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                {authLoading ? 'Signing in...' : 'Continue with Google'}
+              </motion.button>
+
+              {/* Skip auth */}
+              <motion.button
+                onClick={handleSkipAuth}
+                whileHover={{ opacity: 0.6 }}
+                style={{
+                  background: 'none', border: 'none',
+                  color: 'rgba(255,255,255,0.22)',
+                  fontFamily: 'var(--font-mono)', fontSize: '0.62rem',
+                  letterSpacing: '2px', cursor: 'pointer',
+                  position: 'relative',
+                }}
+              >
+                Maybe later
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── About Overlay ────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showAbout && (
+          <motion.div
+            key="about"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 99997,
+              background: 'rgba(2,0,2,0.92)',
+              backdropFilter: 'blur(22px)',
+              WebkitBackdropFilter: 'blur(22px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 24, overflowY: 'auto',
+            }}
+            onClick={e => { if (e.target === e.currentTarget) setShowAbout(false); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 28, filter: 'blur(12px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -18, filter: 'blur(12px)' }}
+              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                maxWidth: 680, width: '100%',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: 20, padding: '48px 40px',
+                backdropFilter: 'blur(30px)',
                 position: 'relative',
               }}
             >
-              {activeProject === 'onelastsmile'
-                ? <OLSPreview
-                    castStars={castStars}
-                    secretEcho={secretEcho}
-                    onEchoClick={handleEchoClick}
-                    secretText={secretText}
-                    setSecretText={setSecretText}
-                    onCast={handleCast}
-                  />
-                : <PortfolioPreview />
-              }
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Ambient glow beneath theater */}
-          <div style={{
-            position: 'absolute', bottom: -20, left: '15%', right: '15%', height: 40,
-            background: activeProject === 'onelastsmile'
-              ? 'radial-gradient(ellipse, rgba(225,48,108,0.3) 0%, transparent 70%)'
-              : 'radial-gradient(ellipse, rgba(0,247,255,0.18) 0%, transparent 70%)',
-            filter: 'blur(12px)',
-            pointerEvents: 'none',
-            transition: 'background 0.6s',
-          }} />
-        </div>
-
-        {/* RIGHT: Info Panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {/* Label + title */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ ...SPRING_GENTLE, delay: 0.1 }}
-          >
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              color: activeProject === 'onelastsmile' ? '#E1306C' : '#00F7FF',
-              marginBottom: 10,
-            }}>
-              <Sparkles size={14} />
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
-                {activeProject === 'onelastsmile' ? 'CINEMATIC CENTERPIECE' : 'SYSTEM ARCHITECTURE'}
-              </span>
-            </div>
-
-            <AnimatePresence mode="wait">
-              <motion.h3
-                key={activeProject + '-title'}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ ...SPRING_SNAPPY, duration: 0.35 }}
+              <button
+                onClick={() => setShowAbout(false)}
                 style={{
-                  fontSize: 'clamp(2rem, 3.5vw, 2.7rem)',
-                  fontWeight: 800, color: '#fff',
-                  letterSpacing: '-0.5px', margin: '0 0 20px',
-                  fontFamily: 'var(--font-heading)',
+                  position: 'absolute', top: 24, right: 28,
+                  background: 'none', border: 'none',
+                  color: 'rgba(255,255,255,0.3)',
+                  fontFamily: 'var(--font-mono)', fontSize: '0.62rem',
+                  letterSpacing: '3px', cursor: 'pointer',
                 }}
               >
-                {activeProject === 'onelastsmile' ? 'OneLastSmile' : 'My_PortFolio'}
-              </motion.h3>
-            </AnimatePresence>
-          </motion.div>
+                [ close ]
+              </button>
 
-          {/* Tabs */}
-          <div style={{
-            display: 'flex', gap: 4,
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
-            marginBottom: 22, position: 'relative',
-          }}>
-            {['overview', 'architecture', 'metrics'].map((tab) => (
-              <motion.button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                whileHover={{ color: '#fff' }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                  background: 'transparent', border: 'none',
-                  color: activeTab === tab ? '#fff' : 'var(--text-dim)',
-                  fontWeight: activeTab === tab ? 700 : 500,
-                  fontSize: '0.88rem', cursor: 'pointer',
-                  padding: '6px 14px 10px',
-                  textTransform: 'capitalize',
-                  position: 'relative',
-                  fontFamily: 'var(--font-heading)',
-                  transition: 'color 0.25s',
-                }}
-              >
-                {tab}
-                {activeTab === tab && (
-                  <motion.span
-                    layoutId="tab-underline"
-                    style={{
-                      position: 'absolute', bottom: -1, left: 0, right: 0,
-                      height: 2,
-                      background: activeProject === 'onelastsmile'
-                        ? 'linear-gradient(90deg, #E1306C, #FF5E3A)'
-                        : 'linear-gradient(90deg, #00F7FF, #8F00FF)',
-                      borderRadius: 2,
-                    }}
-                    transition={{ ...SPRING_SNAPPY, duration: 0.4 }}
-                  />
-                )}
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Tab content */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeProject + '-' + activeTab}
-              initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -8, filter: 'blur(3px)' }}
-              transition={{ ...SPRING_GENTLE, duration: 0.4 }}
-              style={{ minHeight: 130 }}
-            >
-              {activeTab === 'overview' && (
-                <div>
-                  {activeProject === 'onelastsmile' ? (
-                    <>
-                      <p style={{ fontSize: '0.95rem', lineHeight: 1.7, marginBottom: 14, color: 'var(--text-muted)' }}>
-                        <strong style={{ color: '#fff' }}>OneLastSmile</strong> is an immersive digital memorial — a quiet, permanent sanctuary built to archive emotional memories, polaroid snapshots, and secrets cast into the cosmos.
-                      </p>
-                      <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'var(--text-muted)' }}>
-                        It merges raw emotion with modern craftsmanship: Web Audio synthesis, GPU-accelerated canvas, secure cryptographic channels, and hand-tuned micro-animations.
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p style={{ fontSize: '0.95rem', lineHeight: 1.7, marginBottom: 14, color: 'var(--text-muted)' }}>
-                        <strong style={{ color: '#fff' }}>My_PortFolio</strong> is a fully responsive developer portal built on React 19, operating on a hardware-accelerated <strong style={{ color: '#00F7FF' }}>fluid rendering loop</strong>.
-                      </p>
-                      <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'var(--text-muted)' }}>
-                        Dynamic constellation particles, elastic custom cursor, direct DOM scroll progress tracking, and lazy-loaded modular components.
-                      </p>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'architecture' && (
-                <motion.div
-                  variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
-                  initial="hidden" animate="visible"
-                  style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
-                >
-                  {architecturePoints.map((point, i) => (
-                    <motion.div
-                      key={i}
-                      variants={{
-                        hidden: { opacity: 0, x: -16 },
-                        visible: { opacity: 1, x: 0, transition: SPRING_SNAPPY },
-                      }}
-                      style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}
-                    >
-                      <CheckCircle2
-                        size={15}
-                        style={{
-                          color: activeProject === 'onelastsmile' ? '#E1306C' : '#00F7FF',
-                          flexShrink: 0, marginTop: 2,
-                        }}
-                      />
-                      <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                        {point}
-                      </span>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-
-              {activeTab === 'metrics' && (
-                <motion.div
-                  className="metrics-grid"
-                  variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
-                  initial="hidden" animate="visible"
-                >
-                  {stats.map((s, i) => (
-                    <motion.div
-                      key={i}
-                      variants={{
-                        hidden: { opacity: 0, scale: 0.9 },
-                        visible: { opacity: 1, scale: 1, transition: SPRING_SNAPPY },
-                      }}
-                      whileHover={{ scale: 1.03, transition: SPRING_SNAPPY }}
-                      style={{
-                        padding: '14px 16px',
-                        background: 'rgba(255,255,255,0.018)',
-                        border: '1px solid rgba(255,255,255,0.06)',
-                        borderRadius: 12,
-                      }}
-                    >
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginBottom: 4 }}>{s.label}</div>
-                      <div style={{ fontSize: '1.1rem', fontWeight: 700, color: s.color }}>{s.value}</div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            style={{
-              display: 'flex', gap: 14, flexWrap: 'wrap',
-              marginTop: 28, paddingTop: 22,
-              borderTop: '1px solid rgba(255,255,255,0.05)',
-            }}
-          >
-            <motion.a
-              href="https://github.com/Aethron-fr/My_PortFolio"
-              target="_blank" rel="noopener noreferrer"
-              className="btn-neon-glow"
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              transition={SPRING_FLOAT}
-              style={{
-                padding: '10px 24px', fontSize: '0.85rem', gap: 8,
-                background: activeProject === 'onelastsmile'
-                  ? 'linear-gradient(135deg, #1a0505, #4a0a0a)'
-                  : 'linear-gradient(135deg, #00F7FF, #0088FF)',
-                border: activeProject === 'onelastsmile' ? '1px solid rgba(225, 48, 108, 0.3)' : 'none',
-              }}
-            >
-              <Code2 size={15} />
-              <span>Inspect Source</span>
-            </motion.a>
-            {activeProject === 'onelastsmile' ? (
-              <motion.button
-                onClick={() => setShowComingSoon(true)}
-                className="btn-neon-outline"
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                transition={SPRING_FLOAT}
-                style={{ padding: '10px 24px', fontSize: '0.85rem', gap: 8 }}
-              >
-                <span>Enter Story Mode</span>
-                <ExternalLink size={15} />
-              </motion.button>
-            ) : (
-              <motion.a
-                href="https://swapnadip-ghosh.vercel.app/"
-                target="_blank" rel="noopener noreferrer"
-                className="btn-neon-outline"
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                transition={SPRING_FLOAT}
-                style={{ padding: '10px 24px', fontSize: '0.85rem', gap: 8 }}
-              >
-                <span>Live Demo</span>
-                <ExternalLink size={15} />
-              </motion.a>
-            )}
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ── Behind The Project: Cinematic Memory Cards ─────────────────── */}
-      <AnimatePresence>
-        {activeProject === 'onelastsmile' && (
-          <motion.div
-            key="memory-section"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ ...SPRING_GENTLE, delay: 0.1 }}
-            style={{ marginTop: 60, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 44 }}
-          >
-            {/* Section heading */}
-            {/* Section heading */}
-            <div style={{ textAlign: 'center', marginBottom: 40 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 12 }}>
-                <BookOpen size={16} style={{ color: '#E1306C' }} />
-                <span style={{
-                  fontSize: '0.72rem', fontWeight: 800, letterSpacing: '2px',
-                  textTransform: 'uppercase', color: '#E1306C',
-                }}>
-                  THE STORY BEHIND ONELASTSMILE
-                </span>
-              </div>
-              <h4 style={{
-                fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800,
-                color: '#fff', margin: 0, fontFamily: 'var(--font-heading)', letterSpacing: '-0.5px'
-              }}>
-                A Developer's Reflection
-              </h4>
-            </div>
-
-            {/* Cinematic text section */}
-            <div style={{
-              position: 'relative', maxWidth: 840, margin: '0 auto 80px auto',
-              padding: '40px 20px', textAlign: 'center',
-            }}>
-              {/* Floating ambient grain and dark gradient behind text */}
               <div style={{
-                position: 'absolute', inset: 0,
-                background: 'radial-gradient(circle at 50% 50%, rgba(225,48,108,0.03) 0%, transparent 70%)',
-                filter: 'blur(30px)', pointerEvents: 'none', zIndex: -1
-              }} />
-
-              <motion.p
-                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-                style={{
-                  fontSize: '1.05rem', color: '#e2e8f0',
-                  lineHeight: 1.9, marginBottom: 32,
-                  fontFamily: 'var(--font-body)', fontWeight: 300,
-                  textShadow: '0 2px 10px rgba(0,0,0,0.5)'
-                }}
-              >
-                OneLastSmile wasn't supposed to be a massive undertaking. It started quietly—from overthinking, and the weight of unfinished conversations. The idea was simple: even when people leave, sometimes one last smile still remains somewhere inside us.
-              </motion.p>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.1 }}
-                style={{
-                  fontSize: '1.05rem', color: 'rgba(255,255,255,0.75)',
-                  lineHeight: 1.9, marginBottom: 32,
-                  fontFamily: 'var(--font-body)', fontWeight: 300
-                }}
-              >
-                Building it became an obsession. I rebuilt the animations more times than I can count. Removing effects because they felt too loud. Staying awake fixing tiny blur transitions. It was a constant fight to balance raw emotion with clean engineering.
-              </motion.p>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.2 }}
-                style={{
-                  fontSize: '1.05rem', color: 'rgba(255,255,255,0.65)',
-                  lineHeight: 1.9, marginBottom: 40,
-                  fontFamily: 'var(--font-body)', fontWeight: 300
-                }}
-              >
-                Technically, it forced me into the deep end. I had to learn immersive frontend architecture, cinematic interaction systems, and atmosphere-driven development. I realized that performance optimization—ensuring GPU-friendly rendering—is exactly what makes emotional UX possible. The emotion doesn't work if the interface stutters.
-              </motion.p>
-
-              <motion.p
-                initial={{ opacity: 0, filter: 'blur(5px)' }}
-                whileInView={{ opacity: 1, filter: 'blur(0px)' }}
-                viewport={{ once: true, margin: '-20px' }}
-                transition={{ duration: 1.5, ease: 'easeOut', delay: 0.4 }}
-                style={{
-                  fontSize: '0.9rem', color: '#E1306C',
-                  lineHeight: 1.8, paddingTop: 30,
-                  fontFamily: 'var(--font-mono)', fontStyle: 'italic',
-                  borderTop: '1px solid rgba(225,48,108,0.15)',
-                  display: 'inline-block'
-                }}
-              >
-                "Built slowly across countless nights of overthinking, redesigning, debugging, and feeling."
-              </motion.p>
-            </div>
-
-            <div style={{ textAlign: 'center', marginBottom: 36 }}>
-              <h5 style={{ fontSize: '0.8rem', color: 'var(--text-dim)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 10 }}>The Memory Archive</h5>
-              <div style={{ width: 40, height: 1, background: '#E1306C', margin: '0 auto', opacity: 0.5 }} />
-            </div>
-
-            {/* Cards row */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: 20, marginBottom: 32,
-            }}>
-              {MEMORY_CHAPTERS.map((ch, i) => (
-                <MemoryCard
-                  key={ch.id}
-                  chapter={ch}
-                  index={i}
-                  isExpanded={expandedChapter === ch.id}
-                  onToggle={() => setExpandedChapter(expandedChapter === ch.id ? null : ch.id)}
-                />
-              ))}
-            </div>
-
-            {/* Expanded story panel */}
-            <AnimatePresence mode="wait">
-              {expandedChapter && (() => {
-                const ch = MEMORY_CHAPTERS.find((c) => c.id === expandedChapter);
-                return (
-                  <motion.div
-                    key={expandedChapter}
-                    initial={{ opacity: 0, height: 0, scale: 0.97 }}
-                    animate={{ opacity: 1, height: 'auto', scale: 1 }}
-                    exit={{ opacity: 0, height: 0, scale: 0.97 }}
-                    transition={{ ...SPRING_GENTLE, duration: 0.45 }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <div style={{
-                      maxWidth: 680, margin: '0 auto',
-                      padding: '28px 32px',
-                      background: `linear-gradient(135deg, ${ch.glowColor.replace('0.4', '0.06')} 0%, rgba(6,6,10,0.8) 100%)`,
-                      border: `1px solid ${ch.glowColor.replace('0.4', '0.18')}`,
-                      borderRadius: 18,
-                      boxShadow: `0 0 40px ${ch.glowColor.replace('0.4', '0.08')}`,
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                        <Calendar size={13} style={{ color: ch.accentColor }} />
-                        <span style={{
-                          fontSize: '0.7rem', fontWeight: 800,
-                          color: ch.accentColor, letterSpacing: '0.8px',
-                          textTransform: 'uppercase', fontFamily: 'var(--font-mono)',
-                        }}>
-                          {ch.date} — {ch.subtitle.toUpperCase()}
-                        </span>
-                      </div>
-                      <p style={{
-                        fontSize: '0.98rem', color: '#e2e8f0',
-                        lineHeight: 1.75, margin: 0, fontWeight: 400,
-                      }}>
-                        {ch.story}
-                      </p>
-                      <div style={{
-                        borderTop: '1px dashed rgba(255,255,255,0.07)',
-                        marginTop: 20, paddingTop: 14,
-                        display: 'flex', alignItems: 'center', gap: 7,
-                      }}>
-                        <Lock size={11} style={{ color: 'var(--text-dim)' }} />
-                        <span style={{
-                          fontSize: '0.74rem', color: 'var(--text-dim)',
-                          fontStyle: 'italic', fontFamily: 'var(--font-mono)',
-                        }}>
-                          {ch.secret}
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })()}
-            </AnimatePresence>
-
-            {!expandedChapter && (
-              <p style={{
-                textAlign: 'center', fontSize: '0.76rem',
-                color: 'var(--text-dim)', fontFamily: 'var(--font-mono)',
-                marginTop: 8, opacity: 0.7,
+                fontFamily: 'var(--font-mono)', fontSize: '0.56rem',
+                letterSpacing: '5px', color: 'rgba(180,48,72,0.65)',
+                textTransform: 'uppercase', marginBottom: 24,
               }}>
-                [ Select a memory snapshot to reveal emotional context ]
-              </p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+                About The Project
+              </div>
 
-      <AnimatePresence>
-        {showComingSoon && (
-          <StoryMode onClose={() => setShowComingSoon(false)} />
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
+              <h3 style={{
+                fontSize: '1.75rem', fontWeight: 300, color: '#fff',
+                marginBottom: 36, letterSpacing: '-0.5px', lineHeight: 1.3,
+              }}>
+                The Story Behind OneLastSmile
+              </h3>
 
-// ─── Memory Card Sub-component ────────────────────────────────────────────────
-function MemoryCard({ chapter: ch, isExpanded, onToggle }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <TiltCard
-      disabled={isExpanded}
-      onClick={onToggle}
-      style={{
-        cursor: 'pointer',
-        borderRadius: 16,
-        overflow: 'hidden',
-        position: 'relative',
-        aspectRatio: '3/4',
-        border: `1px solid ${isExpanded ? ch.accentColor + '44' : 'rgba(255,255,255,0.015)'}`,
-        boxShadow: isExpanded
-          ? `0 0 30px ${ch.glowColor.replace('0.25', '0.15')}, 0 20px 40px rgba(0,0,0,0.8)`
-          : hovered
-            ? `0 0 20px ${ch.glowColor.replace('0.25', '0.1')}, 0 12px 30px rgba(0,0,0,0.6)`
-            : '0 8px 24px rgba(0,0,0,0.5)',
-        transition: 'border-color 0.6s ease, box-shadow 0.6s ease',
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* ── Cinematic atmospheric background ── */}
-      <motion.div
-        style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `${ch.bg}, url(${ch.image})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundBlendMode: 'overlay',
-          transition: 'opacity 0.5s',
-        }}
-        animate={{ scale: hovered ? 1.04 : 1 }}
-        transition={{ ...SPRING_FLOAT, duration: 0.7 }}
-      />
-
-      {/* ── Grain/noise overlay for cinematic film feel ── */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        backgroundSize: '180px 180px',
-        opacity: 0.06,
-        mixBlendMode: 'overlay',
-        pointerEvents: 'none',
-      }} />
-
-      {/* ── Scanline effect ── */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${ch.scanColor} 2px, ${ch.scanColor} 4px)`,
-        pointerEvents: 'none', opacity: 0.6,
-      }} />
-
-      {/* ── Hover glow bloom ── */}
-      <motion.div
-        style={{
-          position: 'absolute', inset: 0,
-          background: `radial-gradient(ellipse at 50% 100%, ${ch.glowColor.replace('0.4', '0.25')} 0%, transparent 65%)`,
-          pointerEvents: 'none',
-        }}
-        animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-      />
-
-      {/* ── Content layer ── */}
-      <div style={{
-        position: 'relative', zIndex: 2,
-        height: '100%', display: 'flex', flexDirection: 'column',
-        justifyContent: 'space-between', padding: '20px 18px',
-      }}>
-        {/* Top: label + emoji */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <span style={{
-            fontSize: '0.62rem', fontWeight: 800,
-            color: ch.accentColor, letterSpacing: '1.5px',
-            textTransform: 'uppercase', fontFamily: 'var(--font-mono)',
-            background: `${ch.glowColor.replace('0.4', '0.15')}`,
-            padding: '3px 8px', borderRadius: 4,
-            border: `1px solid ${ch.accentColor}33`,
-          }}>
-            {ch.label}
-          </span>
-          <motion.span
-            style={{ fontSize: '1.6rem', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.2))' }}
-            animate={{ y: hovered ? -4 : 0 }}
-            transition={SPRING_FLOAT}
-          >
-            {ch.icon}
-          </motion.span>
-        </div>
-
-        {/* Bottom: title + subtitle */}
-        <div>
-          <motion.div
-            style={{
-              fontSize: '0.62rem', color: ch.accentColor,
-              fontFamily: 'var(--font-mono)', letterSpacing: '0.8px',
-              marginBottom: 6, opacity: 0.8,
-            }}
-            animate={{ opacity: hovered ? 1 : 0.7 }}
-          >
-            {ch.date}
-          </motion.div>
-          <h5 style={{
-            fontSize: '1.1rem', fontWeight: 800, color: '#fff',
-            margin: '0 0 5px', fontFamily: 'var(--font-heading)',
-            textShadow: `0 0 20px ${ch.glowColor}`,
-          }}>
-            {ch.title}
-          </h5>
-          <p style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.55)', margin: 0 }}>
-            {ch.subtitle}
-          </p>
-
-          {/* Expand indicator */}
-          <motion.div
-            style={{
-              marginTop: 14, display: 'flex', alignItems: 'center', gap: 5,
-              fontSize: '0.7rem', color: ch.accentColor,
-              fontFamily: 'var(--font-mono)', fontWeight: 700,
-            }}
-            animate={{ x: hovered ? 4 : 0 }}
-            transition={SPRING_SNAPPY}
-          >
-            <span>{isExpanded ? '— close' : '+ reveal'}</span>
-            <ArrowUpRight size={11} />
-          </motion.div>
-        </div>
-      </div>
-    </TiltCard>
-  );
-}
-
-// ─── OneLastSmile Preview Sub-component ─────────────────────────────────────
-function OLSPreview({ castStars, secretEcho, onEchoClick, secretText, setSecretText, onCast }) {
-  const [heartPopped, setHeartPopped] = useState(false);
-
-  const popHeart = () => {
-    setHeartPopped(true);
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const g = ctx.createGain();
-      osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-      g.gain.setValueAtTime(0.06, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.45);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime + 0.5);
-    } catch (e) { void e; }
-    setTimeout(() => setHeartPopped(false), 600);
-  };
-
-  return (
-    <div style={{
-      position: 'relative', width: '100%', height: '100%',
-      background: 'radial-gradient(ellipse at 40% 35%, #140b28 0%, #08040e 100%)',
-      display: 'flex', flexDirection: 'column',
-      justifyContent: 'center', alignItems: 'center',
-      overflow: 'hidden', padding: 24,
-    }}>
-      {/* Star field backdrop */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 0)',
-        backgroundSize: '22px 22px', opacity: 0.18, pointerEvents: 'none',
-      }} />
-
-      {/* Rotating orbit ring */}
-      <div style={{
-        position: 'absolute', width: 200, height: 200,
-        borderRadius: '50%',
-        border: '1px dashed rgba(225,48,108,0.18)',
-        animation: 'spin 35s linear infinite',
-        pointerEvents: 'none',
-      }} />
-
-      {/* Ambient glow beneath polaroid */}
-      <div style={{
-        position: 'absolute',
-        width: 200, height: 200,
-        background: 'radial-gradient(circle, rgba(225,48,108,0.12) 0%, transparent 70%)',
-        pointerEvents: 'none',
-        animation: 'pulseBlob 5s ease-in-out infinite alternate',
-      }} />
-
-      {/* Hidden star echo coordinate — glowing blinking dot */}
-      <motion.div
-        onClick={onEchoClick}
-        whileHover={{ scale: 1.8 }}
-        whileTap={{ scale: 0.7 }}
-        transition={SPRING_SNAPPY}
-        style={{
-          position: 'absolute', top: 14, right: 14,
-          width: 8, height: 8, borderRadius: '50%',
-          background: 'rgba(255,255,255,0.4)',
-          boxShadow: '0 0 8px #fff, 0 0 18px rgba(255,255,255,0.55)',
-          cursor: 'pointer', zIndex: 15,
-          animation: 'heartPulse 2.4s infinite',
-        }}
-        title="A quiet echo..."
-      />
-
-      {/* Secret echo overlay */}
-      <AnimatePresence>
-        {secretEcho && (
-          <motion.div
-            key="echo-overlay"
-            initial={{ opacity: 0, scale: 0.88, filter: 'blur(8px)' }}
-            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, scale: 0.92, filter: 'blur(6px)' }}
-            transition={{ ...SPRING_SNAPPY, duration: 0.4 }}
-            style={{
-              position: 'absolute', inset: 10, zIndex: 20,
-              background: 'rgba(5,5,12,0.96)',
-              backdropFilter: 'blur(18px)',
-              borderRadius: 12,
-              border: '1px solid rgba(255,255,255,0.07)',
-              padding: 24,
-              display: 'flex', flexDirection: 'column',
-              justifyContent: 'center', alignItems: 'center',
-              textAlign: 'center',
-            }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.18, 1] }}
-              transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
-            >
-              <Heart size={20} style={{ color: '#E1306C', fill: '#E1306C', filter: 'drop-shadow(0 0 8px #E1306C)' }} />
+              {[
+                {
+                  label: '01 — The Idea',
+                  body: `OneLastSmile didn't start as a portfolio project. It started as something personal — a way to process the kind of distance that doesn't announce itself loudly. You just notice it one day. The conversations get shorter. The replies take longer. And then one night, you're staring at a chat thread that used to feel like home and it just feels like a timestamp.\n\nI didn't want to write about that feeling. I wanted to build around it.`,
+                },
+                {
+                  label: '02 — The Journey',
+                  body: `I rebuilt the entire atmosphere at least four times. The first version was too loud — too much animation, too many things trying to say something at once. I scrapped it when I realized it was performing emotion instead of communicating it.\n\nThe hardest part wasn't the engineering. It was learning to trust restraint. Removing things was the actual work.`,
+                },
+                {
+                  label: '03 — The Engineering',
+                  body: `Every atmospheric effect runs purely through transforms and opacity — no layout recalculations, no paint thrashing. The cursor-reactive lighting uses spring physics to feel like light moving through fog, not a mouse spotlight.\n\nI learned more about cinematic UI systems building this than anything else I've worked on.`,
+                },
+                {
+                  label: '04 — The Realization',
+                  body: `Smoothness itself carries emotion. The way something moves communicates just as much as what it says. A transition that's too fast feels dismissive. One that's too slow feels melodramatic. The right speed feels like honesty.\n\nThis project isn't publicly open yet. Everything that matters already exists.`,
+                },
+              ].map((section, i) => (
+                <div key={i} style={{ marginBottom: i < 3 ? 34 : 0 }}>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)', fontSize: '0.56rem',
+                    letterSpacing: '4px', color: 'rgba(170,48,68,0.55)',
+                    textTransform: 'uppercase', marginBottom: 10,
+                  }}>
+                    {section.label}
+                  </div>
+                  {section.body.split('\n\n').map((para, j) => (
+                    <p key={j} style={{
+                      fontSize: '0.95rem', color: 'rgba(255,255,255,0.52)',
+                      lineHeight: 1.9, fontWeight: 300,
+                      marginBottom: j < section.body.split('\n\n').length - 1 ? 14 : 0,
+                    }}>
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              ))}
             </motion.div>
-            <h5 style={{
-              fontSize: '0.9rem', fontWeight: 800, color: '#fff',
-              margin: '12px 0 8px', fontFamily: 'var(--font-heading)',
-            }}>
-              A Quiet Echo
-            </h5>
-            <p style={{
-              fontSize: '0.77rem', color: 'var(--text-muted)',
-              lineHeight: 1.65, maxWidth: 260, margin: 0, fontStyle: 'italic',
-            }}>
-              "Perhaps some smiles are not meant to be held forever. But they can be preserved in stars, sculpted in code, and kept safe in the quiet expanse of the digital sky."
-            </p>
-            <motion.button
-              onClick={onEchoClick}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.93 }}
-              transition={SPRING_SNAPPY}
-              style={{
-                marginTop: 16,
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                padding: '5px 14px', borderRadius: 50,
-                color: '#fff', fontSize: '0.67rem',
-                cursor: 'pointer', fontWeight: 700,
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              close echo
-            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Polaroid card */}
+      {/* ── The Artifact Card ────────────────────────────────────────────── */}
       <motion.div
-        onClick={popHeart}
-        whileHover={{ rotate: 0, scale: 1.07, y: -8 }}
-        transition={{ ...SPRING_FLOAT, duration: 0.6 }}
-        animate={{
-          rotate: [-3, -1.5],
-          y: [0, -6],
-          scale: [1.04, 1.06],
-        }}
+        onMouseMove={handleMouseMove}
         style={{
-          width: 155,
-          background: '#fff',
-          padding: '9px 9px 22px',
-          borderRadius: 7,
-          boxShadow: '0 18px 45px rgba(0,0,0,0.65), 0 0 22px rgba(225,48,108,0.14)',
-          cursor: 'pointer', zIndex: 5,
-          position: 'relative',
+          position: 'relative', width: '100%', minHeight: 680,
+          background: '#050505', borderRadius: 24, overflow: 'hidden',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexDirection: 'column',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.022), 0 30px 70px rgba(0,0,0,0.6)',
         }}
       >
-        {/* Polaroid image area */}
+        {/* Grain */}
         <div style={{
-          width: '100%', aspectRatio: '1',
-          background: 'linear-gradient(135deg, #E1306C 0%, #FF5E3A 55%, #dc2743 100%)',
-          borderRadius: 4,
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
-          fontSize: '2rem',
-          position: 'relative', overflow: 'hidden',
-        }}>
-          {/* Polaroid shine effect */}
-          <div style={{
-            position: 'absolute', top: -30, left: -30,
-            width: 80, height: 80,
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '50%', filter: 'blur(10px)',
-          }} />
-          <motion.span
-            animate={{ scale: heartPopped ? 1.5 : 1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 12 }}
-            style={{ filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.3))' }}
-          >
-            ❤️
-          </motion.span>
-        </div>
-
-        <div style={{
-          fontFamily: 'var(--font-heading)',
-          fontSize: '0.65rem', color: '#111',
-          textAlign: 'center', fontWeight: 800,
-          marginTop: 4, letterSpacing: '-0.2px',
-        }}>
-          One Last Smile
-        </div>
-      </motion.div>
-
-      {/* Cosmos casting input */}
-      <form onSubmit={onCast} style={{
-        width: '100%', maxWidth: 270,
-        marginTop: 22, display: 'flex', gap: 8, zIndex: 5, position: 'relative',
-      }}>
-        <input
-          type="text"
-          value={secretText}
-          onChange={(e) => setSecretText(e.target.value)}
-          placeholder="Cast a secret into the sky..."
-          style={{
-            flex: 1,
-            background: 'rgba(0,0,0,0.55)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: 50, padding: '7px 15px',
-            color: '#fff', fontSize: '0.72rem',
-            outline: 'none', fontFamily: 'var(--font-body)',
-            transition: 'border-color 0.3s',
-          }}
-          onFocus={(e) => (e.target.style.borderColor = 'rgba(225,48,108,0.38)')}
-          onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.07)')}
-        />
-        <motion.button
-          type="submit"
-          whileHover={{ scale: 1.12 }}
-          whileTap={{ scale: 0.88 }}
-          transition={SPRING_SNAPPY}
-          style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #E1306C, #FF5E3A)',
-            border: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 12px rgba(225,48,108,0.4)', flexShrink: 0,
-            color: '#fff',
-          }}
-        >
-          <Send size={12} />
-        </motion.button>
-      </form>
-
-      {/* Floating cast particles */}
-      <AnimatePresence>
-        {castStars.map((s) => (
-          <motion.div
-            key={s.id}
-            initial={{ opacity: 0, y: 0, scale: 0.4, rotate: 0 }}
-            animate={{ opacity: [0, 0.9, 0], y: -160, scale: [0.4, 1.2, 0.8], rotate: 360 }}
-            transition={{ duration: s.dur, delay: s.delay, ease: 'easeOut' }}
-            style={{
-              position: 'absolute',
-              left: `${s.left}%`,
-              bottom: '30%',
-              fontSize: s.size,
-              pointerEvents: 'none',
-              zIndex: 10,
-            }}
-          >
-            {s.type}
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {/* Status indicator */}
-      <div style={{
-        position: 'absolute', bottom: 10, left: 12,
-        display: 'flex', alignItems: 'center', gap: 5,
-        fontSize: '0.58rem', color: '#E1306C',
-        fontWeight: 800, letterSpacing: '1px',
-        fontFamily: 'var(--font-mono)',
-      }}>
-        <span style={{
-          width: 5, height: 5, borderRadius: '50%',
-          background: '#E1306C', display: 'inline-block',
-          boxShadow: '0 0 6px #E1306C',
-          animation: 'heartPulse 1.6s infinite',
+          position: 'absolute', inset: 0, backgroundImage: GRAIN,
+          opacity: 0.045, mixBlendMode: 'overlay', pointerEvents: 'none', zIndex: 10,
         }} />
-        ATMOSPHERE_ACTIVE
-      </div>
-    </div>
-  );
-}
 
-// ─── Portfolio Preview Sub-component ─────────────────────────────────────────
-function PortfolioPreview() {
-  const files = [
-    { name: 'CanvasBackground.jsx', color: '#22d3ee', note: 'constellations' },
-    { name: 'CustomCursor.jsx',     color: '#fbbf24', note: 'click_physics'  },
-    { name: 'FeaturedSpotlight.jsx',color: '#f472b6', note: 'centerpiece'    },
-    { name: 'DeveloperJourney.jsx', color: '#a78bfa', note: 'timeline'       },
-  ];
+        {/* Vignette */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse at center, transparent 25%, rgba(5,5,5,0.97) 100%)',
+          pointerEvents: 'none', zIndex: 9,
+        }} />
 
-  return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Terminal chrome */}
-      <div style={{
-        background: 'rgba(255,255,255,0.025)',
-        padding: '11px 18px',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {['#ef4444','#eab308','#22c55e'].map((c) => (
-            <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
+        {/* Breathing ambient glow */}
+        <motion.div
+          animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.04, 1] }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(circle at 50% 40%, rgba(170,28,62,0.07) 0%, transparent 65%)',
+            filter: 'blur(50px)', pointerEvents: 'none', zIndex: 2,
+          }}
+        />
+
+        {/* Cursor fog */}
+        <motion.div
+          style={{
+            position: 'absolute', width: 700, height: 700, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(155,22,55,0.1) 0%, transparent 65%)',
+            left: fogX, top: fogY, x: '-50%', y: '-50%',
+            filter: 'blur(95px)', pointerEvents: 'none', zIndex: 3,
+          }}
+        />
+
+        {/* Dust */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4, overflow: 'hidden' }}>
+          {[...Array(18)].map((_, i) => (
+            <motion.div
+              key={i}
+              animate={{
+                y: [0, -(25 + i % 16), 0],
+                x: [0, (i % 2 === 0 ? 16 : -16), 0],
+                opacity: [0.03, 0.14, 0.03],
+              }}
+              transition={{ duration: 12 + (i % 6), repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
+              style={{
+                position: 'absolute',
+                width: i % 3 === 0 ? 2.5 : 1.5, height: i % 3 === 0 ? 2.5 : 1.5,
+                background: '#fff', borderRadius: '50%',
+                left: `${5 + i * 5.2}%`, top: `${8 + i * 4.8}%`,
+                filter: 'blur(1px)',
+              }}
+            />
           ))}
         </div>
-        <div style={{
-          background: 'rgba(0,0,0,0.4)', borderRadius: 50,
-          padding: '3px 18px', fontSize: '0.65rem',
-          color: 'var(--text-dim)', fontFamily: 'var(--font-mono)',
-          border: '1px solid rgba(255,255,255,0.04)',
-        }}>
-          github.com/Aethron-fr/My_PortFolio
-        </div>
-        <Activity size={12} style={{ color: '#00F7FF' }} />
-      </div>
 
-      {/* File listing */}
-      <div style={{
-        flex: 1, padding: '18px 22px',
-        display: 'flex', flexDirection: 'column',
-        justifyContent: 'space-between',
-        fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-        color: 'var(--text-dim)',
-      }}>
-        <div>
-          <div style={{ color: '#00F7FF', marginBottom: 10, display: 'flex', gap: 6, alignItems: 'center' }}>
-            <Cpu size={12} />
-            <span style={{ fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase', fontSize: '0.62rem' }}>
-              WORKSPACE_INDEXED
-            </span>
-          </div>
-          <div style={{ color: '#fff', fontSize: '0.68rem', lineHeight: 2 }}>
-            <span style={{ color: '#f472b6' }}>📁 src/</span><br />
-            <span style={{ paddingLeft: 12, color: '#a78bfa' }}>📁 components/</span><br />
-            {files.map((f) => (
-              <div key={f.name} style={{ paddingLeft: 24 }}>
-                📄 {f.name} <span style={{ color: f.color }}>( {f.note} )</span>
-              </div>
-            ))}
-            <span style={{ paddingLeft: 12 }}>📄 App.jsx <span style={{ color: '#a78bfa' }}>( orchestrator )</span></span><br />
-            <span style={{ paddingLeft: 12 }}>📄 index.css <span style={{ color: 'var(--text-dim)' }}>( tokens )</span></span>
-          </div>
-        </div>
+        {/* Memory fragments */}
+        <AnimatePresence>
+          {artifacts.map(a => (
+            <motion.div
+              key={a.id}
+              initial={{ opacity: 0, filter: 'blur(18px)' }}
+              animate={{ opacity: 0.08, filter: 'blur(5px)' }}
+              exit={{ opacity: 0, filter: 'blur(18px)' }}
+              transition={{ duration: 2, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute', left: `${a.x}%`, top: `${a.y}%`,
+                fontFamily: 'var(--font-mono)', fontSize: '0.72rem',
+                color: '#fff', fontStyle: 'italic',
+                pointerEvents: 'none', zIndex: 5, userSelect: 'none',
+              }}
+            >
+              {a.text}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {/* Main content */}
         <div style={{
-          borderTop: '1px solid rgba(255,255,255,0.04)',
-          paddingTop: 10,
-          display: 'flex', justifyContent: 'space-between',
-          fontSize: '0.65rem', color: '#22c55e',
+          position: 'relative', zIndex: 20, textAlign: 'center',
+          padding: 'clamp(32px, 5vw, 64px) clamp(24px, 4vw, 48px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
-          <span>● VITE_COMPILER_READY</span>
-          <span style={{ color: 'var(--text-dim)' }}>build: 1.12s</span>
+          {/* Status */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 2 }}
+            style={{
+              fontFamily: 'var(--font-mono)', fontSize: 'clamp(0.5rem, 1.5vw, 0.6rem)',
+              letterSpacing: '8px', color: 'rgba(255,255,255,0.2)',
+              textTransform: 'uppercase', marginBottom: 32,
+            }}
+          >
+            sealed until public opening
+          </motion.div>
+
+          {/* Title */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20, filter: 'blur(12px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 0.7, duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              fontSize: 'clamp(2.8rem, 8vw, 6rem)',
+              fontWeight: 200, fontFamily: 'var(--font-heading)',
+              color: '#fff', letterSpacing: '-2px',
+              marginBottom: 24, lineHeight: 1,
+            }}
+          >
+            OneLastSmile
+          </motion.h2>
+
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 14, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 1.2, duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              fontSize: 'clamp(0.9rem, 2vw, 1.05rem)',
+              color: 'rgba(255,255,255,0.37)',
+              maxWidth: 480, margin: '0 auto 50px',
+              lineHeight: 1.85, fontWeight: 300,
+            }}
+          >
+            A quiet interactive experience built from memory, atmosphere, unfinished conversations, and emotional UX.
+          </motion.p>
+
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.7, duration: 2 }}
+            style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}
+          >
+            {/* Enter Story Mode */}
+            <motion.button
+              onClick={handleEnterStory}
+              whileHover={{ scale: 1.02, borderColor: 'rgba(200,55,90,0.4)' }}
+              whileTap={{ scale: 0.98 }}
+              style={{
+                background: 'rgba(255,255,255,0.025)',
+                border: '1px solid rgba(255,255,255,0.09)',
+                borderRadius: 30, padding: 'clamp(12px, 2vw, 15px) clamp(24px, 3vw, 34px)',
+                color: '#fff', fontSize: 'clamp(0.78rem, 2vw, 0.88rem)',
+                fontFamily: 'var(--font-mono)', letterSpacing: '2px',
+                cursor: 'pointer', backdropFilter: 'blur(20px)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+                position: 'relative', overflow: 'hidden',
+                transition: 'border-color 0.6s ease',
+              }}
+            >
+              <motion.div
+                animate={{ x: ['-120%', '220%'] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
+                style={{
+                  position: 'absolute', top: 0, bottom: 0, width: '35%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.055), transparent)',
+                  transform: 'skewX(-20deg)', pointerEvents: 'none',
+                }}
+              />
+              [ Enter Story Mode ]
+            </motion.button>
+
+            {/* About */}
+            <motion.button
+              onClick={() => setShowAbout(true)}
+              whileHover={{ scale: 1.02, color: 'rgba(255,255,255,0.85)' }}
+              whileTap={{ scale: 0.98 }}
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: 30,
+                padding: 'clamp(12px, 2vw, 15px) clamp(24px, 3vw, 34px)',
+                color: 'rgba(255,255,255,0.38)',
+                fontSize: 'clamp(0.78rem, 2vw, 0.88rem)',
+                fontFamily: 'var(--font-mono)', letterSpacing: '2px',
+                cursor: 'pointer', backdropFilter: 'blur(10px)',
+                transition: 'color 0.5s ease, border-color 0.5s ease',
+              }}
+            >
+              [ About The Project ]
+            </motion.button>
+          </motion.div>
+
+          {/* Date */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2.2, duration: 2 }}
+            style={{
+              marginTop: 48,
+              fontFamily: 'var(--font-mono)', fontSize: 'clamp(0.58rem, 1.5vw, 0.68rem)',
+              color: 'rgba(255,255,255,0.12)', letterSpacing: '3px',
+            }}
+          >
+            Public Opening — January 3, 2027
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </>
   );
 }

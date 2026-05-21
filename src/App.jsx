@@ -1,28 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from './firebase';
+import { signInWithPopup } from 'firebase/auth';
 import emailjs from '@emailjs/browser';
-
-let auth = null;
-let googleProvider = null;
-try {
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID
-  };
-  
-  if (firebaseConfig.apiKey) {
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    googleProvider = new GoogleAuthProvider();
-  }
-} catch (error) {
-  console.warn("Firebase initialization skipped:", error);
-}
 
 import { 
   Mail, 
@@ -49,6 +28,7 @@ import InteractiveSandbox from './components/InteractiveSandbox';
 import GithubProjects from './components/GithubProjects';
 import DeveloperJourney from './components/DeveloperJourney';
 import FeaturedSpotlight from './components/FeaturedSpotlight';
+import StoryBehind from './components/StoryBehind';
 import './App.css';
 
 export default function App() {
@@ -161,7 +141,7 @@ export default function App() {
     { name: 'Git & GitHub', level: '90%', icon: <i className="fa-brands fa-github" style={{ fontSize: '24px', color: '#fff' }}></i>, desc: 'Version pipelines & collaborative team integrations' }
   ];
 
-  const navItems = ['Home', 'Centerpiece', 'Projects', 'Journey', 'Contact'];
+  const navItems = ['Home', 'Centerpiece', 'Projects', 'Upcoming Projects', 'Journey', 'Contact'];
 
   return (
     <>
@@ -221,7 +201,7 @@ export default function App() {
             {navItems.map((item) => (
               <a 
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                href={item === 'Upcoming Projects' ? '#upcoming' : `#${item.toLowerCase().replace(' ', '-')}`}
                 style={{
                   color: 'var(--text-muted)',
                   textDecoration: 'none',
@@ -314,7 +294,7 @@ export default function App() {
           {navItems.map((item) => (
             <a 
               key={item}
-              href={`#${item.toLowerCase()}`}
+              href={item === 'Upcoming Projects' ? '#upcoming' : `#${item.toLowerCase().replace(' ', '-')}`}
               onClick={() => setMobileMenuOpen(false)}
               style={{
                 color: '#fff',
@@ -490,34 +470,43 @@ export default function App() {
         </div>
       </section>
 
-      {/* ONE LAST SMILE CENTERPIECE EXPERIENCE */}
-      <section id="centerpiece" className="section-padding" style={{ position: 'relative', zIndex: 2, background: '#09090f' }}>
+      {/* UPCOMING PROJECTS — OneLastSmile Cinematic Hero */}
+      <section id="upcoming" className="section-padding" style={{ position: 'relative', zIndex: 2, background: '#09090f' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(225, 48, 108, 0.08)', border: '1px solid rgba(225, 48, 108, 0.2)', padding: '6px 16px', borderRadius: '50px', marginBottom: '12px' }}>
-              <Heart size={12} style={{ color: 'var(--accent-primary)', animation: 'heartPulse 1.2s infinite' }} />
-              <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#fff', letterSpacing: '1.5px', textTransform: 'uppercase' }}>THE HERO PROJECT</span>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <div style={{
+              display: 'inline-block',
+              fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+              letterSpacing: '6px', color: 'rgba(180,50,75,0.7)',
+              textTransform: 'uppercase', marginBottom: 16,
+            }}>
+              Upcoming Projects
             </div>
-            <h2 style={{ fontSize: '2.8rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Flagship Showcase</h2>
-            <p style={{ maxWidth: '600px', margin: '12px auto 0', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Explore the live interactive theater of OneLastSmile, featuring Web Audio ambient synthesizers and secret casting channels.
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', color: '#fff', marginBottom: 12 }}>Hidden Experiences</h2>
+            <p style={{ maxWidth: '520px', margin: '0 auto', fontSize: '0.9rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
+              Projects that exist but are not yet public. Built privately, released intentionally.
             </p>
           </div>
           <FeaturedSpotlight />
         </div>
       </section>
 
+      {/* THE STORY BEHIND ONELASTSMILE */}
+      <StoryBehind />
+
       {/* OTHER PROJECTS & GIT CLUSTERS */}
-      <section id="projects" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(to bottom, #09090f, #06060a)' }}>
+      <section id="projects" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(to bottom, #09090f, #06060a)', opacity: 0.85 }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Additional Projects</h2>
-            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
-            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Full operational indexing queried directly from the live GitHub repository stream.
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', color: 'rgba(255,255,255,0.7)' }}>Secondary Projects</h2>
+            <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.1)', margin: '12px auto', borderRadius: '2px' }} />
+            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.9rem', color: 'var(--text-dim)' }}>
+              Standard operational indexing queried directly from the live GitHub repository stream.
             </p>
           </div>
-          <GithubProjects />
+          <div style={{ filter: 'saturate(0.8)' }}>
+            <GithubProjects />
+          </div>
         </div>
       </section>
 
