@@ -36,6 +36,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [storyModeOpen, setStoryModeOpen] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -43,6 +44,18 @@ export default function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const progressBarRef = useRef(null);
+
+  // Listen for story mode open/close events from FeaturedSpotlight
+  useEffect(() => {
+    const onOpen  = () => setStoryModeOpen(true);
+    const onClose = () => setStoryModeOpen(false);
+    window.addEventListener('story-open',  onOpen);
+    window.addEventListener('story-close', onClose);
+    return () => {
+      window.removeEventListener('story-open',  onOpen);
+      window.removeEventListener('story-close', onClose);
+    };
+  }, []);
 
   // Disable automatic scroll restoration, reset scroll to top on reload, and clear URL hash
   useEffect(() => {
@@ -165,7 +178,9 @@ export default function App() {
           width: '0%',
           background: 'var(--insta-gradient)',
           zIndex: 9999,
-          transition: 'width 0.08s linear'
+          transition: 'width 0.08s linear',
+          opacity: storyModeOpen ? 0 : 1,
+          pointerEvents: storyModeOpen ? 'none' : 'auto',
         }}
       />
 
@@ -178,6 +193,8 @@ export default function App() {
           width: '100%',
           zIndex: 1000,
           transition: 'all 0.4s var(--transition-smooth)',
+          opacity: storyModeOpen ? 0 : 1,
+          pointerEvents: storyModeOpen ? 'none' : 'auto',
           background: scrolled ? 'rgba(6, 6, 10, 0.75)' : 'transparent',
           borderBottom: scrolled ? '1px solid var(--border-glass)' : '1px solid transparent',
           backdropFilter: scrolled ? 'blur(20px)' : 'none',

@@ -197,13 +197,7 @@ export default function StoryMode({ onClose, userEmail }) {
           default: { duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 1.5 },
           y: { type: 'spring', stiffness: 250, damping: 20 },
         }}
-        onClick={() => {
-          onClose();
-          // Adding a slight delay allows the overlay to unmount before smooth scrolling
-          setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }, 50);
-        }}
+        onClick={onClose}
         style={{
           position: 'fixed', 
           top: 'max(28px, env(safe-area-inset-top))', 

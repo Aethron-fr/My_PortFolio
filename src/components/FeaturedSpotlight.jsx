@@ -88,12 +88,24 @@ export default function FeaturedSpotlight() {
     setTimeout(() => setShowStory(true), 200);
   }, []);
 
+  // Tell App.jsx navbar to hide/show when story mode opens/closes
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(showStory ? 'story-open' : 'story-close'));
+  }, [showStory]);
+
+  const handleStoryClose = useCallback(() => {
+    setShowStory(false);
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 50);
+  }, []);
+
   return (
     <>
       {/* ── Story Mode overlay ── */}
       <AnimatePresence>
         {showStory && (
-          <StoryMode key="story" userEmail={userEmail} onClose={() => setShowStory(false)} />
+          <StoryMode key="story" userEmail={userEmail} onClose={handleStoryClose} />
         )}
       </AnimatePresence>
 
