@@ -186,7 +186,7 @@ export default function StoryMode({ onClose, userEmail }) {
       {/* ── LEFT: Exit Story Mode ── */}
       <motion.button
         initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 0.45, y: 0 }}
+        animate={{ opacity: 0.85, y: 0 }}
         whileHover={{
           opacity: 1, y: -4,
           boxShadow: '0 0 25px rgba(180,28,62,0.3)',
@@ -197,7 +197,13 @@ export default function StoryMode({ onClose, userEmail }) {
           default: { duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 1.5 },
           y: { type: 'spring', stiffness: 250, damping: 20 },
         }}
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          // Adding a slight delay allows the overlay to unmount before smooth scrolling
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 50);
+        }}
         style={{
           position: 'fixed', 
           top: 'max(28px, env(safe-area-inset-top))', 
@@ -213,7 +219,7 @@ export default function StoryMode({ onClose, userEmail }) {
           transition: 'border-color 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease',
         }}
       >
-        ← Exit Story Mode
+        ← Return to Home
       </motion.button>
 
       {/* ── RIGHT: Skip Story ── */}
