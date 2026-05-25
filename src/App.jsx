@@ -982,6 +982,24 @@ export default function App() {
         </div>
       </footer>
 
+      {/* ── SUBTLE HINT ── */}
+      <div 
+        className="desktop-only-flex"
+        style={{
+          position: 'fixed', bottom: 32, left: 32, zIndex: 90,
+          pointerEvents: 'none',
+        }}
+      >
+        <span style={{ 
+          fontFamily: 'var(--font-mono)', fontSize: '0.55rem', 
+          color: 'rgba(255,255,255,0.15)', letterSpacing: '2px',
+          textTransform: 'lowercase', lineHeight: 1.6
+        }}>
+          there is a memory hidden in the architecture.<br/>
+          pay attention to the quiet parts.
+        </span>
+      </div>
+
       {/* ── WORK IN PROGRESS BADGE ── */}
       <div 
         className="desktop-only-flex"
