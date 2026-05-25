@@ -101,7 +101,7 @@ function RevealRain() {
 // ─── The story ───────────────────────────────────────────────────────────────
 //
 // Five acts. One memory.
-// Written the way it actually happened — not how it would sound if cleaned up.
+// His journey — not her description.
 //
 // type:
 //   'word'     — single atmospheric words. large. spaced. breathe.
@@ -111,56 +111,62 @@ function RevealRain() {
 //
 const SEQUENCE = [
 
-  // ── Act I: Before she existed in his life ───────────────────────────────────
-  // He needs to say who he was first. The contrast matters.
-  { text: 'I used to hate the rain.',                              delay: 1000,  hold: 3600, type: 'fragment' },
-  { text: 'genuinely.',                                            delay: 6400,  hold: 2800, type: 'echo'     },
+  // ── Act I: Before ────────────────────────────────────────────────────────────
+  // Who he was. The contrast that makes everything else matter.
+  { text: 'I used to hate the rain.',                            delay: 800,   hold: 3600, type: 'fragment' },
+  { text: 'genuinely.',                                          delay: 6200,  hold: 2600, type: 'echo'     },
 
-  // ── Act II: The beginning ────────────────────────────────────────────────────
-  // Winter 2021. The morning that didn't announce itself.
-  { text: 'winter, 2021.',                                         delay: 11000, hold: 3600, type: 'word'     },
-  { text: 'a completely ordinary morning.',                        delay: 16400, hold: 3400, type: 'fragment' },
-  { text: 'the kind that doesn\'t feel important at the time.',    delay: 21600, hold: 3800, type: 'fragment' },
+  // ── Act II: It began ─────────────────────────────────────────────────────────
+  // A morning that didn't announce itself.
+  { text: 'winter, 2021.',                                       delay: 11000, hold: 3800, type: 'word'     },
+  { text: 'a completely ordinary morning.',                      delay: 16600, hold: 3400, type: 'fragment' },
+  { text: 'nothing about it felt important at the time.',        delay: 21800, hold: 3800, type: 'fragment' },
+  { text: 'but after my results — we started talking more.',     delay: 27400, hold: 4000, type: 'fragment' },
+  { text: 'the calls started going longer.',                     delay: 33200, hold: 3400, type: 'fragment' },
+  { text: 'the nights got shorter.',                             delay: 38400, hold: 3200, type: 'fragment' },
+  { text: 'random conversations became part of my routine.',     delay: 43400, hold: 4000, type: 'fragment' },
+  { text: 'without me even realizing it.',                       delay: 49200, hold: 3000, type: 'echo'     },
 
-  // ── Act III: Who she was ─────────────────────────────────────────────────────
-  // Not described. Remembered.
-  { text: 'she was childish — in a way that felt real.',           delay: 27400, hold: 4000, type: 'fragment' },
-  { text: 'always trying to look aesthetic.',                      delay: 33200, hold: 3600, type: 'fragment' },
-  { text: 'she overthought everything.',                           delay: 38600, hold: 3400, type: 'fragment' },
-  { text: 'she cared too much about what people thought.',         delay: 43800, hold: 3800, type: 'fragment' },
-  { text: 'she had pain inside her she never showed to anyone.',   delay: 49400, hold: 4200, type: 'fragment' },
-  { text: 'and somehow — I started seeing it anyway.',             delay: 55400, hold: 3800, type: 'fragment' },
-  { text: 'without her having to say anything.',                   delay: 61000, hold: 3400, type: 'echo'     },
+  // ── Act III: What she changed ────────────────────────────────────────────────
+  // He didn't notice until it was already done.
+  { text: 'and somewhere in between — I changed.',               delay: 54400, hold: 3800, type: 'fragment' },
+  { text: 'things I never cared about started mattering.',       delay: 60000, hold: 3800, type: 'fragment' },
+  { text: 'rain started feeling different.',                     delay: 65600, hold: 3400, type: 'fragment' },
+  { text: 'not like something to avoid.',                        delay: 70800, hold: 3000, type: 'echo'     },
+  { text: 'like something that meant something.',                delay: 75600, hold: 3800, type: 'fragment' },
+  { text: 'white.',                                              delay: 81400, hold: 3200, type: 'word'     },
+  { text: 'moonlight.',                                          delay: 86400, hold: 3200, type: 'word'     },
+  { text: 'she changed what I notice.',                          delay: 91400, hold: 3600, type: 'fragment' },
+  { text: 'what I feel.',                                        delay: 96800, hold: 2800, type: 'echo'     },
+  { text: 'what I find beautiful.',                              delay: 101400, hold: 3000, type: 'echo'    },
 
-  // ── Act IV: The shift ────────────────────────────────────────────────────────
-  // How she changed him. Without trying. Without knowing.
-  { text: 'the calls started going longer.',                       delay: 66600, hold: 3400, type: 'fragment' },
-  { text: 'the nights got shorter.',                               delay: 71800, hold: 3200, type: 'fragment' },
-  { text: 'random conversations became part of my daily routine.', delay: 76800, hold: 4000, type: 'fragment' },
-  { text: 'without me even realizing it.',                         delay: 82600, hold: 3000, type: 'echo'     },
-  { text: 'and then one day — I noticed.',                         delay: 87600, hold: 3400, type: 'fragment' },
-  { text: 'the rain had stopped feeling like something to avoid.', delay: 92800, hold: 4200, type: 'fragment' },
-  { text: 'it started feeling beautiful.',                         delay: 98800, hold: 3400, type: 'echo'     },
+  // ── Act IV: The misunderstanding ─────────────────────────────────────────────
+  // Not a fight. Not dramatic. Just — something shifted.
+  { text: 'and then — something shifted.',                       delay: 106800, hold: 3800, type: 'fragment' },
+  { text: 'conversations grew quieter.',                         delay: 112400, hold: 3400, type: 'fragment' },
+  { text: 'not suddenly.',                                       delay: 117600, hold: 2600, type: 'echo'     },
+  { text: 'slowly.',                                             delay: 122000, hold: 2800, type: 'echo'     },
+  { text: 'the kind of slow you only notice later.',             delay: 126600, hold: 3800, type: 'fragment' },
+  { text: 'some things just — stop.',                            delay: 132200, hold: 3800, type: 'fragment' },
+  { text: 'and you never fully understand why.',                 delay: 137800, hold: 3400, type: 'echo'     },
 
   // ── Act V: What remains ──────────────────────────────────────────────────────
-  // These aren't words. They're what she became.
-  { text: 'white.',                                                delay: 104400, hold: 3200, type: 'word'     },
-  { text: 'moonlight.',                                            delay: 109400, hold: 3200, type: 'word'     },
-  { text: 'rain.',                                                 delay: 114400, hold: 3200, type: 'word'     },
-  { text: 'she changed what I notice.',                            delay: 119600, hold: 3600, type: 'fragment' },
-  { text: 'what I feel.',                                          delay: 125000, hold: 3000, type: 'echo'     },
-  { text: 'what I find beautiful.',                                delay: 129800, hold: 3200, type: 'echo'     },
-  { text: 'she became part of everything.',                        delay: 135000, hold: 3800, type: 'fragment' },
-  { text: 'she never even knew she was doing it.',                 delay: 140800, hold: 3800, type: 'fragment' },
-  { text: 'she never truly left.',                                 delay: 146600, hold: 4500, type: 'fragment' },
+  // She left. But she's still everywhere.
+  { text: 'but the rain was already hers.',                      delay: 143600, hold: 3800, type: 'fragment' },
+  { text: 'and so was everything else.',                         delay: 149200, hold: 3400, type: 'echo'     },
+  { text: 'every time it rains — I remember.',                   delay: 154600, hold: 3800, type: 'fragment' },
+  { text: 'automatically.',                                      delay: 160200, hold: 3000, type: 'echo'     },
+  { text: 'she never truly left.',                               delay: 165400, hold: 4500, type: 'fragment' },
+  { text: 'she\'s in every detail.',                             delay: 171800, hold: 3600, type: 'echo'     },
 
   // ── The name ─────────────────────────────────────────────────────────────────
   // Everything above was leading here.
-  // This is why it all exists.
-  { text: 'Anushka.',                                              delay: 154200, hold: 11000, type: 'name'   },
+  // Every act, every word, every changed feeling.
+  // This is the whole point.
+  { text: 'Anushka.',                                            delay: 178400, hold: 13000, type: 'name'   },
 ];
 
-const TOTAL_MS = 154200 + 11000 + 4000;
+const TOTAL_MS = 178400 + 13000 + 5000;
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
@@ -177,9 +183,10 @@ function getStyle(type) {
 
 export default function PuzzleReveal() {
   const { showReveal, dismissReveal } = usePuzzle();
-  const [active, setActive] = useState(null); // { text, type }
+  const [active, setActive] = useState(null);
   const [phase, setPhase] = useState('idle');
   const [showHeart, setShowHeart] = useState(false);
+  const [showSubtitle, setShowSubtitle] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -192,6 +199,7 @@ export default function PuzzleReveal() {
 
     setPhase('running');
     setShowHeart(false);
+    setShowSubtitle(false);
 
     // Start ambient rain audio
     audioRef.current = createRainAudio();
@@ -202,14 +210,16 @@ export default function PuzzleReveal() {
       timers.push(setTimeout(() => {
         setActive({ text, type });
         if (type === 'name') {
-          // Show the white heart 1.5s after Anushka arrives
-          timers.push(setTimeout(() => setShowHeart(true), 1500));
+          // Heart appears 2s after name
+          timers.push(setTimeout(() => setShowHeart(true), 2000));
+          // Subtitle 'she was always here.' appears 3.5s after name
+          timers.push(setTimeout(() => setShowSubtitle(true), 3500));
         }
       }, delay));
 
       timers.push(setTimeout(() => {
         setActive(prev => prev?.text === text ? null : prev);
-        if (type === 'name') setShowHeart(false);
+        if (type === 'name') { setShowHeart(false); setShowSubtitle(false); }
       }, delay + hold));
     });
 
@@ -298,11 +308,14 @@ export default function PuzzleReveal() {
               {active && (
                 <motion.div
                   key={active.text}
-                  initial={{ opacity: 0, filter: 'blur(18px)', y: active.type === 'name' ? 8 : 0 }}
+                  initial={{ opacity: 0, filter: 'blur(18px)', y: active.type === 'name' ? 10 : 0 }}
                   animate={{ opacity: style.opacity, filter: 'blur(0px)', y: 0 }}
                   exit={{ opacity: 0, filter: 'blur(18px)' }}
-                  transition={{ duration: 2.4, ease: 'easeInOut' }}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}
+                  transition={{
+                    duration: active.type === 'name' ? 3.5 : 2.4,
+                    ease: 'easeInOut',
+                  }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}
                 >
                   <p style={{
                     fontFamily: 'var(--font-mono)',
@@ -324,19 +337,43 @@ export default function PuzzleReveal() {
                     {active.text}
                   </p>
 
-                  {/* White heart — appears 1.5s after Anushka */}
+                  {/* White heart — 2s after Anushka */}
                   <AnimatePresence>
                     {showHeart && (
                       <motion.span
                         key="heart"
-                        initial={{ opacity: 0, scale: 0.7, filter: 'blur(8px)' }}
-                        animate={{ opacity: 0.85, scale: 1, filter: 'blur(0px)' }}
+                        initial={{ opacity: 0, scale: 0.6, filter: 'blur(10px)' }}
+                        animate={{ opacity: 0.9, scale: 1, filter: 'blur(0px)' }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 2, ease: 'easeOut' }}
-                        style={{ fontSize: '1.4rem', userSelect: 'none', pointerEvents: 'none' }}
+                        transition={{ duration: 2.5, ease: 'easeOut' }}
+                        style={{ fontSize: '1.5rem', userSelect: 'none', pointerEvents: 'none' }}
                       >
                         🤍
                       </motion.span>
+                    )}
+                  </AnimatePresence>
+
+                  {/* 'she was always here.' — 3.5s after Anushka, below the heart */}
+                  <AnimatePresence>
+                    {showSubtitle && (
+                      <motion.p
+                        key="subtitle"
+                        initial={{ opacity: 0, filter: 'blur(10px)' }}
+                        animate={{ opacity: 0.38 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 3, ease: 'easeInOut' }}
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 'clamp(0.7rem, 1.5vw, 0.85rem)',
+                          fontStyle: 'italic',
+                          color: 'rgba(255,255,255,0.38)',
+                          letterSpacing: '3px',
+                          margin: 0, marginTop: 8,
+                          userSelect: 'none', pointerEvents: 'none',
+                        }}
+                      >
+                        she was always here.
+                      </motion.p>
                     )}
                   </AnimatePresence>
                 </motion.div>
