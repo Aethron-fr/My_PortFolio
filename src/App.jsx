@@ -41,14 +41,7 @@ function CurrentlyExploring() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
 
-  // Ghost hint timer
-  const [showHint, setShowHint] = useState(false);
-
   useEffect(() => {
-    // Hint fades in after 3 seconds, stays for 8, then vanishes forever.
-    const t1 = setTimeout(() => setShowHint(true), 3000);
-    const t2 = setTimeout(() => setShowHint(false), 12000);
-
     const interval = setInterval(() => {
       setVisible(false);
       setTimeout(() => {
@@ -56,11 +49,7 @@ function CurrentlyExploring() {
         setVisible(true);
       }, 400);
     }, 3600);
-    return () => {
-      clearInterval(interval);
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -86,6 +75,17 @@ export default function App() {
   const [isVerified, setIsVerified] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [timeGreeting, setTimeGreeting] = useState('');
+  const [showHint, setShowHint] = useState(false);
+
+  useEffect(() => {
+    // Hint fades in after 3 seconds, stays for 8, then vanishes forever.
+    const t1 = setTimeout(() => setShowHint(true), 3000);
+    const t2 = setTimeout(() => setShowHint(false), 12000);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
 
   const progressBarRef = useRef(null);
 
