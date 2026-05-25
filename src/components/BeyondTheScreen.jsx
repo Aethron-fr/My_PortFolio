@@ -118,6 +118,8 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http:
 
 function AtmosphereCard({ atm, index }) {
   const [hovered, setHovered] = useState(false);
+  const [showSecret, setShowSecret] = useState(false);
+  const hoverTimer = useRef(null);
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
 
@@ -130,14 +132,35 @@ function AtmosphereCard({ atm, index }) {
     return () => observer.disconnect();
   }, []);
 
+  const handleEnter = () => {
+    setHovered(true);
+    if (atm.id === 'rain') {
+      hoverTimer.current = setTimeout(() => {
+        setShowSecret(true);
+        try {
+          const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
+          if (!stored['puzzle_hover']) {
+            stored['puzzle_hover'] = Date.now();
+            localStorage.setItem('_p_clues', JSON.stringify(stored));
+          }
+        } catch {}
+      }, 8000);
+    }
+  };
+
+  const handleLeave = () => {
+    setHovered(false);
+    clearTimeout(hoverTimer.current);
+  };
+
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 10 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.2, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
       style={{
         minWidth: 220, width: 240, height: 180,
         borderRadius: 16,
@@ -221,6 +244,22 @@ function AtmosphereCard({ atm, index }) {
         }}>
           {atm.note}
         </p>
+
+        {/* Rain secret — appears after 8s hover on rain card only */}
+        {atm.id === 'rain' && showSecret && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.38 }}
+            transition={{ duration: 2.5 }}
+            style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+              color: 'rgba(255,255,255,0.38)', letterSpacing: '2px',
+              margin: '10px 0 0', pointerEvents: 'none',
+            }}
+          >
+            I used to hate this.
+          </motion.p>
+        )}
       </div>
     </motion.div>
   );
