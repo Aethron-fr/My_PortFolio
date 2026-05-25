@@ -41,7 +41,14 @@ function CurrentlyExploring() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
 
+  // Ghost hint timer
+  const [showHint, setShowHint] = useState(false);
+
   useEffect(() => {
+    // Hint fades in after 3 seconds, stays for 8, then vanishes forever.
+    const t1 = setTimeout(() => setShowHint(true), 3000);
+    const t2 = setTimeout(() => setShowHint(false), 12000);
+
     const interval = setInterval(() => {
       setVisible(false);
       setTimeout(() => {
@@ -49,7 +56,11 @@ function CurrentlyExploring() {
         setVisible(true);
       }, 400);
     }, 3600);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
 
   return (
@@ -982,23 +993,31 @@ export default function App() {
         </div>
       </footer>
 
-      {/* ── SUBTLE HINT ── */}
-      <div 
-        className="desktop-only-flex"
-        style={{
-          position: 'fixed', bottom: 32, left: 32, zIndex: 90,
-          pointerEvents: 'none',
-        }}
-      >
-        <span style={{ 
-          fontFamily: 'var(--font-mono)', fontSize: '0.55rem', 
-          color: 'rgba(255,255,255,0.15)', letterSpacing: '2px',
-          textTransform: 'lowercase', lineHeight: 1.6
-        }}>
-          there is a memory hidden in the architecture.<br/>
-          pay attention to the quiet parts.
-        </span>
-      </div>
+      {/* ── SUBTLE HINT (Ghost Popup) ── */}
+      <AnimatePresence>
+        {showHint && (
+          <motion.div 
+            className="desktop-only-flex"
+            initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, filter: 'blur(10px)' }}
+            transition={{ duration: 3, ease: 'easeInOut' }}
+            style={{
+              position: 'fixed', bottom: 32, left: 32, zIndex: 90,
+              pointerEvents: 'none',
+            }}
+          >
+            <span style={{ 
+              fontFamily: 'var(--font-mono)', fontSize: '0.55rem', 
+              color: 'rgba(255,255,255,0.15)', letterSpacing: '2px',
+              textTransform: 'lowercase', lineHeight: 1.6
+            }}>
+              there is a memory hidden in the architecture.<br/>
+              pay attention to the quiet parts.
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── WORK IN PROGRESS BADGE ── */}
       <div 
