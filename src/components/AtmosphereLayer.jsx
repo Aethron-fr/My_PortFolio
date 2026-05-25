@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAtmosphere } from '../context/AtmosphereContext';
+import { usePuzzle } from '../context/PuzzleContext';
 
 // Phrases that emerge on idle — rotate through once per visit, never repeat same session
 const IDLE_PHRASES = [
@@ -30,6 +31,7 @@ let nightPhraseIndex = 0;
 
 export default function AtmosphereLayer() {
   const { isLateNight, isIdle, trustLevel, moonPhase } = useAtmosphere();
+  const { triggerReveal } = usePuzzle();
   const [idlePhrase, setIdlePhrase] = useState('');
   const [showIdlePhrase, setShowIdlePhrase] = useState(false);
 
@@ -209,6 +211,31 @@ export default function AtmosphereLayer() {
           />
         )}
       </AnimatePresence>
+      {/* ── TEMP TEST BUTTON — remove after checking ─────────────────────────── */}
+      <button
+        onClick={triggerReveal}
+        style={{
+          position: 'fixed', bottom: 24, left: 24, zIndex: 999998,
+          background: 'rgba(180,40,70,0.15)',
+          border: '1px solid rgba(180,40,70,0.4)',
+          borderRadius: 8, padding: '8px 16px',
+          fontFamily: 'var(--font-mono)', fontSize: '0.62rem',
+          color: 'rgba(255,255,255,0.7)', letterSpacing: '1.5px',
+          cursor: 'pointer',
+          backdropFilter: 'blur(10px)',
+          transition: 'background 0.3s, border-color 0.3s',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(180,40,70,0.3)';
+          e.currentTarget.style.borderColor = 'rgba(180,40,70,0.7)';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'rgba(180,40,70,0.15)';
+          e.currentTarget.style.borderColor = 'rgba(180,40,70,0.4)';
+        }}
+      >
+        🤍 preview reveal
+      </button>
     </>
   );
 }

@@ -74,9 +74,13 @@ export function PuzzleProvider({ children }) {
   }, [clues, solved]);
 
   const dismissReveal = useCallback(() => setShowReveal(false), []);
+  const triggerReveal  = useCallback(() => {
+    setSolved(false); // allow re-trigger for testing
+    setShowReveal(true);
+  }, []);
 
   return (
-    <PuzzleContext.Provider value={{ clues, solved, showReveal, dismissReveal }}>
+    <PuzzleContext.Provider value={{ clues, solved, showReveal, dismissReveal, triggerReveal }}>
       {children}
     </PuzzleContext.Provider>
   );
