@@ -118,6 +118,21 @@ export default function OneLastSmilePage() {
     return () => clearTimeout(t);
   }, [isLateNight, isIdle]);
 
+  // puzzle_idle — discover clue when idle here (any time, not just night)
+  useEffect(() => {
+    if (!isIdle) return;
+    const t = setTimeout(() => {
+      try {
+        const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
+        if (!stored['puzzle_idle']) {
+          stored['puzzle_idle'] = Date.now();
+          localStorage.setItem('_p_clues', JSON.stringify(stored));
+        }
+      } catch {}
+    }, 6000); // 6s after idle triggers (idle itself = 40s, so ~46s total here)
+    return () => clearTimeout(t);
+  }, [isIdle]);
+
   // Lock body scroll when story is active
   useEffect(() => {
     if (showStory) {

@@ -5,7 +5,7 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http:
 
 // ─── Lines ─────────────────────────────────────────────────────────────────────
 const QUIET_LINES = [
-  "I remember the quiet.",
+  "It started in winter.",
   "Not the silence.",
   "The space left behind.",
   "Some conversations never really end.",
@@ -35,12 +35,27 @@ const FRAGMENTS = [
   { text: "it didn't feel the same.",    x: '26%', y: '80%', isKey: false },
   { text: 'draft saved',                 x: '83%', y: '77%', isKey: false },
   { text: 'I still check sometimes.',    x: '6%',  y: '38%', isKey: true  },
+  { text: 'aesthetic.',                  x: '44%', y: '87%', isKey: false },
+  { text: 'childish.',                   x: '8%',  y: '64%', isKey: false },
 ];
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function StoryMode({ onClose, userEmail }) {
   const [chapter, setChapter] = useState(1);
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  // Discover puzzle_story clue when chapter 3 is reached
+  useEffect(() => {
+    if (chapter >= 3) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
+        if (!stored['puzzle_story']) {
+          stored['puzzle_story'] = Date.now();
+          localStorage.setItem('_p_clues', JSON.stringify(stored));
+        }
+      } catch {}
+    }
+  }, [chapter]);
 
   // Lock body scroll while StoryMode is open to prevent layout/viewport bugs
   useEffect(() => {
@@ -599,6 +614,7 @@ const SUCCESS_LINES = [
   'Some things deserve to stay.',
   'Stored quietly.',
   'Certain words remain.',
+  'Some people stay as rain.',
 ];
 
 function Chapter04({ onClose, userEmail }) {

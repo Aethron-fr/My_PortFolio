@@ -1,6 +1,9 @@
 // atmosphere — the layer underneath everything.
 // "strange how tastes change."
 // "maybe we heard each other differently."
+// A.
+// 🤍
+// I used to hate the rain.
 import { useState, useEffect, useRef, createContext, useContext } from 'react';
 
 // ─── Context ──────────────────────────────────────────────────────────────────

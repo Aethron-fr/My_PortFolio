@@ -33,6 +33,36 @@ export default function AtmosphereLayer() {
   const [idlePhrase, setIdlePhrase] = useState('');
   const [showIdlePhrase, setShowIdlePhrase] = useState(false);
 
+  // Styled console message — once per session, visible only in DevTools
+  // winter, 2021.
+  useEffect(() => {
+    if (sessionStorage.getItem('_console_shown')) return;
+    sessionStorage.setItem('_console_shown', '1');
+    setTimeout(() => {
+      console.log(
+        '%c still raining.   %c — winter, 2021.',
+        'color:rgba(244,244,244,0.45);font-family:monospace;font-size:11px;letter-spacing:2px;padding:3px 0;',
+        'color:rgba(255,255,255,0.18);font-family:monospace;font-size:10px;letter-spacing:2px;'
+      );
+    }, 3000);
+  }, []);
+
+  // Page title flicker — late night + idle, once per session
+  useEffect(() => {
+    if (!isLateNight || !isIdle) return;
+    if (sessionStorage.getItem('_title_shown')) return;
+    const original = document.title;
+    const t = setTimeout(() => {
+      sessionStorage.setItem('_title_shown', '1');
+      document.title = 'still here.';
+      setTimeout(() => { document.title = original; }, 4500);
+    }, 22000); // 22s after idle triggers (total ≈62s on page)
+    return () => {
+      clearTimeout(t);
+      document.title = original;
+    };
+  }, [isLateNight, isIdle]);
+
   // Idle phrase system — shows a phrase after 40s idle, hides after 6s, never repeats
   useEffect(() => {
     if (!isIdle) {

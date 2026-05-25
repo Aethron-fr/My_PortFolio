@@ -30,13 +30,6 @@ const INFLUENCES = [
     note: 'Movement as character expression. Environmental storytelling. The balance between spectacle and quiet.',
     accent: 'rgba(60, 80, 120, 0.45)',
   },
-  {
-    title: 'Disco Elysium',
-    studio: 'ZA/UM',
-    year: '2019',
-    note: 'Writing as world-building. Tone as identity. UI that serves the experience instead of announcing itself.',
-    accent: 'rgba(80, 60, 100, 0.5)',
-  },
 ];
 
 function InfluenceCard({ influence, index }) {

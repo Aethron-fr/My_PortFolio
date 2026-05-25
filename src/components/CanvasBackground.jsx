@@ -118,6 +118,40 @@ export default function CanvasBackground() {
     document.addEventListener('mouseleave', handleMouseLeave);
     handleResize();
 
+    // ── 7-click background clue ───────────────────────────────────────────────
+    // "I used to hate the rain. I don't anymore."
+    let bgClickCount = 0;
+    const handleBgClick = (e) => {
+      const isInteractive = e.target.closest('button, a, input, textarea, select, [role="button"], nav, label');
+      if (isInteractive) return;
+      bgClickCount++;
+      if (bgClickCount === 7) {
+        bgClickCount = 0;
+        const el = document.createElement('div');
+        el.textContent = "this wasn't always here.";
+        Object.assign(el.style, {
+          position: 'fixed', bottom: '44px', left: '50%',
+          transform: 'translateX(-50%)',
+          fontFamily: 'monospace', fontSize: '0.61rem',
+          color: 'rgba(255,255,255,0.13)', letterSpacing: '2.5px',
+          pointerEvents: 'none', zIndex: '9998',
+          whiteSpace: 'nowrap', opacity: '1',
+          transition: 'opacity 2.5s ease',
+        });
+        document.body.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; }, 4000);
+        setTimeout(() => el.remove(), 7000);
+        try {
+          const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
+          if (!stored['puzzle_rain']) {
+            stored['puzzle_rain'] = Date.now();
+            localStorage.setItem('_p_clues', JSON.stringify(stored));
+          }
+        } catch {}
+      }
+    };
+    window.addEventListener('click', handleBgClick);
+
     // ── Render loop ──────────────────────────────────────────────────────────
     const animate = () => {
       ctx.fillStyle = '#06060a';
@@ -136,6 +170,7 @@ export default function CanvasBackground() {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('click', handleBgClick);
     };
   }, []);
 
