@@ -3,58 +3,89 @@ import { auth, googleProvider } from './firebase';
 import { signInWithPopup } from 'firebase/auth';
 import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Mail, 
-  FileText, 
-  Code, 
-  Server, 
-  Database, 
-  Sparkles, 
-  Laptop, 
-  ArrowUpRight, 
+import {
+  Mail,
+  FileText,
+  Code,
+  Server,
+  Database,
+  Laptop,
   Send,
-  Cpu,
   Globe,
-  Activity,
   Award,
   User,
   Heart,
-  Lock
+  ArrowUpRight,
+  Lock,
 } from 'lucide-react';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
-import InteractiveSandbox from './components/InteractiveSandbox';
 import GithubProjects from './components/GithubProjects';
 import DeveloperJourney from './components/DeveloperJourney';
 import FeaturedSpotlight from './components/FeaturedSpotlight';
-import StoryBehind from './components/StoryBehind';
+import CreativeInfluences from './components/CreativeInfluences';
+import BeyondTheScreen from './components/BeyondTheScreen';
 import './App.css';
+
+const EXPLORING_PHRASES = [
+  'currently rebuilding things.',
+  'currently exploring quieter interfaces.',
+  'currently awake at the wrong hours.',
+  'currently thinking too much.',
+  'currently making something slow.',
+];
+
+function CurrentlyExploring() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIdx(i => (i + 1) % EXPLORING_PHRASES.length);
+        setVisible(true);
+      }, 400);
+    }, 3600);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{
+      fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+      color: 'rgba(255,255,255,0.22)', letterSpacing: '1.5px',
+      marginBottom: '28px', minHeight: '18px',
+      transition: 'opacity 0.4s ease',
+      opacity: visible ? 1 : 0,
+    }}>
+      Currently exploring: {EXPLORING_PHRASES[idx]}
+    </div>
+  );
+}
 
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [storyModeOpen, setStoryModeOpen] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [timeGreeting, setTimeGreeting] = useState('');
 
   const progressBarRef = useRef(null);
 
-  // Listen for story mode open/close events from FeaturedSpotlight
+  // Time-based greeting
   useEffect(() => {
-    const onOpen  = () => setStoryModeOpen(true);
-    const onClose = () => setStoryModeOpen(false);
-    window.addEventListener('story-open',  onOpen);
-    window.addEventListener('story-close', onClose);
-    return () => {
-      window.removeEventListener('story-open',  onOpen);
-      window.removeEventListener('story-close', onClose);
-    };
+    const h = new Date().getHours();
+    if (h >= 0  && h < 5)  setTimeGreeting('Still up?');
+    else if (h < 12) setTimeGreeting('Good morning.');
+    else if (h < 17) setTimeGreeting('Good afternoon.');
+    else if (h < 21) setTimeGreeting('Good evening.');
+    else             setTimeGreeting('Working late again?');
   }, []);
 
   // Disable automatic scroll restoration, reset scroll to top on reload, and clear URL hash
@@ -141,7 +172,7 @@ export default function App() {
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      alert("Transmission pipeline interrupted. Please verify your connection or email me directly.");
+      alert('Something went wrong. Please email me directly at ghoshswapnadip7@gmail.com');
     } finally {
       setIsSubmitting(false);
     }
@@ -156,7 +187,7 @@ export default function App() {
     { name: 'Git & GitHub', level: '90%', icon: <i className="fa-brands fa-github" style={{ fontSize: '24px', color: '#fff' }}></i>, desc: 'Version pipelines & collaborative team integrations' }
   ];
 
-  const navItems = ['Home', 'Centerpiece', 'Projects', 'Upcoming Projects', 'Journey', 'Contact'];
+  const navItems = ['Home', 'About', 'Experience', 'Work', 'Journey', 'Contact'];
 
   return (
     <>
@@ -167,79 +198,104 @@ export default function App() {
         {!hasEntered && <WelcomeModal key="welcome" onEnter={() => setHasEntered(true)} />}
       </AnimatePresence>
 
-      {/* 60 FPS Dynamic Scroll Progress Indicator */}
+      {/* Scroll Progress Indicator */}
       <div 
         ref={progressBarRef} 
         style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          height: '3.5px',
-          width: '0%',
-          background: 'var(--insta-gradient)',
+          position: 'fixed', top: 0, left: 0,
+          height: '2px', width: '0%',
+          background: 'linear-gradient(90deg, rgba(180,40,70,0.8), rgba(200,60,90,0.6))',
+          boxShadow: '0 0 8px rgba(180,40,70,0.55), 0 0 2px rgba(180,40,70,0.9)',
           zIndex: 9999,
           transition: 'width 0.08s linear',
-          opacity: storyModeOpen ? 0 : 1,
-          pointerEvents: storyModeOpen ? 'none' : 'auto',
         }}
       />
 
-      {/* FLOATING TRANSLUCENT NAVBAR */}
+      {/* NAVBAR */}
       <header 
         style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
+          position: 'fixed', top: 0, left: 0, width: '100%',
           zIndex: 1000,
           transition: 'all 0.4s var(--transition-smooth)',
-          opacity: storyModeOpen ? 0 : 1,
-          pointerEvents: storyModeOpen ? 'none' : 'auto',
-          background: scrolled ? 'rgba(6, 6, 10, 0.75)' : 'transparent',
-          borderBottom: scrolled ? '1px solid var(--border-glass)' : '1px solid transparent',
+          background: scrolled ? 'rgba(6, 6, 10, 0.8)' : 'transparent',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.04)' : '1px solid transparent',
           backdropFilter: scrolled ? 'blur(20px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-          padding: scrolled ? '14px 0' : '24px 0'
+          padding: scrolled ? '14px 0' : '22px 0',
         }}
       >
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <a href="#home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{
-              fontSize: '1.6rem',
-              fontWeight: 800,
-              fontFamily: 'var(--font-heading)',
-              background: 'var(--insta-gradient)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              letterSpacing: '-0.5px'
-            }}>
-              Swapnadip
-            </span>
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <a href="#home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{
+                fontSize: '1.6rem',
+                fontWeight: 800,
+                fontFamily: 'var(--font-heading)',
+                background: 'var(--insta-gradient)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: '-0.5px'
+              }}>
+                Swapnadip
+              </span>
+            </a>
+
+            {/* Build Status */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 20, padding: '4px 10px',
+            }} className="desktop-only-flex">
+              <div style={{
+                width: 5, height: 5, borderRadius: '50%',
+                background: 'rgba(80, 200, 120, 0.8)',
+                boxShadow: '0 0 6px rgba(80, 200, 120, 0.6)',
+                animation: 'pulse 2.5s ease-in-out infinite',
+              }} />
+              <span style={{
+                fontFamily: 'var(--font-mono)', fontSize: '0.52rem',
+                color: 'rgba(255,255,255,0.3)', letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+              }}>
+                Build Active
+              </span>
+            </div>
+          </div>
 
           {/* Desktop Nav Links */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '30px' }} className="desktop-only-flex">
-            {navItems.map((item) => (
-              <a 
-                key={item}
-                href={item === 'Upcoming Projects' ? '#upcoming' : `#${item.toLowerCase().replace(' ', '-')}`}
-                style={{
-                  color: 'var(--text-muted)',
-                  textDecoration: 'none',
-                  fontSize: '0.92rem',
-                  fontWeight: '600',
-                  transition: 'color 0.3s',
-                  letterSpacing: '0.3px'
-                }}
-                onMouseOver={(e) => e.target.style.color = '#fff'}
-                onMouseOut={(e) => e.target.style.color = 'var(--text-muted)'}
-              >
-                {item}
-              </a>
-            ))}
-            <a href="#contact" className="btn-neon-outline" style={{ padding: '8px 20px', fontSize: '0.85rem' }}>
-              Let's Connect
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '28px' }} className="desktop-only-flex">
+            {navItems.map((item) => {
+              const hrefMap = {
+                'Home': '#home',
+                'About': '#about',
+                'Experience': '#experience',
+                'Work': '#work',
+                'Journey': '#journey',
+                'Contact': '#contact',
+              };
+              return (
+                <a
+                  key={item}
+                  href={hrefMap[item] || `#${item.toLowerCase()}`}
+                  style={{
+                    color: 'var(--text-muted)',
+                    textDecoration: 'none',
+                    fontSize: '0.88rem',
+                    fontWeight: '500',
+                    transition: 'color 0.3s',
+                    letterSpacing: '0.2px',
+                  }}
+                  onMouseOver={(e) => e.target.style.color = '#fff'}
+                  onMouseOut={(e) => e.target.style.color = 'var(--text-muted)'}
+                >
+                  {item}
+                </a>
+              );
+            })}
+            <a href="#contact" className="btn-neon-outline" style={{ padding: '7px 18px', fontSize: '0.82rem' }}>
+              Contact
             </a>
           </nav>
 
@@ -344,55 +400,54 @@ export default function App() {
       <section id="home" className="hero-section">
         <div className="hero-glow-blob" />
         <div className="hero-content">
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(225, 48, 108, 0.08)',
-            border: '1px solid rgba(225, 48, 108, 0.25)',
-            padding: '8px 16px',
-            borderRadius: '50px',
-            marginBottom: '24px',
-          }}>
-            <Sparkles size={14} style={{ color: 'var(--accent-primary)' }} />
-            <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              Interactive Developer Ecosystem
-            </span>
-          </div>
+          {/* Time greeting */}
+          {timeGreeting && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.8 }}
+              style={{
+                fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
+                color: 'rgba(255,255,255,0.28)', letterSpacing: '2px',
+                marginBottom: '20px',
+              }}
+            >
+              {timeGreeting}
+            </motion.div>
+          )}
 
           <h1 style={{
-            fontSize: 'clamp(2.5rem, 5vw + 1rem, 4.5rem)',
-            fontWeight: 800,
+            fontSize: 'clamp(2.4rem, 5vw + 1rem, 4.2rem)',
+            fontWeight: 600,
             lineHeight: 1.15,
             marginBottom: '16px',
-            letterSpacing: '-1px',
+            letterSpacing: '-1.5px',
             color: '#ffffff'
           }}>
-            Hi, I'm Swapnadip Ghosh
+            Swapnadip Ghosh
           </h1>
 
           <div style={{
-            fontSize: 'calc(1.1rem + 0.8vw)',
-            fontWeight: '600',
+            fontSize: 'calc(1rem + 0.6vw)',
+            fontWeight: '500',
             color: 'var(--text-muted)',
-            marginBottom: '32px',
-            minHeight: '40px',
+            marginBottom: '24px',
+            minHeight: '36px',
             letterSpacing: '-0.3px'
           }}>
-            I am a <Typewriter 
-              words={['Full Stack Developer', 'MERN Stack Engineer', 'Python Specialist', 'UI Animator']} 
-              speed={80} 
-              delay={2200} 
+            I am a <Typewriter
+              words={['Full Stack Developer', 'MERN Stack Engineer', 'Python Specialist', 'UI Animator']}
+              speed={80}
+              delay={2200}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '45px' }}>
-            <a href="#projects" className="btn-neon-glow">
-              Explore Projects
-            </a>
-            <a href="#contact" className="btn-neon-outline">
-              Get in Touch
-            </a>
+          {/* Currently Exploring */}
+          <CurrentlyExploring />
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
+            <a href="#work" className="btn-neon-glow">View Work</a>
+            <a href="#contact" className="btn-neon-outline">Contact</a>
           </div>
 
           {/* Social icons */}
@@ -441,249 +496,182 @@ export default function App() {
         </div>
       </section>
 
-      {/* CINEMATIC EMOTIONAL TRANSITION */}
-      <section style={{ 
-        position: 'relative', 
-        zIndex: 2, 
-        padding: '120px 0 80px', 
+      {/* ABOUT SECTION */}
+      <section id="about" style={{
+        position: 'relative', zIndex: 2,
+        padding: '80px 0 60px',
         background: 'linear-gradient(to bottom, #06060a, #09090f)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center'
       }}>
-        <div className="container" style={{ maxWidth: '800px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-            <span style={{
-              fontSize: '0.78rem',
-              fontWeight: '800',
-              color: 'var(--accent-primary)',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              animation: 'pulse 2s infinite alternate'
-            }}>
-              A Cinematic Shift
-            </span>
-            <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.1)' }} />
-            <h2 style={{ 
-              fontSize: '2.2rem', 
-              fontWeight: '300', 
-              color: '#f8fafc', 
-              fontFamily: 'var(--font-heading)',
-              lineHeight: '1.5',
-              letterSpacing: '-0.5px',
-              textShadow: '0 0 40px rgba(255,255,255,0.05)'
-            }}>
-              "Some projects are built with keyboard clicks. <br/>
-              Others are written with <span style={{ background: 'var(--insta-gradient)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: '800' }}>sleepless nights</span> and quiet memories."
-            </h2>
-            <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.1)', marginTop: '10px' }} />
-            <p style={{ 
-              fontSize: '0.98rem', 
-              color: 'var(--text-muted)', 
-              lineHeight: '1.8',
-              maxWidth: '620px',
-              margin: '10px auto 0',
-              fontStyle: 'italic'
-            }}>
-              The digital memorial ahead is my creative identity crafted in light and code—a sanctuary to preserve a smile indefinitely.
-            </p>
+        <div className="container" style={{ maxWidth: 720 }}>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+            letterSpacing: '5px', color: 'rgba(255,255,255,0.2)',
+            textTransform: 'uppercase', marginBottom: 28,
+          }}>
+            About
           </div>
+          <p style={{
+            fontSize: '1.05rem', color: 'rgba(255,255,255,0.65)',
+            lineHeight: 1.9, fontWeight: 300, marginBottom: 20,
+            maxWidth: 640,
+          }}>
+            Full Stack Developer based in West Bengal, India. I work across React, Node, and Python —
+            building interfaces that feel considered. Fast, intentional, and honest in how they move.
+          </p>
+          <p style={{
+            fontSize: '0.95rem', color: 'rgba(255,255,255,0.32)',
+            lineHeight: 1.9, fontWeight: 300, maxWidth: 600,
+          }}>
+            Currently focused on cinematic UI systems, motion design, and the quiet engineering
+            that makes both possible.
+          </p>
         </div>
       </section>
 
-      {/* UPCOMING PROJECTS — OneLastSmile Cinematic Hero */}
-      <section id="upcoming" className="section-padding" style={{ position: 'relative', zIndex: 2, background: '#09090f' }}>
+      {/* FEATURED EXPERIENCE — OneLastSmile */}
+      <section id="experience" style={{
+        position: 'relative', zIndex: 2,
+        padding: '60px 0 80px',
+        background: '#09090f',
+      }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div style={{ marginBottom: 40 }}>
             <div style={{
-              display: 'inline-block',
-              fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-              letterSpacing: '6px', color: 'rgba(180,50,75,0.7)',
-              textTransform: 'uppercase', marginBottom: 16,
+              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+              letterSpacing: '5px', color: 'rgba(180,50,75,0.6)',
+              textTransform: 'uppercase', marginBottom: 12,
             }}>
-              Upcoming Projects
+              Featured Experience
             </div>
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', color: '#fff', marginBottom: 12 }}>Hidden Experiences</h2>
-            <p style={{ maxWidth: '520px', margin: '0 auto', fontSize: '0.9rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
-              Projects that exist but are not yet public. Built privately, released intentionally.
-            </p>
+            <h2 style={{
+              fontSize: '1.6rem', fontWeight: 400,
+              color: 'rgba(255,255,255,0.75)',
+              letterSpacing: '-0.5px', margin: 0,
+            }}>
+              A project built outside the ordinary.
+            </h2>
           </div>
-          <div id="centerpiece">
-            <FeaturedSpotlight />
-          </div>
+          <FeaturedSpotlight />
         </div>
       </section>
 
-      {/* THE STORY BEHIND ONELASTSMILE */}
-      <StoryBehind />
-
-      {/* OTHER PROJECTS & GIT CLUSTERS */}
-      <section id="projects" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(to bottom, #09090f, #06060a)', opacity: 0.85 }}>
+      {/* SELECTED WORK */}
+      <section id="work" style={{
+        position: 'relative', zIndex: 2,
+        padding: '60px 0 80px',
+        background: 'linear-gradient(to bottom, #09090f, #06060a)',
+      }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', color: 'rgba(255,255,255,0.7)' }}>Secondary Projects</h2>
-            <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.1)', margin: '12px auto', borderRadius: '2px' }} />
-            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.9rem', color: 'var(--text-dim)' }}>
-              Standard operational indexing queried directly from the live GitHub repository stream.
-            </p>
+          <div style={{ marginBottom: 40 }}>
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+              letterSpacing: '5px', color: 'rgba(255,255,255,0.18)',
+              textTransform: 'uppercase', marginBottom: 12,
+            }}>
+              Selected Work
+            </div>
+            <h2 style={{
+              fontSize: '1.6rem', fontWeight: 400,
+              color: 'rgba(255,255,255,0.65)',
+              letterSpacing: '-0.5px', margin: 0,
+            }}>
+              Open source and shipped work from the GitHub archive.
+            </h2>
           </div>
-          <div style={{ filter: 'saturate(0.8)' }}>
-            <GithubProjects />
-          </div>
+          <GithubProjects />
         </div>
       </section>
 
-      {/* DEVELOPER JOURNEY & CREDENTIALS TOOLKIT */}
+      {/* CREATIVE INFLUENCES */}
+      <CreativeInfluences />
+
+      {/* BEYOND THE SCREEN */}
+      <BeyondTheScreen />
+
+      {/* DEVELOPER JOURNEY */}
       <section id="journey" className="section-padding" style={{ position: 'relative', zIndex: 2, background: '#06060a' }}>
         <div className="container">
-          
-          {/* About Biography Bento */}
-          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Developer Journey</h2>
-            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
-            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Biography matrix and full-stack architecture stats. Hardware accelerated.
-            </p>
+          {/* Section header */}
+          <div style={{ marginBottom: 48 }}>
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+              letterSpacing: '5px', color: 'rgba(255,255,255,0.18)',
+              textTransform: 'uppercase', marginBottom: 12,
+            }}>
+              Background
+            </div>
+            <h2 style={{
+              fontSize: '1.6rem', fontWeight: 400,
+              color: 'rgba(255,255,255,0.65)',
+              letterSpacing: '-0.5px', margin: 0,
+            }}>
+              Who I am and how I got here.
+            </h2>
           </div>
 
-          <div className="bento-grid" style={{ marginBottom: '60px' }}>
-            {/* Panel 1: Profile bio */}
-            <div 
-              className="glass-panel" 
-              style={{
-                gridColumn: 'span 8',
-                padding: '36px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-              }}
+          {/* Bio + Philosophy grid */}
+          <div className="bento-grid" style={{ marginBottom: '52px' }}>
+            {/* Panel 1: Bio */}
+            <div
+              className="glass-panel"
+              style={{ gridColumn: 'span 8', padding: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-cyber)', marginBottom: '14px' }}>
-                <User size={20} />
-                <span style={{ fontWeight: '700', letterSpacing: '1px', fontSize: '0.85rem', textTransform: 'uppercase' }}>THE PROFILE CORE</span>
+                <User size={18} />
+                <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Profile</span>
               </div>
-              <h3 style={{ fontSize: '1.6rem', marginBottom: '16px', color: '#fff' }}>Swapnadip Ghosh</h3>
-              <p style={{ lineHeight: '1.7', marginBottom: '18px' }}>
-                I am a Full Stack Developer located in West Bengal, India, deeply passionate about sculpting silky-smooth responsive animations, solid APIs, and high-performance React architectures.
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 500, marginBottom: '16px', color: '#fff' }}>Swapnadip Ghosh</h3>
+              <p style={{ lineHeight: '1.8', marginBottom: '16px', color: 'rgba(255,255,255,0.55)', fontSize: '0.95rem' }}>
+                Full Stack Developer based in West Bengal, India. I work across React, Node, and Python —
+                writing interfaces that load fast, animate cleanly, and hold up under real conditions.
               </p>
-              <p style={{ lineHeight: '1.7' }}>
-                My development core centers around writing clean, highly scalable codebase infrastructure. Whether orchestrating Node services or designing premium browser interactions, I aim to weave complex engineering logic into smooth human experiences.
-              </p>
-            </div>
-
-            {/* Panel 2: Rapid facts / stats */}
-            <div 
-              className="glass-panel" 
-              style={{
-                gridColumn: 'span 4',
-                padding: '36px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)', marginBottom: '20px' }}>
-                <Activity size={20} style={{ color: 'var(--accent-primary)' }} />
-                <span style={{ fontWeight: '700', letterSpacing: '1px', fontSize: '0.85rem' }}>GRID TELEMETRY</span>
-              </div>
-              
-              <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-heading)', lineHeight: '1', marginBottom: '6px' }}>
-                60.0
-              </div>
-              <div style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--accent-cyber)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '15px' }}>
-                TARGET FPS LOCKED
-              </div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>
-                System render pipeline utilizes GPU acceleration to sustain battery-optimized frames.
+              <p style={{ lineHeight: '1.8', color: 'rgba(255,255,255,0.38)', fontSize: '0.92rem' }}>
+                I'm most interested in the intersection of engineering quality and interaction design —
+                where the code is invisible and only the experience remains.
               </p>
             </div>
 
-            {/* Panel 3: Terminal Console Telemetry */}
-            <div 
-              className="glass-panel" 
-              style={{
-                gridColumn: 'span 5',
-                padding: '36px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-violet)', marginBottom: '18px' }}>
-                <Cpu size={20} />
-                <span style={{ fontWeight: '700', letterSpacing: '1px', fontSize: '0.85rem' }}>NODE TELEMETRY</span>
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
-                {[
-                  { label: 'React Engine', status: 'Silky Smooth', color: 'var(--accent-cyber)' },
-                  { label: 'Express Engine', status: 'STABLE', color: 'var(--accent-violet)' },
-                  { label: 'Django Clusters', status: 'SECURED', color: 'var(--accent-secondary)' },
-                  { label: 'Docker Services', status: 'ONLINE', color: '#22c55e' }
-                ].map((stat, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>{stat.label}:</span>
-                    <span style={{ color: stat.color, fontWeight: 'bold' }}>{stat.status}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Panel 4: Quick quotes & factoids */}
-            <div 
-              className="glass-panel" 
-              style={{
-                gridColumn: 'span 7',
-                padding: '36px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-              }}
+            {/* Panel 2: Philosophy */}
+            <div
+              className="glass-panel"
+              style={{ gridColumn: 'span 4', padding: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-secondary)', marginBottom: '14px' }}>
-                <Award size={20} />
-                <span style={{ fontWeight: '700', letterSpacing: '1px', fontSize: '0.85rem' }}>PHILOSOPHY</span>
+                <Award size={18} />
+                <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Philosophy</span>
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#fff', marginBottom: '8px' }}>
-                "Not too serious in life, very serious in coding."
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 400, color: 'rgba(255,255,255,0.82)', marginBottom: '12px', lineHeight: 1.5 }}>
+                "Serious about the craft. Not about the performance of it."
               </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '16px' }}>
-                I believe that programming shouldn't just be about moving data around. It should be a creative craft. Elevating digital profiles and shaping user experiences is what drives me to log in every day.
+              <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.38)', lineHeight: '1.7' }}>
+                Good interfaces feel obvious in hindsight. Getting there takes obsessive iteration.
               </p>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: '3px solid var(--accent-cyber)' }}>
-                <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--accent-cyber)', marginBottom: '4px', textTransform: 'uppercase' }}>Current Learning Focus</span>
-                <span style={{ fontSize: '0.85rem', color: '#cbd5e1', fontFamily: 'var(--font-mono)' }}>Exploring WebGL shaders and advanced Framer Motion choreography for next-gen interactive storytelling.</span>
-              </div>
             </div>
           </div>
 
-          {/* Competency Skills list */}
-          <div style={{ marginBottom: '80px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h3 style={{ fontSize: '2rem', fontWeight: '800', color: '#fff', fontFamily: 'var(--font-heading)' }}>Core Competencies</h3>
-              <div style={{ width: '40px', height: '3px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+          {/* Skills */}
+          <div style={{ marginBottom: '52px' }}>
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+              letterSpacing: '4px', color: 'rgba(255,255,255,0.15)',
+              textTransform: 'uppercase', marginBottom: 28,
+            }}>
+              Core Stack
             </div>
-            
             <div className="skills-grid">
               {skillsList.map((skill, idx) => (
                 <div key={idx} className="skill-card">
                   <div style={{
-                    width: '56px',
-                    height: '56px',
-                    borderRadius: '12px',
+                    width: '48px', height: '48px', borderRadius: '10px',
                     background: 'rgba(255, 255, 255, 0.02)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid var(--border-glass)',
-                    marginBottom: '10px'
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '1px solid var(--border-glass)', marginBottom: '10px'
                   }}>
                     {skill.icon}
                   </div>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#fff', margin: 0 }}>{skill.name}</h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', lineHeight: '1.4', margin: '4px 0 0 0' }}>{skill.desc}</p>
-                  
-                  <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', marginTop: '8px', overflow: 'hidden' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#fff', margin: 0 }}>{skill.name}</h4>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: '1.4', margin: '4px 0 0 0' }}>{skill.desc}</p>
+                  <div style={{ width: '100%', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', marginTop: '8px', overflow: 'hidden' }}>
                     <div style={{ width: skill.level, height: '100%', background: 'var(--insta-gradient)' }} />
                   </div>
                 </div>
@@ -691,24 +679,70 @@ export default function App() {
             </div>
           </div>
 
-          {/* Chronological Developer Roadmap Timeline */}
-          <div style={{ marginBottom: '80px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h3 style={{ fontSize: '2rem', fontWeight: '800', color: '#fff', fontFamily: 'var(--font-heading)' }}>Interactive Milestones</h3>
-              <div style={{ width: '40px', height: '3px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
+          {/* Timeline */}
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+              letterSpacing: '4px', color: 'rgba(255,255,255,0.15)',
+              textTransform: 'uppercase', marginBottom: 28,
+            }}>
+              Timeline
             </div>
             <DeveloperJourney />
           </div>
 
-          {/* Stack sandbox architect */}
-          <div>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h3 style={{ fontSize: '2rem', fontWeight: '800', color: '#fff', fontFamily: 'var(--font-heading)' }}>Stack Sandbox</h3>
-              <div style={{ width: '40px', height: '3px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
-            </div>
-            <InteractiveSandbox />
-          </div>
+        </div>
+      </section>
 
+
+      {/* NOW SECTION */}
+      <section style={{
+        position: 'relative', zIndex: 2,
+        padding: '52px 0 48px',
+        background: 'linear-gradient(to bottom, #05050b, #06060a)',
+        borderTop: '1px solid rgba(255,255,255,0.03)',
+      }}>
+        <div className="container" style={{ maxWidth: 640 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 20, marginBottom: 24 }}>
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+              letterSpacing: '5px', color: 'rgba(255,255,255,0.16)',
+              textTransform: 'uppercase',
+            }}>
+              Now
+            </div>
+            <div style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: 'rgba(80, 200, 120, 0.7)',
+              boxShadow: '0 0 8px rgba(80, 200, 120, 0.5)',
+              animation: 'pulse 2.5s ease-in-out infinite',
+              flexShrink: 0,
+            }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { label: 'Building', value: 'OneLastSmile — cinematic interaction experience' },
+              { label: 'Exploring', value: 'Environmental storytelling and motion design systems' },
+              { label: 'Learning', value: 'WebGL fundamentals, advanced Framer Motion patterns' },
+              { label: 'Status', value: 'Open to internships and collaboration' },
+            ].map(({ label, value }) => (
+              <div key={label} style={{ display: 'flex', gap: 20, alignItems: 'baseline' }}>
+                <div style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+                  color: 'rgba(255,255,255,0.2)', letterSpacing: '2px',
+                  minWidth: 72, textTransform: 'uppercase',
+                }}>
+                  {label}
+                </div>
+                <div style={{
+                  fontSize: '0.88rem', color: 'rgba(255,255,255,0.48)',
+                  fontWeight: 300, lineHeight: 1.6,
+                }}>
+                  {value}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -716,10 +750,16 @@ export default function App() {
       <section id="contact" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(to bottom, #06060a, #040407)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>Get In Touch</h2>
-            <div style={{ width: '50px', height: '4px', background: 'var(--insta-gradient)', margin: '12px auto', borderRadius: '2px' }} />
-            <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Ready to construct a high-performance system or a microservices backend cluster? Fire a pipeline signal below.
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+              letterSpacing: '5px', color: 'rgba(255,255,255,0.18)',
+              textTransform: 'uppercase', marginBottom: 12,
+            }}>
+              Contact
+            </div>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 400, letterSpacing: '-0.5px', marginBottom: 12 }}>Get in touch.</h2>
+            <p style={{ maxWidth: '500px', margin: '0 auto', fontSize: '0.9rem', color: 'rgba(255,255,255,0.32)', lineHeight: 1.8 }}>
+              Open to work, collaboration, or just a conversation about building things well.
             </p>
           </div>
 
@@ -741,48 +781,48 @@ export default function App() {
                   }}
                 />
                 <div>
-                  <h3 style={{ fontSize: '1.4rem', fontWeight: '700', color: '#fff', margin: 0 }}>Swapnadip Ghosh</h3>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--accent-cyber)', fontWeight: '700', letterSpacing: '0.5px' }}>FULL STACK ARCHITECT</span>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: '600', color: '#fff', margin: '0 0 4px' }}>Swapnadip Ghosh</h3>
+                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', fontWeight: '400', letterSpacing: '0.5px', fontFamily: 'var(--font-mono)' }}>Full Stack Developer</span>
                 </div>
               </div>
-              <p style={{ fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '30px' }}>
-                Feel free to email me directly or launch a connect ping. I am always open to exploring cutting-edge product structures, open source systems, or MERN cloud integrations.
+              <p style={{ fontSize: '0.92rem', lineHeight: '1.8', marginBottom: '28px', color: 'rgba(255,255,255,0.45)', fontWeight: '300' }}>
+                Open to work, collaboration, or just a conversation about building things well. Email is always the best channel.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(0, 247, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(0, 247, 255, 0.2)' }}>
-                    <Mail size={16} style={{ color: 'var(--accent-cyber)' }} />
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+                    <Mail size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>SECURE MAIL CHANNEL</div>
-                    <a href="mailto:ghoshswapnadip7@gmail.com" style={{ fontSize: '0.9rem', color: '#fff', textDecoration: 'none', fontWeight: '600' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>email</div>
+                    <a href="mailto:ghoshswapnadip7@gmail.com" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', fontWeight: '400' }}>
                       ghoshswapnadip7@gmail.com
                     </a>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(143, 0, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(143, 0, 255, 0.2)' }}>
-                    <Globe size={16} style={{ color: 'var(--accent-violet)' }} />
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+                    <Globe size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>DEVELOPER GEOMETRY</div>
-                    <span style={{ fontSize: '0.9rem', color: '#fff', fontWeight: '600' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>based in</div>
+                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', fontWeight: '400' }}>
                       West Bengal, India
                     </span>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(255, 94, 58, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255, 94, 58, 0.2)' }}>
-                    <FileText size={16} style={{ color: 'var(--accent-secondary)' }} />
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+                    <FileText size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>SYSTEM BRIEFING</div>
-                    <a href="#" className="interactive" style={{ fontSize: '0.9rem', color: 'var(--accent-secondary)', textDecoration: 'none', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span>Download Developer CV</span>
-                      <ArrowUpRight size={14} />
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>resume</div>
+                    <a href="#" className="interactive" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span>Download CV</span>
+                      <ArrowUpRight size={13} style={{ opacity: 0.6 }} />
                     </a>
                   </div>
                 </div>
@@ -823,8 +863,8 @@ export default function App() {
 
               <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', opacity: isVerified ? 1 : 0.4, pointerEvents: isVerified ? 'auto' : 'none', transition: 'opacity 0.4s' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    Your Identifier Name
+                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                    Name
                   </label>
                   <input
                     type="text"
@@ -849,8 +889,8 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    Secure Return Email
+                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                    Email
                   </label>
                   <input
                     type="email"
@@ -873,13 +913,13 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    Project Core Message
+                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                    Message
                   </label>
                   <textarea
                     required
                     rows={4}
-                    placeholder="Tell me about your MERN architecture or 60fps design system needs..."
+                    placeholder="What's on your mind?"
                     value={contactForm.message}
                     onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                     style={{
@@ -907,13 +947,13 @@ export default function App() {
                   className="btn-neon-glow"
                   style={{ width: '100%', gap: '8px', marginTop: '10px' }}
                 >
-                  <Send size={16} />
-                  {isSubmitting ? 'TRANSMITTING SIGNAL...' : 'TRANSMIT CONTACT SIGNAL'}
+                  <Send size={15} style={{ opacity: 0.7 }} />
+                  {isSubmitting ? 'Sending…' : 'Send Message'}
                 </button>
 
                 {submitSuccess && (
-                  <div style={{ padding: '12px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#22c55e', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center', animation: 'fadeIn 0.3s' }}>
-                    Signal successfully sent! Swapnadip will return contact soon. 🚀
+                  <div style={{ padding: '12px 16px', background: 'rgba(80,200,120,0.06)', border: '1px solid rgba(80,200,120,0.18)', color: 'rgba(140,220,160,0.85)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
+                    Sent. I'll get back to you soon.
                   </div>
                 )}
               </form>
@@ -922,16 +962,22 @@ export default function App() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ position: 'relative', zIndex: 2, padding: '60px 0 30px', background: '#040407' }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <footer style={{ position: 'relative', zIndex: 2, padding: '48px 0 28px', background: '#040407' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
           <div className="footer-accent" />
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span>© 2026 Swapnadip Ghosh. Handcrafted in India.</span>
+          <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.2)', margin: 0 }}>
+            © 2026 Swapnadip Ghosh — Handcrafted slowly in India.
           </p>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span>Constructed with React, Vite & framer-motion. Silky smooth rendering.</span>
-            <Heart size={10} className="pulse-heart" />
+          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.1)', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+            React · Vite · Framer Motion
+            <Heart size={9} style={{ opacity: 0.4 }} />
+          </p>
+          <p style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
+            color: 'rgba(255,255,255,0.06)', letterSpacing: '2px',
+            margin: '8px 0 0',
+          }}>
+            still learning.
           </p>
         </div>
       </footer>

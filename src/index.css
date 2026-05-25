@@ -1,6 +1,7 @@
-/* ==========================================
-   Swapnadip Ghosh | Premium Design System
-   ========================================== */
+/* Swapnadip Ghosh | Design System */
+/* certain silences feel louder later. */
+/* typing... */
+/* some things stay. */
 
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -133,12 +134,12 @@ p {
 }
 
 .section-padding {
-  padding: 100px 0;
+  padding: 72px 0;
 }
 
 @media (max-width: 768px) {
   .section-padding {
-    padding: 60px 0;
+    padding: 48px 0;
   }
 }
 
@@ -322,6 +323,7 @@ p {
   100% { background-position: 0% 50%; }
 }
 
+
 /* Hide default Vite layout elements since we completely restructure */
 #root {
   min-height: 100vh;
@@ -331,3 +333,13 @@ p {
   width: 100%;
   max-width: 100%;
 }
+
+/* Pulsing glow for status indicators */
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; box-shadow: 0 0 4px currentColor; }
+  50%       { opacity: 1;   box-shadow: 0 0 10px currentColor; }
+}
+
+/* Hide scrollbars on horizontal scrolling rows */
+.scroll-row::-webkit-scrollbar { display: none; }
+.scroll-row { scrollbar-width: none; }

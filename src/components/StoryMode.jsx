@@ -242,6 +242,28 @@ export default function StoryMode({ onClose, userEmail }) {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* Chapter progress dots */}
+      <div style={{
+        position: 'fixed',
+        bottom: 'max(28px, env(safe-area-inset-bottom))',
+        left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', gap: 8, zIndex: 999999,
+        pointerEvents: 'none',
+      }}>
+        {[1,2,3,4].map(n => (
+          <div key={n} style={{
+            width: n === chapter ? 20 : 5,
+            height: 3, borderRadius: 2,
+            background: n === chapter
+              ? 'rgba(255,255,255,0.4)'
+              : n < chapter
+                ? 'rgba(255,255,255,0.14)'
+                : 'rgba(255,255,255,0.05)',
+            transition: 'width 0.7s cubic-bezier(0.22,1,0.36,1), background 0.7s ease',
+          }} />
+        ))}
+      </div>
     </motion.div>
   );
 }
@@ -249,7 +271,7 @@ export default function StoryMode({ onClose, userEmail }) {
 // ─── Chapter 01: The Quiet ─────────────────────────────────────────────────────
 // Engine: setInterval every LINE_MS. doneRef captures onDone stably so the
 // effect has an EMPTY dependency array — zero re-runs, zero timer cancellations.
-const LINE_MS = 3800;
+const LINE_MS = 4200; // Slightly slower — more breathing room, less mechanical
 
 function Chapter01({ onDone }) {
   const [idx, setIdx] = useState(0);
@@ -280,7 +302,9 @@ function Chapter01({ onDone }) {
       transition={{ duration: 2.5, ease: 'easeInOut' }}
       style={{
         position: 'relative', zIndex: 20,
-        textAlign: 'center', padding: '0 40px', maxWidth: 620,
+        textAlign: 'center',
+        padding: '0 clamp(20px, 6vw, 40px)',
+        maxWidth: 620, width: '100%',
       }}
     >
       {/* Chapter label */}
@@ -365,7 +389,7 @@ function Chapter02({ onDone }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, filter: 'blur(22px)' }}
       transition={{ duration: 2.5, ease: 'easeInOut' }}
-      style={{ position: 'absolute', inset: 0, zIndex: 20, overflow: 'hidden' }}
+      style={{ position: 'absolute', inset: 0, zIndex: 20, overflow: 'hidden', touchAction: 'none' }}
     >
       {/* Scanlines */}
       <div style={{
@@ -507,7 +531,10 @@ function Chapter03({ onDone }) {
       transition={{ duration: 2.5, ease: 'easeInOut' }}
       style={{
         position: 'relative', zIndex: 20,
-        textAlign: 'center', maxWidth: 580, padding: '0 40px',
+        textAlign: 'center',
+        maxWidth: 580,
+        padding: '0 clamp(20px, 6vw, 40px)',
+        width: '100%',
       }}
     >
       <motion.div
