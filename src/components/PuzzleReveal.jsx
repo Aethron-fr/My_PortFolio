@@ -98,51 +98,80 @@ function RevealRain() {
   );
 }
 
-// ─── The sequence — his actual story ─────────────────────────────────────────
-// Delay and hold are in milliseconds.
-// type: 'before' | 'word' | 'fragment' | 'name'
+// ─── The story ───────────────────────────────────────────────────────────────
+//
+// Five acts. One memory.
+// Written the way it actually happened — not how it would sound if cleaned up.
+//
+// type:
+//   'word'     — single atmospheric words. large. spaced. breathe.
+//   'echo'     — tiny reflective lines. quiet. almost a whisper.
+//   'fragment' — full sentences. the story itself.
+//   'name'     — the final word. the whole point.
+//
 const SEQUENCE = [
-  // How it started — contrast (what he was before)
-  { text: 'I never liked rain.',                          delay: 1000,  hold: 3200, type: 'fragment' },
 
-  // The arrival
-  { text: 'winter, 2021.',                                delay: 5800,  hold: 3200, type: 'word'     },
-  { text: 'a normal morning that didn\'t feel important.', delay: 10400, hold: 3800, type: 'fragment' },
+  // ── Act I: Before she existed in his life ───────────────────────────────────
+  // He needs to say who he was first. The contrast matters.
+  { text: 'I used to hate the rain.',                              delay: 1000,  hold: 3600, type: 'fragment' },
+  { text: 'genuinely.',                                            delay: 6400,  hold: 2800, type: 'echo'     },
 
-  // Who she was
-  { text: 'childish in a way that felt real.',            delay: 16000, hold: 3800, type: 'fragment' },
-  { text: 'an overthinker.',                              delay: 21200, hold: 3000, type: 'word'     },
-  { text: 'she had pain she never truly showed.',         delay: 26000, hold: 3800, type: 'fragment' },
+  // ── Act II: The beginning ────────────────────────────────────────────────────
+  // Winter 2021. The morning that didn't announce itself.
+  { text: 'winter, 2021.',                                         delay: 11000, hold: 3600, type: 'word'     },
+  { text: 'a completely ordinary morning.',                        delay: 16400, hold: 3400, type: 'fragment' },
+  { text: 'the kind that doesn\'t feel important at the time.',    delay: 21600, hold: 3800, type: 'fragment' },
 
-  // What changed
-  { text: 'calls became longer.',                         delay: 31600, hold: 3000, type: 'fragment' },
-  { text: 'nights became shorter.',                       delay: 36200, hold: 3000, type: 'fragment' },
+  // ── Act III: Who she was ─────────────────────────────────────────────────────
+  // Not described. Remembered.
+  { text: 'she was childish — in a way that felt real.',           delay: 27400, hold: 4000, type: 'fragment' },
+  { text: 'always trying to look aesthetic.',                      delay: 33200, hold: 3600, type: 'fragment' },
+  { text: 'she overthought everything.',                           delay: 38600, hold: 3400, type: 'fragment' },
+  { text: 'she cared too much about what people thought.',         delay: 43800, hold: 3800, type: 'fragment' },
+  { text: 'she had pain inside her she never showed to anyone.',   delay: 49400, hold: 4200, type: 'fragment' },
+  { text: 'and somehow — I started seeing it anyway.',             delay: 55400, hold: 3800, type: 'fragment' },
+  { text: 'without her having to say anything.',                   delay: 61000, hold: 3400, type: 'echo'     },
 
-  // The transformation
-  { text: 'rain started feeling beautiful.',              delay: 41200, hold: 3800, type: 'fragment' },
-  { text: 'white.',                                       delay: 46800, hold: 3000, type: 'word'     },
-  { text: 'moonlight.',                                   delay: 51400, hold: 3000, type: 'word'     },
-  { text: 'she changed what I find beautiful.',           delay: 56200, hold: 3800, type: 'fragment' },
+  // ── Act IV: The shift ────────────────────────────────────────────────────────
+  // How she changed him. Without trying. Without knowing.
+  { text: 'the calls started going longer.',                       delay: 66600, hold: 3400, type: 'fragment' },
+  { text: 'the nights got shorter.',                               delay: 71800, hold: 3200, type: 'fragment' },
+  { text: 'random conversations became part of my daily routine.', delay: 76800, hold: 4000, type: 'fragment' },
+  { text: 'without me even realizing it.',                         delay: 82600, hold: 3000, type: 'echo'     },
+  { text: 'and then one day — I noticed.',                         delay: 87600, hold: 3400, type: 'fragment' },
+  { text: 'the rain had stopped feeling like something to avoid.', delay: 92800, hold: 4200, type: 'fragment' },
+  { text: 'it started feeling beautiful.',                         delay: 98800, hold: 3400, type: 'echo'     },
 
-  // Still here
-  { text: 'she became part of everything.',               delay: 61800, hold: 3800, type: 'fragment' },
-  { text: 'she never truly left.',                        delay: 67200, hold: 4200, type: 'fragment' },
+  // ── Act V: What remains ──────────────────────────────────────────────────────
+  // These aren't words. They're what she became.
+  { text: 'white.',                                                delay: 104400, hold: 3200, type: 'word'     },
+  { text: 'moonlight.',                                            delay: 109400, hold: 3200, type: 'word'     },
+  { text: 'rain.',                                                 delay: 114400, hold: 3200, type: 'word'     },
+  { text: 'she changed what I notice.',                            delay: 119600, hold: 3600, type: 'fragment' },
+  { text: 'what I feel.',                                          delay: 125000, hold: 3000, type: 'echo'     },
+  { text: 'what I find beautiful.',                                delay: 129800, hold: 3200, type: 'echo'     },
+  { text: 'she became part of everything.',                        delay: 135000, hold: 3800, type: 'fragment' },
+  { text: 'she never even knew she was doing it.',                 delay: 140800, hold: 3800, type: 'fragment' },
+  { text: 'she never truly left.',                                 delay: 146600, hold: 4500, type: 'fragment' },
 
-  // The name — after the longest pause
-  { text: 'Anushka.',                                     delay: 74400, hold: 10000, type: 'name'   },
+  // ── The name ─────────────────────────────────────────────────────────────────
+  // Everything above was leading here.
+  // This is why it all exists.
+  { text: 'Anushka.',                                              delay: 154200, hold: 11000, type: 'name'   },
 ];
 
-const TOTAL_MS = 74400 + 10000 + 3500;
+const TOTAL_MS = 154200 + 11000 + 4000;
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
 // Per-type visual style
 function getStyle(type) {
   switch (type) {
-    case 'word':     return { fontSize: 'clamp(1.4rem, 4vw, 2.2rem)',   opacity: 0.85, color: 'rgba(255,255,255,0.85)', letterSpacing: '8px',  fontWeight: 300 };
-    case 'fragment': return { fontSize: 'clamp(0.9rem, 2.2vw, 1.15rem)', opacity: 0.65, color: 'rgba(255,255,255,0.65)', letterSpacing: '1px',  fontWeight: 300 };
-    case 'name':     return { fontSize: 'clamp(2.6rem, 8vw, 5rem)',      opacity: 1.0,  color: '#f4f4f4',                letterSpacing: '18px', fontWeight: 300 };
-    default:         return { fontSize: '1rem', opacity: 0.6, color: '#fff', letterSpacing: '2px', fontWeight: 300 };
+    case 'word':     return { fontSize: 'clamp(1.6rem, 4.5vw, 2.6rem)',  opacity: 0.88, color: 'rgba(255,255,255,0.88)', letterSpacing: '10px', fontWeight: 300, italic: false };
+    case 'echo':     return { fontSize: 'clamp(0.75rem, 1.8vw, 0.95rem)', opacity: 0.42, color: 'rgba(255,255,255,0.42)', letterSpacing: '1px',  fontWeight: 300, italic: true  };
+    case 'fragment': return { fontSize: 'clamp(0.92rem, 2.2vw, 1.18rem)', opacity: 0.72, color: 'rgba(255,255,255,0.72)', letterSpacing: '0.5px',fontWeight: 300, italic: false };
+    case 'name':     return { fontSize: 'clamp(2.8rem, 8vw, 5.2rem)',     opacity: 1.0,  color: '#f4f4f4',                letterSpacing: '20px', fontWeight: 300, italic: false };
+    default:         return { fontSize: '1rem', opacity: 0.6, color: '#fff', letterSpacing: '2px', fontWeight: 300, italic: false };
   }
 }
 
@@ -279,6 +308,7 @@ export default function PuzzleReveal() {
                     fontFamily: 'var(--font-mono)',
                     fontSize: style.fontSize,
                     fontWeight: style.fontWeight,
+                    fontStyle: style.italic ? 'italic' : 'normal',
                     color: style.color,
                     letterSpacing: style.letterSpacing,
                     margin: 0,
@@ -286,7 +316,7 @@ export default function PuzzleReveal() {
                     userSelect: 'none',
                     pointerEvents: 'none',
                     maxWidth: '78vw',
-                    lineHeight: 1.45,
+                    lineHeight: 1.55,
                     textShadow: active.type === 'name'
                       ? '0 0 80px rgba(244,244,244,0.22), 0 0 140px rgba(220,215,255,0.1)'
                       : 'none',
