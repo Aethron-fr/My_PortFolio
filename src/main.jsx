@@ -8,6 +8,7 @@ import { AtmosphereProvider } from './context/AtmosphereContext.jsx';
 import { PuzzleProvider } from './context/PuzzleContext.jsx';
 import AtmosphereLayer from './components/AtmosphereLayer.jsx';
 import PuzzleReveal from './components/PuzzleReveal.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 import { Analytics } from '@vercel/analytics/react';
 import './index.css';
 
@@ -17,6 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <AtmosphereProvider>
         <PuzzleProvider>
           <BrowserRouter>
+            <ScrollToTop />
             <AtmosphereLayer />
             <PuzzleReveal />
             <Routes>
