@@ -159,14 +159,21 @@ const SEQUENCE = [
   { text: 'she never truly left.',                               delay: 165400, hold: 4500, type: 'fragment' },
   { text: 'she\'s in every detail.',                             delay: 171800, hold: 3600, type: 'echo'     },
 
+  // ── Act VI: Forever ──────────────────────────────────────────────────────────
+  // The absolute truth.
+  { text: 'I loved her then.',                                   delay: 178400, hold: 3800, type: 'fragment' },
+  { text: 'I love her now.',                                     delay: 184000, hold: 3800, type: 'fragment' },
+  { text: 'and I will love her until the very end.',             delay: 189600, hold: 4600, type: 'fragment' },
+  { text: 'that will never change.',                             delay: 196000, hold: 3000, type: 'echo'     },
+
   // ── The name ─────────────────────────────────────────────────────────────────
   // Everything above was leading here.
   // Every act, every word, every changed feeling.
   // This is the whole point.
-  { text: 'Anushka.',                                            delay: 178400, hold: 13000, type: 'name'   },
+  { text: 'Anushka.',                                            delay: 202400, hold: 22000, type: 'name'   },
 ];
 
-const TOTAL_MS = 178400 + 13000 + 5000;
+const TOTAL_MS = 202400 + 22000 + 6000;
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
@@ -187,6 +194,7 @@ export default function PuzzleReveal() {
   const [phase, setPhase] = useState('idle');
   const [showHeart, setShowHeart] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(false);
+  const [showSecretMessage, setShowSecretMessage] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -200,6 +208,7 @@ export default function PuzzleReveal() {
     setPhase('running');
     setShowHeart(false);
     setShowSubtitle(false);
+    setShowSecretMessage(false);
 
     // Start ambient rain audio
     audioRef.current = createRainAudio();
@@ -214,12 +223,14 @@ export default function PuzzleReveal() {
           timers.push(setTimeout(() => setShowHeart(true), 2000));
           // Subtitle 'she was always here.' appears 3.5s after name
           timers.push(setTimeout(() => setShowSubtitle(true), 3500));
+          // The secret message appears 10s after name, staying until the end
+          timers.push(setTimeout(() => setShowSecretMessage(true), 10000));
         }
       }, delay));
 
       timers.push(setTimeout(() => {
         setActive(prev => prev?.text === text ? null : prev);
-        if (type === 'name') { setShowHeart(false); setShowSubtitle(false); }
+        if (type === 'name') { setShowHeart(false); setShowSubtitle(false); setShowSecretMessage(false); }
       }, delay + hold));
     });
 
@@ -380,6 +391,31 @@ export default function PuzzleReveal() {
               )}
             </AnimatePresence>
           </div>
+
+          {/* The Secret Message — appears 10s after the name, at the very bottom */}
+          <AnimatePresence>
+            {showSecretMessage && (
+              <motion.div
+                key="secret-message"
+                initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+                animate={{ opacity: 0.5, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 4, ease: 'easeOut' }}
+                style={{
+                  position: 'absolute', bottom: '15vh', left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'clamp(0.6rem, 1.2vw, 0.75rem)',
+                  color: 'rgba(255,255,255,0.5)',
+                  letterSpacing: '1.5px',
+                  textAlign: 'center', width: '90%',
+                  pointerEvents: 'none', zIndex: 10,
+                }}
+              >
+                if you ever find this... I just want you to know you were the most beautiful part of my story.
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Progress dots — top center */}
           <div style={{
