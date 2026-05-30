@@ -149,7 +149,7 @@ export default function App() {
     
     try {
       const formData = new FormData();
-      formData.append("access_key", import.meta.env.VITE_W3FORMS_KEY || "YOUR_ACCESS_KEY");
+      formData.append("access_key", import.meta.env.VITE_W3FORMS_KEY || "04014102-8895-411b-90e3-db279b85eb44");
       formData.append("name", contactForm.name);
       formData.append("email", contactForm.email);
       formData.append("message", contactForm.message);
