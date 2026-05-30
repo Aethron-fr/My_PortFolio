@@ -166,11 +166,9 @@ const SEQUENCE = [
   { text: 'and I will love her until the very end.',             delay: 189600, hold: 4600, type: 'fragment' },
   { text: 'that will never change.',                             delay: 196000, hold: 3000, type: 'echo'     },
 
-  // ── The name ─────────────────────────────────────────────────────────────────
-  // Everything above was leading here.
-  // Every act, every word, every changed feeling.
-  // This is the whole point.
-  { text: 'Anushka.',                                            delay: 202400, hold: 22000, type: 'name'   },
+  // ── The final memory ─────────────────────────────────────────────────────────
+  // A quiet realization. Not a dramatic reveal.
+  { text: 'some people stay as rain.',                           delay: 202400, hold: 22000, type: 'final'  },
 ];
 
 const TOTAL_MS = 202400 + 22000 + 6000;
@@ -183,7 +181,7 @@ function getStyle(type) {
     case 'word':     return { fontSize: 'clamp(1.6rem, 4.5vw, 2.6rem)',  opacity: 0.88, color: 'rgba(255,255,255,0.88)', letterSpacing: '10px', fontWeight: 300, italic: false };
     case 'echo':     return { fontSize: 'clamp(0.75rem, 1.8vw, 0.95rem)', opacity: 0.42, color: 'rgba(255,255,255,0.42)', letterSpacing: '1px',  fontWeight: 300, italic: true  };
     case 'fragment': return { fontSize: 'clamp(0.92rem, 2.2vw, 1.18rem)', opacity: 0.72, color: 'rgba(255,255,255,0.72)', letterSpacing: '0.5px',fontWeight: 300, italic: false };
-    case 'name':     return { fontSize: 'clamp(2.8rem, 8vw, 5.2rem)',     opacity: 1.0,  color: '#f4f4f4',                letterSpacing: '20px', fontWeight: 300, italic: false };
+    case 'final':    return { fontSize: 'clamp(1.4rem, 3.5vw, 2.0rem)',   opacity: 0.9,  color: '#f4f4f4',                letterSpacing: '5px',   fontWeight: 300, italic: true  };
     default:         return { fontSize: '1rem', opacity: 0.6, color: '#fff', letterSpacing: '2px', fontWeight: 300, italic: false };
   }
 }
@@ -218,19 +216,10 @@ export default function PuzzleReveal() {
     SEQUENCE.forEach(({ text, delay, hold, type }) => {
       timers.push(setTimeout(() => {
         setActive({ text, type });
-        if (type === 'name') {
-          // Heart appears 2s after name
-          timers.push(setTimeout(() => setShowHeart(true), 2000));
-          // Subtitle 'she was always here.' appears 3.5s after name
-          timers.push(setTimeout(() => setShowSubtitle(true), 3500));
-          // The secret message appears 10s after name, staying until the end
-          timers.push(setTimeout(() => setShowSecretMessage(true), 10000));
-        }
       }, delay));
 
       timers.push(setTimeout(() => {
         setActive(prev => prev?.text === text ? null : prev);
-        if (type === 'name') { setShowHeart(false); setShowSubtitle(false); setShowSecretMessage(false); }
       }, delay + hold));
     });
 
@@ -295,9 +284,9 @@ export default function PuzzleReveal() {
             }}
           />
 
-          {/* Warm glow — appears only when Anushka arrives */}
+          {/* Warm glow — appears only for the final quote */}
           <AnimatePresence>
-            {active?.type === 'name' && (
+            {active?.type === 'final' && (
               <motion.div
                 key="name-glow"
                 initial={{ opacity: 0 }}

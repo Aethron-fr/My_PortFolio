@@ -74,20 +74,27 @@ export function AtmosphereProvider({ children }) {
     };
   }, []);
 
-  // Slow hover detection — counts when mouse moves slowly
+  // Slow hover detection — counts when mouse moves slowly, throttled for performance
   useEffect(() => {
     let lastX = 0, lastY = 0;
+    let ticking = false;
     const onMove = (e) => {
-      const now = Date.now();
-      const dt = now - lastMoveTime.current;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      const speed = Math.sqrt(dx * dx + dy * dy) / Math.max(dt, 1);
-      if (speed < 0.15 && dt > 200) {
-        slowHoverCount.current += 1;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const now = Date.now();
+          const dt = now - lastMoveTime.current;
+          const dx = e.clientX - lastX;
+          const dy = e.clientY - lastY;
+          const speed = Math.sqrt(dx * dx + dy * dy) / Math.max(dt, 1);
+          if (speed < 0.15 && dt > 200) {
+            slowHoverCount.current += 1;
+          }
+          lastX = e.clientX; lastY = e.clientY;
+          lastMoveTime.current = now;
+          ticking = false;
+        });
+        ticking = true;
       }
-      lastX = e.clientX; lastY = e.clientY;
-      lastMoveTime.current = now;
     };
     window.addEventListener('mousemove', onMove, { passive: true });
     return () => window.removeEventListener('mousemove', onMove);

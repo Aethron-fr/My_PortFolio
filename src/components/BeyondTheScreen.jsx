@@ -69,7 +69,7 @@ function RainCanvas({ opacity = 0.12 }) {
 const ATMOSPHERES = [
   {
     id: 'rain',
-    mood: 'Rain on glass.',
+    mood: 'Rain-soaked streets.',
     note: 'The kind of quiet you only find when the world outside is wet and grey.',
     gradient: 'linear-gradient(160deg, #060810 0%, #090c14 60%, #07080f 100%)',
     accent: 'rgba(100, 140, 200, 0.12)',
@@ -78,7 +78,7 @@ const ATMOSPHERES = [
   },
   {
     id: 'transit',
-    mood: 'Late trains.',
+    mood: 'Neon midnight transit.',
     note: 'Movement without destination. The in-between that feels strangely clarifying.',
     gradient: 'linear-gradient(160deg, #08060c 0%, #0c0910 60%, #080608 100%)',
     accent: 'rgba(200, 160, 80, 0.08)',
@@ -87,7 +87,7 @@ const ATMOSPHERES = [
   },
   {
     id: 'city',
-    mood: 'Unknown cities.',
+    mood: 'Empty late-night cities.',
     note: 'Places that don\'t know your name. Some environments change how you think.',
     gradient: 'linear-gradient(160deg, #07070d 0%, #090910 60%, #060607 100%)',
     accent: 'rgba(160, 80, 120, 0.08)',
@@ -96,7 +96,7 @@ const ATMOSPHERES = [
   },
   {
     id: 'cold',
-    mood: 'Cold morning air.',
+    mood: 'Winter morning air.',
     note: 'Dim cafés. Warm windows from outside. The contrast that makes both more real.',
     gradient: 'linear-gradient(160deg, #060a0f 0%, #080c12 60%, #060810 100%)',
     accent: 'rgba(80, 160, 200, 0.08)',
@@ -105,7 +105,7 @@ const ATMOSPHERES = [
   },
   {
     id: 'silence',
-    mood: 'Airport silence.',
+    mood: 'Cold mountain silence.',
     note: 'Three in the morning. Every stranger temporarily suspended between lives.',
     gradient: 'linear-gradient(160deg, #080808 0%, #0c0c0e 60%, #080808 100%)',
     accent: 'rgba(200, 200, 200, 0.05)',

@@ -4,58 +4,58 @@ import { BookOpen, Terminal, Rocket, Sparkles, Calendar, Award, Code2 } from 'lu
 const JOURNEY_STEPS = [
   {
     year: "2023",
-    title: "Core Foundations Locked",
+    title: "Foundations",
     subtitle: "West Bengal, India",
     icon: <BookOpen size={20} />,
     color: "var(--accent-cyber)",
     gradient: "linear-gradient(135deg, var(--accent-cyber) 0%, var(--accent-violet) 100%)",
-    description: "Began my engineering journey by building strong foundations in programming logic. Mastery of HTML5, CSS3, and core Python structures.",
+    description: "Learning how logic structures work. Writing my first lines of Python and understanding the web.",
     details: [
-      "Designed semantic webpage layouts and lightweight responsive layouts.",
-      "Developed basic CLI applications in Python using algorithmic logic structures.",
-      "Committed my very first repository on GitHub, learning version pipeline rules."
+      "Semantic HTML and CSS layouts.",
+      "Basic CLI applications and control flow.",
+      "Version control and repository management."
     ]
   },
   {
     year: "2024",
-    title: "JavaScript & Node Mastery",
-    subtitle: "Full Stack Exploration",
+    title: "Architecture",
+    subtitle: "Full Stack",
     icon: <Terminal size={20} />,
     color: "var(--accent-violet)",
     gradient: "linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-primary) 100%)",
-    description: "Expanded my toolkit into full-stack layers, mastering ES6+ JavaScript, asynchronous runtimes, and routing APIs with Express.",
+    description: "Moving into server-side logic and database architecture. Building systems that communicate.",
     details: [
-      "Engineered clean REST APIs in Node.js and Express with tokenized JWT authentication.",
-      "Created dynamic databases using MongoDB, linking models with Mongoose architectures.",
-      "Learned server-side scripting, routing models, and request middleware paradigms."
+      "Node.js and Express REST APIs.",
+      "MongoDB and Mongoose data modeling.",
+      "Authentication and token management."
     ]
   },
   {
     year: "2025",
-    title: "High-Performance React Architectures",
-    subtitle: "MERN Stack Architect",
+    title: "Interaction",
+    subtitle: "MERN Stack",
     icon: <Code2 size={20} />,
     color: "var(--accent-primary)",
     gradient: "var(--insta-gradient)",
-    description: "Graduated into high-end web designs. Optimized React structures, globally distributed context states, and beautiful micro-animations.",
+    description: "Focusing on the frontend experience. Managing complex states and fluid animations.",
     details: [
-      "Built fluid, stateful web applications leveraging React Hooks, Context APIs, and modular designs.",
-      "Integrated secure payment and email delivery channels inside full-stack pipelines.",
-      "Achieved hardware-accelerated fluid visual outputs by shifting computational loads into canvas threads."
+      "React Hooks, Context API, and modular architecture.",
+      "Payment and email integrations.",
+      "Canvas rendering and performance optimization."
     ]
   },
   {
     year: "2026",
-    title: "Open Source & Scaling",
-    subtitle: "PortFolioMaker & Cloud Deployments",
+    title: "Continuity",
+    subtitle: "Deployment",
     icon: <Rocket size={20} />,
     color: "var(--accent-secondary)",
     gradient: "linear-gradient(135deg, var(--accent-secondary) 0%, #fbbf24 100%)",
-    description: "Leading creative products like PortFolioMaker, collaborating on open-source ecosystems, and automating container builds.",
+    description: "Creating open-source tools and automating the deployment pipeline.",
     details: [
-      "Pioneered PortFolioMaker, allowing thousands to compile custom responsive profiles.",
-      "Automated CI/CD deployments utilizing Docker, cloud virtual shells, and global Edge servers.",
-      "Maintained professional standards, peer-reviewing codebases, and writing robust scalable architectures."
+      "Building PortFolioMaker.",
+      "Docker, CI/CD, and Edge deployments.",
+      "Peer review and scalable architecture."
     ]
   }
 ];
@@ -128,9 +128,9 @@ export default function DeveloperJourney() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Calendar size={12} style={{ color: step.color }} />
-                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: step.color }}>{step.year}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '500', color: step.color }}>{step.year}</span>
                   </div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: '700', marginTop: '2px' }}>{step.title}</h4>
+                  <h4 style={{ fontSize: '1rem', fontWeight: '400', marginTop: '2px' }}>{step.title}</h4>
                 </div>
               </button>
             );
@@ -174,7 +174,7 @@ export default function DeveloperJourney() {
               </span>
             </div>
 
-            <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '14px', fontWeight: '800' }}>
+            <h3 style={{ fontSize: '1.6rem', color: '#fff', marginBottom: '14px', fontWeight: '300' }}>
               {JOURNEY_STEPS[activeStep].title}
             </h3>
             

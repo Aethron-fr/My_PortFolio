@@ -239,14 +239,14 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <a href="#home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{
-                fontSize: '1.6rem',
-                fontWeight: 800,
+                fontSize: '1.4rem',
+                fontWeight: 400,
                 fontFamily: 'var(--font-heading)',
                 background: 'var(--insta-gradient)',
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                letterSpacing: '-0.5px'
+                letterSpacing: '0px'
               }}>
                 Swapnadip
               </span>
@@ -388,9 +388,10 @@ export default function App() {
               style={{
                 color: '#fff',
                 textDecoration: 'none',
-                fontSize: '1.8rem',
-                fontWeight: '700',
+                fontSize: '1.6rem',
+                fontWeight: '400',
                 fontFamily: 'var(--font-heading)',
+                letterSpacing: '1px'
               }}
             >
               {item}
@@ -428,23 +429,23 @@ export default function App() {
           )}
 
           <h1 style={{
-            fontSize: 'clamp(2.4rem, 5vw + 1rem, 4.2rem)',
-            fontWeight: 600,
-            lineHeight: 1.15,
+            fontSize: 'clamp(2rem, 4vw + 1rem, 3.8rem)',
+            fontWeight: 300,
+            lineHeight: 1.3,
             marginBottom: '16px',
-            letterSpacing: '-1.5px',
+            letterSpacing: '-0.5px',
             color: '#ffffff'
           }}>
             Swapnadip Ghosh
           </h1>
 
           <div style={{
-            fontSize: 'calc(1rem + 0.6vw)',
-            fontWeight: '500',
+            fontSize: 'calc(0.9rem + 0.4vw)',
+            fontWeight: '300',
             color: 'var(--text-muted)',
             marginBottom: '24px',
             minHeight: '36px',
-            letterSpacing: '-0.3px'
+            letterSpacing: '0px'
           }}>
             I am a <Typewriter
               words={['Full Stack Developer', 'MERN Stack Engineer', 'Python Specialist', 'UI Animator']}
@@ -973,22 +974,14 @@ export default function App() {
         </div>
       </section>
 
-      <footer style={{ position: 'relative', zIndex: 2, padding: '48px 0 28px', background: '#040407' }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <div className="footer-accent" />
-          <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.2)', margin: 0 }}>
-            © 2026 Swapnadip Ghosh — Handcrafted slowly in India.
-          </p>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.1)', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
-            React · Vite · Framer Motion
-            <Heart size={9} style={{ opacity: 0.4 }} />
-          </p>
+      <footer style={{ position: 'relative', zIndex: 2, padding: '120px 0 60px', background: '#040406' }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <p style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-            color: 'rgba(255,255,255,0.06)', letterSpacing: '2px',
-            margin: '8px 0 0',
+            fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+            color: 'rgba(255,255,255,0.15)', letterSpacing: '3px',
+            margin: 0, fontWeight: 300, textTransform: 'lowercase',
           }}>
-            still learning.
+            quietly becoming something.
           </p>
         </div>
       </footer>
@@ -1018,36 +1011,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ── WORK IN PROGRESS BADGE ── */}
-      <div 
-        className="desktop-only-flex"
-        style={{
-          position: 'fixed', bottom: 32, right: 32, zIndex: 90,
-          background: 'rgba(255,255,255,0.015)',
-          border: '1px solid rgba(255,255,255,0.04)',
-          borderRadius: 30, padding: '8px 18px',
-          alignItems: 'center', gap: 10,
-          backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
-          pointerEvents: 'none',
-        }}
-      >
-        <motion.div
-          animate={{ opacity: [0.15, 0.7, 0.15], scale: [1, 1.1, 1] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ 
-            width: 5, height: 5, borderRadius: '50%', 
-            background: 'rgba(180,40,70,0.8)', 
-            boxShadow: '0 0 12px rgba(180,40,70,0.5)' 
-          }}
-        />
-        <span style={{ 
-          fontFamily: 'var(--font-mono)', fontSize: '0.65rem', 
-          color: 'rgba(255,255,255,0.35)', letterSpacing: '1px' 
-        }}>
-          Still being crafted
-        </span>
-      </div>
 
       {/* Embedded CSS for responsive elements and dynamic fades */}
       <style>{`

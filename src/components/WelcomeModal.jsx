@@ -49,7 +49,7 @@ export default function WelcomeModal({ onEnter }) {
           <div style={{
             position: 'absolute', top: '0', left: '50%', transform: 'translateX(-50%)',
             width: '80%', height: '100px',
-            background: 'radial-gradient(ellipse at top, rgba(180,40,70,0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse at top, rgba(225,48,108,0.15) 0%, transparent 70%)',
             pointerEvents: 'none',
           }} />
 
@@ -64,7 +64,7 @@ export default function WelcomeModal({ onEnter }) {
               >
                 <div style={{
                   fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
-                  letterSpacing: '5px', color: 'rgba(200,80,60,0.8)',
+                  letterSpacing: '5px', color: 'rgba(225,48,108,0.8)',
                   textTransform: 'uppercase', marginBottom: 24,
                 }}>
                   Hardware Notice
@@ -170,7 +170,7 @@ export default function WelcomeModal({ onEnter }) {
               >
                 <div style={{
                   fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
-                  letterSpacing: '5px', color: 'rgba(180,40,70,0.8)',
+                  letterSpacing: '5px', color: 'rgba(0,247,255,0.8)',
                   textTransform: 'uppercase', marginBottom: 24,
                 }}>
                   System Status

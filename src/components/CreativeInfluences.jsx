@@ -17,18 +17,11 @@ const INFLUENCES = [
     accent: 'rgba(140, 40, 40, 0.5)',
   },
   {
-    title: 'God of War',
-    studio: 'Santa Monica Studio',
-    year: '2018',
-    note: 'Cinematic continuity without breaking immersion. The entire film in one uncut take. Character through restraint, not exposition.',
-    accent: 'rgba(100, 80, 60, 0.5)',
-  },
-  {
-    title: 'Uncharted 4',
-    studio: 'Naughty Dog',
-    year: '2016',
-    note: 'Movement as character expression. Environmental storytelling. The balance between spectacle and quiet.',
-    accent: 'rgba(60, 80, 120, 0.45)',
+    title: 'Journey',
+    studio: 'thatgamecompany',
+    year: '2012',
+    note: 'Minimalism, atmosphere, and emotional silence through interaction.',
+    accent: 'rgba(200, 160, 80, 0.5)',
   },
 ];
 
@@ -117,7 +110,7 @@ export default function CreativeInfluences() {
     <section style={{
       position: 'relative', zIndex: 2,
       padding: '72px 0 80px',
-      background: '#07070d',
+      background: '#040406',
     }}>
       <div className="container">
         {/* Header */}
@@ -136,18 +129,17 @@ export default function CreativeInfluences() {
             Creative Influences
           </div>
           <h2 style={{
-            fontSize: '1.55rem', fontWeight: 400,
+            fontSize: '1.4rem', fontWeight: 300,
             color: 'rgba(255,255,255,0.7)',
             letterSpacing: '-0.5px', margin: '0 0 16px',
           }}>
-            Design thinking shaped by storytelling.
+            Shaped by environment.
           </h2>
           <p style={{
             fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)',
             lineHeight: 1.85, fontWeight: 300, maxWidth: 560, margin: 0,
           }}>
-            A lot of how I think about interfaces comes from slow cinematic worlds — experiences where
-            environment tells the story, pacing is never rushed, and nothing feels decorative.
+            Interfaces informed by cinematic pacing. Where environment dictates the feeling, and silence holds weight.
           </p>
         </motion.div>
 

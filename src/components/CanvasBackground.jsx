@@ -11,7 +11,7 @@ export default function CanvasBackground() {
     let animId;
 
     // ── Particles (restrained — warm grey, very dim) ────────────────────────
-    const particleCount = Math.min(35, Math.floor((window.innerWidth * window.innerHeight) / 38000));
+    const particleCount = Math.min(25, Math.floor((window.innerWidth * window.innerHeight) / 50000));
     const particles = [];
 
     const mouse = { x: null, y: null, radius: 140 };
@@ -106,11 +106,29 @@ export default function CanvasBackground() {
     };
 
     // ── Resize ──────────────────────────────────────────────────────────────
+    let resizeTicking = false;
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      if (!resizeTicking) {
+        window.requestAnimationFrame(() => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          resizeTicking = false;
+        });
+        resizeTicking = true;
+      }
     };
-    const handleMouseMove = (e) => { mouse.x = e.clientX; mouse.y = e.clientY; };
+    
+    let mouseTicking = false;
+    const handleMouseMove = (e) => { 
+      if (!mouseTicking) {
+        window.requestAnimationFrame(() => {
+          mouse.x = e.clientX; 
+          mouse.y = e.clientY; 
+          mouseTicking = false;
+        });
+        mouseTicking = true;
+      }
+    };
     const handleMouseLeave = () => { mouse.x = null; mouse.y = null; };
 
     window.addEventListener('resize', handleResize);

@@ -125,21 +125,20 @@ export default function FeaturedSpotlight() {
 
         {/* Description */}
         <p style={{
-          fontSize: '0.95rem', color: 'rgba(255,255,255,0.35)',
+          fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)',
           lineHeight: 1.85, fontWeight: 300,
           maxWidth: 380, margin: '0 auto 12px',
         }}>
-          A cinematic experience built around quiet emotional distance.
-          Restrained. Intentional. Deeply engineered.
+          An atmosphere built from memory and silence.
         </p>
 
         {/* Status */}
         <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-          color: 'rgba(255,255,255,0.14)', letterSpacing: '3px',
+          fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
+          color: 'rgba(255,255,255,0.1)', letterSpacing: '3px',
           marginBottom: 40,
         }}>
-          Sealed — Opening January 2027
+          Winter 2021
         </div>
 
         {/* Buttons */}
@@ -147,8 +146,8 @@ export default function FeaturedSpotlight() {
           <motion.button
             whileHover={{
               opacity: 1,
-              boxShadow: '0 0 24px rgba(180,38,68,0.25)',
-              borderColor: 'rgba(180,38,68,0.45)',
+              boxShadow: '0 0 24px rgba(225,48,108,0.25)',
+              borderColor: 'rgba(225,48,108,0.45)',
             }}
             whileTap={{ scale: 0.97 }}
             onClick={() => handleEnter('/onelastsmile')}
@@ -163,13 +162,13 @@ export default function FeaturedSpotlight() {
               transition: 'all 0.4s ease',
             }}
           >
-            {transitioning ? 'Entering…' : 'Enter Experience'}
+            {transitioning ? 'Entering…' : 'View Experience'}
           </motion.button>
 
           <motion.button
-            whileHover={{ opacity: 1 }}
+            whileHover={{ opacity: 1, borderColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => handleEnter('/onelastsmile')}
+            onClick={() => handleEnter('/case-study/onelastsmile')}
             disabled={transitioning}
             style={{
               background: 'transparent',
@@ -181,7 +180,7 @@ export default function FeaturedSpotlight() {
               transition: 'all 0.4s ease',
             }}
           >
-            About The Project
+            Read Case Study
           </motion.button>
         </div>
       </div>
