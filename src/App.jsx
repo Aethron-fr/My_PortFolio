@@ -148,16 +148,20 @@ export default function App() {
     setIsSubmitting(true);
     
     try {
-      const formData = new FormData();
-      formData.append("access_key", import.meta.env.VITE_W3FORMS_KEY || "04014102-8895-411b-90e3-db279b85eb44");
-      formData.append("name", contactForm.name);
-      formData.append("email", contactForm.email);
-      formData.append("message", contactForm.message);
-
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        body: formData
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          access_key: import.meta.env.VITE_W3FORMS_KEY || "04014102-8895-411b-90e3-db279b85eb44",
+          name: contactForm.name,
+          email: contactForm.email,
+          message: contactForm.message
+        })
       });
+      
       const data = await res.json();
       
       if (data.success) {
