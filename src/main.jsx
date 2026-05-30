@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.jsx';
 import OneLastSmilePage from './pages/OneLastSmilePage.jsx';
 import OneLastSmileCaseStudy from './pages/OneLastSmileCaseStudy.jsx';
+import OneLastSmileShowcase from './pages/OneLastSmileShowcase.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { AtmosphereProvider } from './context/AtmosphereContext.jsx';
 import { PuzzleProvider } from './context/PuzzleContext.jsx';
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Routes>
               <Route path="/" element={<App />} />
               <Route path="/onelastsmile" element={<OneLastSmilePage />} />
+              <Route path="/showcase/onelastsmile" element={<OneLastSmileShowcase />} />
               <Route path="/case-study/onelastsmile" element={<OneLastSmileCaseStudy />} />
               <Route path="*" element={<App />} />
             </Routes>

@@ -1,15 +1,25 @@
 class GlobalAudio {
   constructor() {
     this.ctx = null;
+    this.masterGain = null;
     this.rumbleGain = null;
     this.rainGain = null;
     this.initialized = false;
+    this.isMuted = false;
+    this.isDucked = false;
   }
 
   init() {
     if (this.initialized) return;
     try {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Mute persistence check
+      this.isMuted = localStorage.getItem('ols_muted') === '1';
+
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.value = this.isMuted ? 0 : 1;
+      this.masterGain.connect(this.ctx.destination);
       
       const bufferSize = 4096;
       const noise = this.ctx.createScriptProcessor(bufferSize, 1, 1);
@@ -20,19 +30,17 @@ class GlobalAudio {
           const white = Math.random() * 2 - 1;
           out[i] = (lastOut + (0.02 * white)) / 1.02;
           lastOut = out[i];
-          out[i] *= 3.5; // boost brown noise
+          out[i] *= 3.5;
         }
       };
 
-      // 1. Rumble Path (Low-end rumble, distant thunder/train tracks)
       const rumbleFilter = this.ctx.createBiquadFilter();
       rumbleFilter.type = 'lowpass';
       rumbleFilter.frequency.value = 150;
       
-      // Add subtle tremolo to the rumble to make it feel alive
       const lfo = this.ctx.createOscillator();
       lfo.type = 'sine';
-      lfo.frequency.value = 0.2; // very slow wave
+      lfo.frequency.value = 0.2; 
       const lfoGain = this.ctx.createGain();
       lfoGain.gain.value = 15;
       lfo.connect(lfoGain);
@@ -42,7 +50,6 @@ class GlobalAudio {
       this.rumbleGain = this.ctx.createGain();
       this.rumbleGain.gain.value = 0;
 
-      // 2. Rain Path (Warm filtered brown noise, heavy rain through a window)
       const rainBandpass = this.ctx.createBiquadFilter();
       rainBandpass.type = 'bandpass';
       rainBandpass.frequency.value = 800;
@@ -55,15 +62,14 @@ class GlobalAudio {
       this.rainGain = this.ctx.createGain();
       this.rainGain.gain.value = 0;
 
-      // Connect everything
       noise.connect(rumbleFilter);
       rumbleFilter.connect(this.rumbleGain);
-      this.rumbleGain.connect(this.ctx.destination);
+      this.rumbleGain.connect(this.masterGain);
 
       noise.connect(rainBandpass);
       rainBandpass.connect(rainHighpass);
       rainHighpass.connect(this.rainGain);
-      this.rainGain.connect(this.ctx.destination);
+      this.rainGain.connect(this.masterGain);
       
       this.initialized = true;
     } catch(err) {
@@ -77,6 +83,27 @@ class GlobalAudio {
     }
   }
 
+  toggleMute() {
+    if (!this.initialized) this.init();
+    this.isMuted = !this.isMuted;
+    localStorage.setItem('ols_muted', this.isMuted ? '1' : '0');
+    
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.linearRampToValueAtTime(this.isMuted ? 0 : (this.isDucked ? 0.3 : 1), now + 1);
+  }
+
+  setDucking(active) {
+    if (!this.initialized) this.init();
+    if (this.isMuted) return;
+    this.isDucked = active;
+
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    // Smooth volume drop for deep reading moments
+    this.masterGain.gain.linearRampToValueAtTime(active ? 0.3 : 1, now + 2);
+  }
+
   setRumble(active) {
     if (!this.initialized) this.init();
     this.resume();
@@ -84,7 +111,6 @@ class GlobalAudio {
     
     const now = this.ctx.currentTime;
     this.rumbleGain.gain.cancelScheduledValues(now);
-    // Smooth, long fade in/out to feel organic, not mechanical
     if (active) {
       this.rumbleGain.gain.setValueAtTime(this.rumbleGain.gain.value, now);
       this.rumbleGain.gain.linearRampToValueAtTime(0.6, now + 4);

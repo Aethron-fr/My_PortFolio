@@ -4,6 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CanvasBackground from '../components/CanvasBackground';
 import StoryMode from '../components/StoryMode';
 import ThresholdScreen from '../components/ThresholdScreen';
+import BirthdayFlow from '../components/BirthdayFlow';
+import GiftIntro from '../components/GiftIntro';
+import CinematicIntro from '../components/CinematicIntro';
+import IdleMessages from '../components/IdleMessages';
+import MemoryArchive from '../components/MemoryArchive';
+import OneLastReply from '../components/OneLastReply';
+import Propose from '../components/Propose';
+import FinalChoice from '../components/FinalChoice';
+import OneLastThing from '../components/OneLastThing';
+import FinalLetter from '../components/FinalLetter';
+import Epilogue from '../components/Epilogue';
+import QuietAftermath from '../components/QuietAftermath';
 import { useAtmosphere } from '../context/AtmosphereContext';
 import { audioController } from '../audio';
 
@@ -83,7 +95,22 @@ const PARTS = [
 export default function OneLastSmilePage() {
   const navigate = useNavigate();
   const { isLateNight, isIdle } = useAtmosphere();
-  const [showThreshold, setShowThreshold] = useState(() => !sessionStorage.getItem('__ols_threshold_cleared'));
+  const [entryStage, setEntryStage] = useState(() => {
+    const decision = localStorage.getItem('final_decision_locked');
+    if (decision) {
+      const endTime = parseInt(localStorage.getItem('ols_session_end') || '0', 10);
+      const hoursPassed = (Date.now() - endTime) / (1000 * 60 * 60);
+      const seenEpilogue = localStorage.getItem('ols_seen_epilogue') === '1';
+
+      if (hoursPassed > 12 && !seenEpilogue && decision === 'keep') {
+        return 'EPILOGUE';
+      }
+      return 'QUIET_AFTERMATH';
+    }
+
+    if (sessionStorage.getItem('__ols_threshold_cleared')) return 'MAIN';
+    return 'BIRTHDAY';
+  });
   const [showStory, setShowStory] = useState(false);
 
   // The one special hidden moment
@@ -130,20 +157,20 @@ export default function OneLastSmilePage() {
     return () => clearTimeout(t);
   }, [isIdle]);
 
-  // Lock body scroll when story or threshold is active
+  // Lock body scroll when story or threshold or other fullscreens are active
   useEffect(() => {
-    if (showStory || showThreshold) {
+    if (showStory || entryStage !== 'MAIN') {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [showStory, showThreshold]);
+  }, [showStory, entryStage]);
 
   // Audio manager
   useEffect(() => {
-    if (showThreshold) {
-      // Behind threshold: absolute silence
+    if (entryStage !== 'MAIN') {
+      // Before main experience, absolute silence except cinematic
       audioController.setRumble(false);
       audioController.setRain(false);
     } else if (showStory) {
@@ -155,7 +182,7 @@ export default function OneLastSmilePage() {
       audioController.setRain(false);
       audioController.setRumble(true);
     }
-  }, [showThreshold, showStory]);
+  }, [entryStage, showStory]);
 
   // Clean up all audio if they leave the page entirely
   useEffect(() => {
@@ -165,50 +192,87 @@ export default function OneLastSmilePage() {
     };
   }, []);
 
+  if (entryStage === 'EPILOGUE') {
+    return <Epilogue onComplete={() => {
+      localStorage.setItem('ols_seen_epilogue', '1');
+      setEntryStage('QUIET_AFTERMATH');
+    }} />;
+  }
+
+  if (entryStage === 'QUIET_AFTERMATH') {
+    return <QuietAftermath onComplete={() => setEntryStage('MAIN')} />;
+  }
+
+  if (entryStage === 'BIRTHDAY') return <BirthdayFlow onComplete={() => setEntryStage('GIFT')} />;
+  if (entryStage === 'GIFT') return <GiftIntro onComplete={() => setEntryStage('WARNING')} />;
+  if (entryStage === 'WARNING') {
+    return (
+      <ThresholdScreen 
+        onAccept={() => {
+          sessionStorage.setItem('__ols_threshold_cleared', '1');
+          setEntryStage('CINEMATIC');
+          audioController.setRumble(true);
+        }} 
+        onDecline={() => navigate('/')} 
+      />
+    );
+  }
+
+  if (entryStage === 'CINEMATIC') {
+    return <CinematicIntro onComplete={() => {
+      setEntryStage('MAIN');
+      setShowStory(true);
+    }} />;
+  }
+
+  if (entryStage === 'ARCHIVE') return <MemoryArchive onComplete={() => setEntryStage('THINGS_I_NEVER_SAID')} />;
+  if (entryStage === 'THINGS_I_NEVER_SAID') return <OneLastReply onComplete={() => setEntryStage('PROPOSE')} />;
+  if (entryStage === 'PROPOSE') return <Propose onComplete={() => setEntryStage('FINAL_CHOICE')} />;
+  
+  if (entryStage === 'FINAL_CHOICE') {
+    return <FinalChoice onComplete={(choice) => {
+      window.userFinalChoice = choice;
+      setEntryStage('ONE_LAST_THING');
+    }} />;
+  }
+
+  if (entryStage === 'ONE_LAST_THING') return <OneLastThing onComplete={() => setEntryStage('FINAL_LETTER')} />;
+  
+  if (entryStage === 'FINAL_LETTER') {
+    return <FinalLetter onComplete={() => {
+      import('../utils/KeepsakeGenerator.js').then(m => m.generateKeepsakeHTML(window.userFinalChoice || 'keep'));
+      setEntryStage('QUIET_AFTERMATH');
+    }} />;
+  }
+
   return (
     <>
       <CanvasBackground />
+      <IdleMessages />
 
-      {/* ── Threshold Gateway ── */}
-      <AnimatePresence>
-        {showThreshold && (
-          <ThresholdScreen 
-            onEnter={() => {
-              sessionStorage.setItem('__ols_threshold_cleared', '1');
-              setShowThreshold(false);
-            }}
-            onSkip={() => {
-              sessionStorage.setItem('__ols_threshold_cleared', '1');
-              setShowThreshold(false);
-            }}
-          />
-        )}
-      </AnimatePresence>
 
       {/* The One Hidden Moment — late night, idle, once per session. No replay. */}
       {/* "Funny how some people quietly become part of everything." */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showHiddenMoment && (
           <motion.div
-            key="hidden-moment"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 3.5, ease: 'easeInOut' }}
+            initial={{ opacity: 0, filter: 'blur(20px)' }}
+            animate={{ opacity: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, filter: 'blur(20px)' }}
+            transition={{ duration: 4, ease: 'easeInOut' }}
+            onClick={() => setShowHiddenMoment(false)}
             style={{
-              position: 'fixed',
-              bottom: '12vh', left: '50%',
-              transform: 'translateX(-50%)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.68rem',
-              color: 'rgba(255,255,255,0.18)',
-              letterSpacing: '1.5px',
-              zIndex: 200,
-              pointerEvents: 'none',
-              whiteSpace: 'nowrap',
+              position: 'fixed', inset: 0, zIndex: 99999,
+              background: 'rgba(2,0,2,0.95)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}
           >
-            Funny how some people quietly become part of everything.
+            <p style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.8rem',
+              color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textAlign: 'center'
+            }}>
+              Funny how some people quietly become part of everything.
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -220,7 +284,7 @@ export default function OneLastSmilePage() {
             key="story"
             onClose={() => {
               setShowStory(false);
-              setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+              setEntryStage('ARCHIVE');
             }}
           />
         )}

@@ -19,6 +19,7 @@ const ALMOST_LINES = [
   "There was a moment.",
   "A fractured second where everything could have been different.",
   "I almost stayed.",
+  "A name that still feels like home.",
   "And then the moment passed.",
   "Some moments don't break loudly.",
   "They simply fade.",

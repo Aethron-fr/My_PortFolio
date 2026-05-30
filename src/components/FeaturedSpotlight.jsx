@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 
@@ -8,6 +8,28 @@ export default function FeaturedSpotlight() {
   const navigate = useNavigate();
   const cardRef = useRef(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date('2027-01-03T00:00:00').getTime();
+    const updateTime = () => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000)
+      });
+    };
+    updateTime();
+    const t = setInterval(updateTime, 1000);
+    return () => clearInterval(t);
+  }, []);
 
   // Subtle cursor-aware glow — restrained
   const rawX = useMotionValue(0);
@@ -142,47 +164,118 @@ export default function FeaturedSpotlight() {
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+          gap: '16px', 
+          width: '100%',
+          maxWidth: '580px',
+          margin: '0 auto'
+        }}>
           <motion.button
-            whileHover={{
-              opacity: 1,
-              boxShadow: '0 0 24px rgba(225,48,108,0.25)',
-              borderColor: 'rgba(225,48,108,0.45)',
-            }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => handleEnter('/onelastsmile')}
-            disabled={transitioning}
+            whileHover={{ opacity: 1, borderColor: 'rgba(255,255,255,0.15)' }}
+            disabled={true}
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 30, padding: '12px 28px',
-              color: '#fff', fontFamily: 'var(--font-mono)',
-              fontSize: '0.65rem', letterSpacing: '2px',
-              textTransform: 'uppercase', cursor: transitioning ? 'default' : 'pointer',
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.05)',
+              borderRadius: '12px', padding: '16px 20px',
+              color: 'rgba(255,255,255,0.2)', fontFamily: 'var(--font-mono)',
+              fontSize: '0.6rem', letterSpacing: '3px',
+              textTransform: 'uppercase', cursor: 'not-allowed',
               transition: 'all 0.4s ease',
+              backdropFilter: 'blur(10px)',
+              width: '100%'
             }}
           >
-            {transitioning ? 'Entering…' : 'View Experience'}
+            Locked
           </motion.button>
 
           <motion.button
-            whileHover={{ opacity: 1, borderColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ 
+              background: 'rgba(255,255,255,0.05)',
+              borderColor: 'rgba(255,255,255,0.2)', 
+              color: '#fff',
+              boxShadow: '0 0 20px rgba(255,255,255,0.05)'
+            }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => handleEnter('/case-study/onelastsmile')}
             disabled={transitioning}
             style={{
               background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 30, padding: '12px 28px',
-              color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--font-mono)',
-              fontSize: '0.65rem', letterSpacing: '2px',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '12px', padding: '16px 20px',
+              color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-mono)',
+              fontSize: '0.6rem', letterSpacing: '3px',
               textTransform: 'uppercase', cursor: transitioning ? 'default' : 'pointer',
               transition: 'all 0.4s ease',
+              backdropFilter: 'blur(10px)',
+              width: '100%'
             }}
           >
-            Read Case Study
+            Case Study
+          </motion.button>
+
+          <motion.button
+            whileHover={{
+              background: 'rgba(225,48,108,0.1)',
+              boxShadow: '0 0 24px rgba(225,48,108,0.3)',
+              borderColor: 'rgba(225,48,108,0.6)',
+              color: '#fff'
+            }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleEnter('/showcase/onelastsmile')}
+            disabled={transitioning}
+            style={{
+              background: 'rgba(225,48,108,0.05)',
+              border: '1px solid rgba(225,48,108,0.25)',
+              borderRadius: '12px', padding: '16px 20px',
+              color: 'rgba(225,48,108,0.9)', fontFamily: 'var(--font-mono)',
+              fontSize: '0.6rem', letterSpacing: '3px',
+              textTransform: 'uppercase', cursor: transitioning ? 'default' : 'pointer',
+              transition: 'all 0.4s ease',
+              backdropFilter: 'blur(10px)',
+              width: '100%'
+            }}
+          >
+            Special Access
           </motion.button>
         </div>
+
+        {/* Atmosphere & Timer */}
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ delay: 1, duration: 2 }}
+          style={{ marginTop: '48px', textAlign: 'center' }}
+        >
+          <div style={{
+            fontFamily: 'var(--font-body)', fontSize: '0.85rem',
+            color: 'rgba(255,255,255,0.4)', fontStyle: 'italic',
+            marginBottom: '16px', fontWeight: 300
+          }}>
+            "Some memories wait for the right day."
+          </div>
+
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
+            letterSpacing: '4px', color: 'rgba(225,48,108,0.7)',
+            display: 'flex', gap: '24px', justifyContent: 'center',
+            textTransform: 'uppercase', textShadow: '0 0 12px rgba(225,48,108,0.2)'
+          }}>
+            <span>{timeLeft.days.toString().padStart(2, '0')} Days</span>
+            <span>{timeLeft.hours.toString().padStart(2, '0')} Hrs</span>
+            <span>{timeLeft.minutes.toString().padStart(2, '0')} Min</span>
+            <span>{timeLeft.seconds.toString().padStart(2, '0')} Sec</span>
+          </div>
+          
+          <div style={{
+            marginTop: '16px', fontFamily: 'var(--font-mono)', 
+            fontSize: '0.55rem', letterSpacing: '2px', color: 'rgba(255,255,255,0.2)',
+            textTransform: 'uppercase'
+          }}>
+            Until January 3, 2027
+          </div>
+        </motion.div>
       </div>
     </div>
 

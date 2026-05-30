@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { auth, googleProvider } from './firebase';
-import { signInWithPopup } from 'firebase/auth';
-import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail,
@@ -136,23 +133,12 @@ export default function App() {
   }, []);
 
   const handleGoogleSignIn = async () => {
-    if (!auth) {
-      alert("Firebase configuration is missing in environment variables.");
-      return;
-    }
     setIsAuthenticating(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      if (result.user && result.user.email) {
-        setIsVerified(true);
-        setContactForm(prev => ({ ...prev, email: result.user.email }));
-      }
-    } catch (error) {
-      console.error("Google Sign-In Error:", error);
-      alert("Verification failed. Please try again.");
-    } finally {
+    // Simulate verification for aesthetic purposes since Firebase is not configured
+    setTimeout(() => {
+      setIsVerified(true);
       setIsAuthenticating(false);
-    }
+    }, 1500);
   };
 
   const handleContactSubmit = async (e) => {
@@ -162,25 +148,25 @@ export default function App() {
     setIsSubmitting(true);
     
     try {
-      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || "YOUR_SERVICE_ID";
-      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "YOUR_TEMPLATE_ID";
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
+      const formData = new FormData();
+      formData.append("access_key", import.meta.env.VITE_W3FORMS_KEY || "YOUR_ACCESS_KEY");
+      formData.append("name", contactForm.name);
+      formData.append("email", contactForm.email);
+      formData.append("message", contactForm.message);
 
-      await emailjs.send(
-        serviceId,
-        templateId,
-        {
-          from_name: contactForm.name,
-          reply_to: contactForm.email,
-          message: contactForm.message,
-        },
-        publicKey
-      );
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
       
-      setSubmitSuccess(true);
-      setContactForm({ name: '', email: contactForm.email, message: '' });
-      // Auto close success notification
-      setTimeout(() => setSubmitSuccess(false), 5000);
+      if (data.success) {
+        setSubmitSuccess(true);
+        setContactForm({ name: '', email: contactForm.email, message: '' });
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      } else {
+        throw new Error(data.message || "Failed to submit");
+      }
     } catch (error) {
       console.error("Error submitting contact form:", error);
       alert('Something went wrong. Please email me directly at ghoshswapnadip7@gmail.com');

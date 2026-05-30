@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 const METRICS = [
@@ -50,6 +50,13 @@ const ARCHITECTURE = [
 
 export default function OneLastSmileCaseStudy() {
   const navigate = useNavigate();
+  const [showMessage, setShowMessage] = useState(false);
+
+  const handleLaunchClick = () => {
+    setShowMessage(true);
+    // Smooth scroll to bottom so they see the full message if they clicked the top button
+    setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -93,13 +100,19 @@ export default function OneLastSmileCaseStudy() {
         >
           ← Back to Portfolio
         </button>
-        <button 
-          onClick={() => navigate('/onelastsmile')}
-          className="btn-neon-outline"
-          style={{ padding: '8px 20px', fontSize: '0.65rem' }}
-        >
-          Launch Experience
-        </button>
+        {showMessage ? (
+          <div style={{ fontSize: '0.7rem', color: 'rgba(225,48,108,0.9)', fontStyle: 'italic', letterSpacing: '1px' }}>
+            Wait for the countdown.
+          </div>
+        ) : (
+          <button 
+            onClick={handleLaunchClick}
+            className="btn-neon-outline"
+            style={{ padding: '8px 20px', fontSize: '0.65rem' }}
+          >
+            Launch Experience
+          </button>
+        )}
       </nav>
 
       <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
@@ -298,13 +311,30 @@ export default function OneLastSmileCaseStudy() {
           style={{ marginTop: '120px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '60px' }}
         >
           <h2 style={{ fontSize: '1.8rem', fontWeight: 300, marginBottom: '24px', color: '#fff' }}>Experience the Architecture</h2>
-          <button 
-            onClick={() => navigate('/onelastsmile')}
-            className="btn-neon-glow"
-            style={{ padding: '16px 40px', fontSize: '0.8rem' }}
-          >
-            Enter OneLastSmile
-          </button>
+          {showMessage ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                background: 'rgba(225,48,108,0.05)', border: '1px solid rgba(225,48,108,0.2)',
+                borderRadius: '16px', padding: '32px', maxWidth: '600px', margin: '0 auto',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              <p style={{ fontSize: '1.15rem', color: 'rgba(255,255,255,0.85)', fontStyle: 'italic', lineHeight: 1.8, margin: 0, fontWeight: 300 }}>
+                Why the rush? Some stories require patience.<br/><br/>
+                When the countdown finally ends, the doors will open—revealing my greatest effort, my deepest emotions, and the most beautiful creation I have ever built for the one I love.
+              </p>
+            </motion.div>
+          ) : (
+            <button 
+              onClick={handleLaunchClick}
+              className="btn-neon-glow"
+              style={{ padding: '16px 40px', fontSize: '0.8rem' }}
+            >
+              Enter OneLastSmile
+            </button>
+          )}
         </motion.div>
 
       </main>
