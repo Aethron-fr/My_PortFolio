@@ -844,37 +844,7 @@ export default function App() {
 
             {/* Interactive Form */}
             <div className="glass-panel" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
-              
-              {!isVerified && (
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: 'rgba(6, 6, 10, 0.85)', backdropFilter: 'blur(8px)', zIndex: 10,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: '20px', textAlign: 'center', padding: '20px'
-                }}>
-                  <Lock size={32} style={{ color: 'var(--accent-primary)', marginBottom: '16px' }} />
-                  <h3 style={{ fontSize: '1.4rem', color: '#fff', marginBottom: '8px' }}>Verification Required</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '24px', maxWidth: '300px' }}>
-                    To prevent spam, please verify your identity using Google before transmitting a message.
-                  </p>
-                  <button 
-                    onClick={handleGoogleSignIn}
-                    disabled={isAuthenticating}
-                    className="btn-neon-outline"
-                    style={{ background: '#fff', color: '#000', border: 'none' }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: '8px' }}>
-                      <path fill="#4285F4" d="M23.74 12.27c0-.85-.08-1.66-.21-2.45H12v4.63h6.58c-.29 1.49-1.12 2.76-2.38 3.61v3h3.86c2.26-2.09 3.68-5.17 3.68-8.79z"/>
-                      <path fill="#34A853" d="M12 24c3.31 0 6.08-1.09 8.11-2.94l-3.86-3c-1.1.74-2.51 1.18-4.25 1.18-3.27 0-6.04-2.21-7.03-5.18H1.02v3.12C3.04 21.2 7.18 24 12 24z"/>
-                      <path fill="#FBBC05" d="M4.97 14.06c-.25-.74-.39-1.54-.39-2.36s.14-1.62.39-2.36V6.22H1.02C.37 7.7 0 9.32 0 11.7s.37 4 .98 5.48l3.99-3.12z"/>
-                      <path fill="#EA4335" d="M12 4.75c1.8 0 3.42.62 4.69 1.83l3.52-3.52C18.07 1.09 15.3 0 12 0 7.18 0 3.04 2.8 1.02 6.22l3.99 3.12c1-2.97 3.77-5.18 7.03-5.18z"/>
-                    </svg>
-                    {isAuthenticating ? 'VERIFYING...' : 'Sign in with Google'}
-                  </button>
-                </div>
-              )}
-
-              <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', opacity: isVerified ? 1 : 0.4, pointerEvents: isVerified ? 'auto' : 'none', transition: 'opacity 0.4s' }}>
+              <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
                     Name
@@ -956,7 +926,7 @@ export default function App() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || !isVerified}
+                  disabled={isSubmitting}
                   className="btn-neon-glow"
                   style={{ width: '100%', gap: '8px', marginTop: '10px' }}
                 >
