@@ -157,45 +157,35 @@ export default function App() {
 
     setIsSubmitting(true);
 
-    const payload = {
-      access_key: "04014102-8895-411b-90e3-db279b85eb44",
-      name: contactForm.name,
-      email: contactForm.email,
-      message: contactForm.message,
-      subject: `New message from ${contactForm.name} via Portfolio`,
-      from_name: "Portfolio Contact Form"
-    };
-
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
+      const res = await fetch("https://formsubmit.co/ajax/ghoshswapnadip7@gmail.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          message: contactForm.message,
+          _subject: `New Portfolio Message from ${contactForm.name}`,
+          _captcha: "false"
+        })
       });
 
-      const rawText = await res.text();
-      console.log("Web3Forms raw response:", rawText);
+      const data = await res.json();
+      console.log("Formsubmit response:", data);
 
-      let data;
-      try {
-        data = JSON.parse(rawText);
-      } catch {
-        throw new Error(`Server returned non-JSON: ${rawText.slice(0, 200)}`);
-      }
-
-      if (data.success) {
+      if (data.success === "true" || data.success === true) {
         setSubmitSuccess(true);
         setContactForm({ name: '', email: '', message: '' });
         setTimeout(() => setSubmitSuccess(false), 6000);
       } else {
-        throw new Error(data.message || "Submission rejected by server");
+        throw new Error(data.message || "Submission failed");
       }
     } catch (error) {
       console.error("Contact form error:", error.message);
-      alert(`Failed to send: ${error.message}`);
+      alert(`Could not send message: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
