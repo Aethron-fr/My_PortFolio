@@ -88,7 +88,6 @@ export default function App() {
   const progressBarRef = useRef(null);
 
   // Time-based greeting
-  const [isVerified, setIsVerified] = useState(false);
 
   // Auto-fill test mode logic
   useEffect(() => {
