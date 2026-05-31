@@ -154,41 +154,53 @@ export default function App() {
   const handleContactSubmit = async (e) => {
     e.preventDefault();
     if (!contactForm.name || !contactForm.email || !contactForm.message) return;
-    
+
     setIsSubmitting(true);
-    const w3Key = import.meta.env.VITE_W3FORMS_KEY || "04014102-8895-411b-90e3-db279b85eb44";
+
+    const payload = {
+      access_key: "04014102-8895-411b-90e3-db279b85eb44",
+      name: contactForm.name,
+      email: contactForm.email,
+      message: contactForm.message,
+      subject: `New message from ${contactForm.name} via Portfolio`,
+      from_name: "Portfolio Contact Form"
+    };
 
     try {
-      const formData = new FormData();
-      formData.append("access_key", w3Key);
-      formData.append("name", contactForm.name);
-      formData.append("email", contactForm.email);
-      formData.append("message", contactForm.message);
-
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: formData
+        body: JSON.stringify(payload)
       });
-      
-      const data = await res.json();
-      
+
+      const rawText = await res.text();
+      console.log("Web3Forms raw response:", rawText);
+
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(`Server returned non-JSON: ${rawText.slice(0, 200)}`);
+      }
+
       if (data.success) {
         setSubmitSuccess(true);
-        setContactForm({ name: '', email: contactForm.email, message: '' });
-        setTimeout(() => setSubmitSuccess(false), 5000);
+        setContactForm({ name: '', email: '', message: '' });
+        setTimeout(() => setSubmitSuccess(false), 6000);
       } else {
-        throw new Error(data.message || "Failed to submit");
+        throw new Error(data.message || "Submission rejected by server");
       }
     } catch (error) {
-      console.error("Error submitting contact form:", error);
-      alert(`Submission failed: ${error.message}\n\nPlease email me directly at ghoshswapnadip7@gmail.com`);
+      console.error("Contact form error:", error.message);
+      alert(`Failed to send: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const skillsList = [
     { name: 'HTML5 & CSS3', level: '95%', icon: <Globe size={24} style={{ color: 'var(--accent-cyber)' }} />, desc: 'Semantic layouts & advanced responsive styling' },
