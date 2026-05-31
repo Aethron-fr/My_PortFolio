@@ -159,18 +159,18 @@ export default function App() {
     const w3Key = import.meta.env.VITE_W3FORMS_KEY || "04014102-8895-411b-90e3-db279b85eb44";
 
     try {
+      const formData = new FormData();
+      formData.append("access_key", w3Key);
+      formData.append("name", contactForm.name);
+      formData.append("email", contactForm.email);
+      formData.append("message", contactForm.message);
+
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify({
-          access_key: w3Key,
-          name: contactForm.name,
-          email: contactForm.email,
-          message: contactForm.message
-        })
+        body: formData
       });
       
       const data = await res.json();
@@ -184,7 +184,7 @@ export default function App() {
       }
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      alert('Something went wrong. Please email me directly at ghoshswapnadip7@gmail.com');
+      alert(`Submission failed: ${error.message}\n\nPlease email me directly at ghoshswapnadip7@gmail.com`);
     } finally {
       setIsSubmitting(false);
     }
