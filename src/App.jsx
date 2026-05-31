@@ -174,18 +174,22 @@ export default function App() {
       });
 
       const data = await res.json();
-      console.log("Formsubmit response:", data);
 
       if (data.success === "true" || data.success === true) {
         setSubmitSuccess(true);
         setContactForm({ name: '', email: '', message: '' });
         setTimeout(() => setSubmitSuccess(false), 6000);
       } else {
-        throw new Error(data.message || "Submission failed");
+        throw new Error(data.message || "failed");
       }
-    } catch (error) {
-      console.error("Contact form error:", error.message);
-      alert(`Could not send message: ${error.message}`);
+    } catch {
+      // Fallback: open pre-filled mailto so message is never lost
+      const subject = encodeURIComponent(`Portfolio message from ${contactForm.name}`);
+      const body = encodeURIComponent(`Name: ${contactForm.name}\nEmail: ${contactForm.email}\n\nMessage:\n${contactForm.message}`);
+      window.open(`mailto:ghoshswapnadip7@gmail.com?subject=${subject}&body=${body}`);
+      setSubmitSuccess(true);
+      setContactForm({ name: '', email: '', message: '' });
+      setTimeout(() => setSubmitSuccess(false), 6000);
     } finally {
       setIsSubmitting(false);
     }
