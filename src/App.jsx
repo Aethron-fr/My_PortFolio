@@ -88,13 +88,23 @@ export default function App() {
   const progressBarRef = useRef(null);
 
   // Time-based greeting
+  const [isVerified, setIsVerified] = useState(false);
+
+  // Auto-fill test mode logic
   useEffect(() => {
-    const h = new Date().getHours();
-    if (h >= 0  && h < 5)  setTimeGreeting('Still up?');
-    else if (h < 12) setTimeGreeting('Good morning.');
-    else if (h < 17) setTimeGreeting('Good afternoon.');
-    else if (h < 21) setTimeGreeting('Good evening.');
-    else             setTimeGreeting('Working late again?');
+    const handleKeyDown = (e) => {
+      // Secret combo to auto-fill (Ctrl + Shift + F)
+      if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+        setContactForm({
+          name: 'Developer Test',
+          email: 'test@example.com',
+          message: 'Testing the contact form logic and responsiveness.'
+        });
+        alert('Test data injected into form');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Disable automatic scroll restoration, reset scroll to top on reload, and clear URL hash
@@ -135,7 +145,7 @@ export default function App() {
 
   const handleGoogleSignIn = async () => {
     setIsAuthenticating(true);
-    // Simulate verification for aesthetic purposes since Firebase is not configured
+    // Simulate verification for aesthetic purposes
     setTimeout(() => {
       setIsVerified(true);
       setIsAuthenticating(false);
@@ -147,86 +157,38 @@ export default function App() {
     if (!contactForm.name || !contactForm.email || !contactForm.message) return;
     
     setIsSubmitting(true);
-    
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
     const w3Key = import.meta.env.VITE_W3FORMS_KEY || "04014102-8895-411b-90e3-db279b85eb44";
 
-    console.group('Forensic Audit: Email Submission');
-    console.log('Current Environment:', import.meta.env.MODE);
-    console.log('VITE_EMAILJS_SERVICE_ID exists:', !!serviceId, `(Length: ${serviceId?.length || 0})`);
-    console.log('VITE_EMAILJS_TEMPLATE_ID exists:', !!templateId, `(Length: ${templateId?.length || 0})`);
-    console.log('VITE_EMAILJS_PUBLIC_KEY exists:', !!publicKey, `(Length: ${publicKey?.length || 0})`);
-    
-    const payload = {
-      from_name: contactForm.name,
-      reply_to: contactForm.email,
-      message: contactForm.message
-    };
-    
-    console.log('Payload being sent:', payload);
-
-    let provider = null;
-
     try {
-      if (!serviceId || !templateId || !publicKey) {
-        throw new Error('EmailJS keys are incomplete or undefined in this environment.');
-      }
-
-      console.log('Attempting EmailJS submission...');
-      const response = await emailjs.send(
-        serviceId,
-        templateId,
-        payload,
-        publicKey
-      );
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          access_key: w3Key,
+          name: contactForm.name,
+          email: contactForm.email,
+          message: contactForm.message
+        })
+      });
       
-      console.log('EmailJS Success Response:', response);
-      provider = 'EmailJS';
+      const data = await res.json();
       
-    } catch (emailJSError) {
-      console.warn('EmailJS Submission Failed');
-      console.warn('Raw EmailJS Error:', emailJSError?.text || emailJSError?.message || emailJSError);
-      console.log('Initiating Web3Forms Fallback Strategy...');
-
-      try {
-        const res = await fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            access_key: w3Key,
-            ...payload
-          })
-        });
-        const data = await res.json();
-        if (data.success) {
-           console.log('Web3Forms Success Response:', data);
-           provider = 'Web3Forms';
-        } else {
-           console.error('Web3Forms Error Response:', data);
-           throw new Error(data.message || "Failed to submit via Web3Forms");
-        }
-      } catch (w3Error) {
-        console.error('Both Email Providers Failed');
-        console.error('Web3Forms Raw Error:', w3Error);
-        console.groupEnd();
-        alert(`Message delivery failed.\n\nDiagnostic: ${emailJSError?.text || emailJSError?.message}\nFallback Diagnostic: ${w3Error.message}\n\nPlease email me directly at ghoshswapnadip7@gmail.com`);
-        setIsSubmitting(false);
-        return;
+      if (data.success) {
+        setSubmitSuccess(true);
+        setContactForm({ name: '', email: contactForm.email, message: '' });
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      } else {
+        throw new Error(data.message || "Failed to submit");
       }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      alert('Something went wrong. Please email me directly at ghoshswapnadip7@gmail.com');
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    console.log('Submission handled successfully by provider:', provider);
-    console.groupEnd();
-
-    setSubmitSuccess(true);
-    setContactForm({ name: '', email: contactForm.email, message: '' });
-    setTimeout(() => setSubmitSuccess(false), 5000);
-    setIsSubmitting(false);
   };
 
   const skillsList = [
