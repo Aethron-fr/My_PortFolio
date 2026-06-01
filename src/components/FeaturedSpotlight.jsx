@@ -4,34 +4,149 @@ import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motio
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
-export default function FeaturedSpotlight() {
-  const navigate = useNavigate();
-  const cardRef = useRef(null);
-  const [transitioning, setTransitioning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+function SegmentedCountdown({ targetDate }) {
+  const [timeLeft, setTimeLeft] = useState({ days: '000', hours: '00', minutes: '00', seconds: '00' });
 
   useEffect(() => {
-    const targetDate = new Date('2027-01-03T00:00:00').getTime();
+    const target = new Date(targetDate).getTime();
     const updateTime = () => {
       const now = new Date().getTime();
-      const difference = targetDate - now;
+      const difference = target - now;
       if (difference <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft({ days: '000', hours: '00', minutes: '00', seconds: '00' });
         return;
       }
       setTimeLeft({
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        days: String(Math.floor(difference / (1000 * 60 * 60 * 24))).padStart(3, '0'),
+        hours: String(Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0'),
+        minutes: String(Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0'),
+        seconds: String(Math.floor((difference % (1000 * 60)) / 1000)).padStart(2, '0')
       });
     };
     updateTime();
     const t = setInterval(updateTime, 1000);
     return () => clearInterval(t);
-  }, []);
+  }, [targetDate]);
 
-  // Subtle cursor-aware glow — restrained
+  const Segment = ({ label, value }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+      <div style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 8,
+        padding: '12px 14px',
+        backdropFilter: 'blur(10px)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-mono)', fontSize: '1.4rem', fontWeight: 300,
+          color: 'rgba(255,255,255,0.9)', letterSpacing: '2px',
+        }}>{value}</span>
+      </div>
+      <span style={{
+        fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '2px',
+        color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase',
+      }}>{label}</span>
+    </div>
+  );
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
+      margin: '0 auto 40px', flexWrap: 'wrap'
+    }}>
+      <Segment label="Days" value={timeLeft.days} />
+      <Segment label="Hours" value={timeLeft.hours} />
+      <Segment label="Minutes" value={timeLeft.minutes} />
+      <Segment label="Seconds" value={timeLeft.seconds} />
+    </div>
+  );
+}
+
+function ExperienceModal({ isOpen, onClose }) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 99999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(6,6,10,0.85)', backdropFilter: 'blur(20px)',
+            padding: 24,
+          }}
+        >
+          {/* subtle background glow */}
+          <div style={{
+            position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(6,182,212,0.08) 0%, transparent 60%)', pointerEvents: 'none'
+          }} />
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
+            style={{
+              position: 'relative',
+              background: '#040406',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 24,
+              padding: '64px 48px',
+              maxWidth: 580,
+              width: '100%',
+              textAlign: 'center',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
+              overflow: 'hidden',
+            }}
+          >
+            <button
+              onClick={onClose}
+              style={{
+                position: 'absolute', top: 24, right: 24,
+                background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)',
+                cursor: 'pointer', padding: 8, fontSize: '1.2rem',
+                transition: 'color 0.3s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
+            >
+              ✕
+            </button>
+
+            <h2 style={{ fontSize: '2.4rem', fontWeight: 300, color: '#fff', letterSpacing: '-1px', marginBottom: 12 }}>OneLastSmile</h2>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--accent-cyber)', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: 40 }}>
+              Opening on 3 January 2027
+            </div>
+
+            <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.8, fontWeight: 300, marginBottom: 48, maxWidth: 380, margin: '0 auto 48px' }}>
+              Some stories are meant to arrive at the right time.<br/><br/>
+              This one isn't ready to be opened yet.
+            </p>
+
+            <SegmentedCountdown targetDate="2027-01-03T00:00:00" />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+export default function FeaturedSpotlight() {
+  const navigate = useNavigate();
+  const cardRef = useRef(null);
+  const [transitioning, setTransitioning] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const glowX = useSpring(rawX, { stiffness: 40, damping: 25 });
@@ -44,172 +159,182 @@ export default function FeaturedSpotlight() {
     rawY.set(e.clientY - rect.top);
   };
 
-  const handleEnter = (dest = '/onelastsmile') => {
+  const handleNavigate = (dest) => {
     if (transitioning) return;
     setTransitioning(true);
-    setTimeout(() => navigate(dest), 900);
+    setTimeout(() => {
+      navigate(dest);
+      setTransitioning(false);
+    }, 400);
   };
 
   return (
     <>
+    <ExperienceModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+    
     <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
       style={{
         position: 'relative',
-        maxWidth: 680,
-        margin: '0 auto',
+        maxWidth: 900,
+        margin: '60px auto 100px',
         borderRadius: 24,
         overflow: 'hidden',
         cursor: 'default',
+        boxShadow: 'var(--shadow-lg)',
       }}
     >
-      {/* Card background */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(160deg, #09030a 0%, #020002 60%, #06030a 100%)',
+        background: '#040406',
         zIndex: 0,
       }} />
 
-      {/* Film grain */}
       <div style={{
         position: 'absolute', inset: 0, backgroundImage: GRAIN,
         opacity: 0.05, mixBlendMode: 'overlay', pointerEvents: 'none',
         zIndex: 1, transform: 'translateZ(0)',
       }} />
 
-      {/* Ambient crimson glow — breathing */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(135deg, rgba(6,182,212,0.4), rgba(139,92,246,0.4))',
+        padding: '1px',
+        borderRadius: 24,
+        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite: 'xor',
+        maskComposite: 'exclude',
+        zIndex: 2, pointerEvents: 'none',
+      }} />
+
       <motion.div
-        animate={{ opacity: [0.35, 0.65, 0.35] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ x: ['-100%', '200%'] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'linear', repeatDelay: 4 }}
         style={{
-          position: 'absolute', top: -40, left: '50%',
-          transform: 'translateX(-50%)',
-          width: '70%', height: '180px',
-          background: 'radial-gradient(ellipse, rgba(180,38,68,0.18) 0%, transparent 70%)',
-          filter: 'blur(30px)', pointerEvents: 'none', zIndex: 1,
+          position: 'absolute', top: 0, left: 0, width: '50%', height: '100%',
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
+          transform: 'skewX(-20deg)', pointerEvents: 'none', zIndex: 1,
         }}
       />
 
-      {/* Cursor-reactive glow — subtle */}
       <motion.div
         style={{
           position: 'absolute',
-          width: 300, height: 300,
+          width: 400, height: 400,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(180,38,68,0.06) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)',
+          filter: 'blur(50px)',
           pointerEvents: 'none', zIndex: 1,
-          left: glowX,
-          top: glowY,
+          left: glowX, top: glowY,
           x: '-50%', y: '-50%',
         }}
       />
 
-      {/* Top border accent */}
-      <div style={{
-        position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(180,38,68,0.4), transparent)',
-        zIndex: 2,
-      }} />
-
-      {/* Card border */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        border: '1px solid rgba(255,255,255,0.04)',
-        borderRadius: 24, zIndex: 2, pointerEvents: 'none',
-      }} />
-
-      {/* Content */}
       <div style={{
         position: 'relative', zIndex: 3,
-        padding: 'clamp(40px, 6vw, 72px) clamp(28px, 6vw, 64px)',
+        padding: 'clamp(60px, 8vw, 100px) clamp(32px, 6vw, 80px)',
         textAlign: 'center',
       }}>
+        <motion.div 
+          animate={{ opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            display: 'inline-block',
+            background: 'rgba(6,182,212,0.1)',
+            border: '1px solid rgba(6,182,212,0.3)',
+            borderRadius: 20,
+            padding: '6px 16px',
+            fontFamily: 'var(--font-mono)', fontSize: '0.52rem',
+            letterSpacing: '4px', color: 'var(--accent-cyber)',
+            textTransform: 'uppercase', marginBottom: 40,
+            boxShadow: '0 0 20px rgba(6,182,212,0.15)',
+          }}
+        >
+          Flagship Experience
+        </motion.div>
 
-        {/* Label */}
-        <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.56rem',
-          letterSpacing: '6px', color: 'rgba(180,48,72,0.55)',
-          textTransform: 'uppercase', marginBottom: 28,
-        }}>
-          Featured Experience
-        </div>
-
-        {/* Title */}
         <h2 style={{
-          fontSize: 'clamp(2rem, 5vw, 2.8rem)',
-          fontWeight: 300, color: 'rgba(255,255,255,0.92)',
-          letterSpacing: '-1px', lineHeight: 1.15, marginBottom: 20,
+          fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+          fontWeight: 300, color: '#ffffff',
+          letterSpacing: '-2px', lineHeight: 1.1, marginBottom: 24,
         }}>
           OneLastSmile
         </h2>
 
-        {/* Description */}
         <p style={{
-          fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)',
-          lineHeight: 1.85, fontWeight: 300,
-          maxWidth: 380, margin: '0 auto 12px',
+          fontSize: '1.05rem', color: 'rgba(255,255,255,0.5)',
+          lineHeight: 1.8, fontWeight: 300,
+          maxWidth: 540, margin: '0 auto 32px',
         }}>
-          An atmosphere built from memory and silence.
+          Built over more than a year. <br/>
+          A personal interactive experience exploring memory, storytelling, permanence, and the things we never get to say.
         </p>
 
-        {/* Status */}
         <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-          color: 'rgba(255,255,255,0.1)', letterSpacing: '3px',
-          marginBottom: 40,
+          fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+          color: 'rgba(255,255,255,0.3)', letterSpacing: '3px',
+          textTransform: 'uppercase', marginBottom: 48,
         }}>
-          Winter 2021
+          Opening: 3 January 2027
         </div>
 
-        {/* Buttons */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-          gap: '16px', 
+        <SegmentedCountdown targetDate="2027-01-03T00:00:00" />
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 16,
           width: '100%',
-          maxWidth: '580px',
-          margin: '0 auto'
+          maxWidth: 640,
+          margin: '0 auto',
         }}>
           <motion.button
-            whileHover={{ opacity: 1, borderColor: 'rgba(255,255,255,0.15)' }}
-            disabled={true}
+            whileHover={{
+              background: 'rgba(255,255,255,0.08)',
+              borderColor: 'rgba(255,255,255,0.4)',
+              color: '#fff',
+            }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setModalOpen(true)}
             style={{
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.05)',
-              borderRadius: '12px', padding: '16px 20px',
-              color: 'rgba(255,255,255,0.2)', fontFamily: 'var(--font-mono)',
-              fontSize: '0.6rem', letterSpacing: '3px',
-              textTransform: 'uppercase', cursor: 'not-allowed',
-              transition: 'all 0.4s ease',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '12px',
+              padding: '16px 24px',
+              color: 'rgba(255,255,255,0.8)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.65rem',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
               backdropFilter: 'blur(10px)',
-              width: '100%'
             }}
           >
-            Locked
+            ✦ Experience
           </motion.button>
 
           <motion.button
-            whileHover={{ 
+            whileHover={{
               background: 'rgba(255,255,255,0.05)',
-              borderColor: 'rgba(255,255,255,0.2)', 
+              borderColor: 'rgba(255,255,255,0.2)',
               color: '#fff',
-              boxShadow: '0 0 20px rgba(255,255,255,0.05)'
             }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleEnter('/case-study/onelastsmile')}
-            disabled={transitioning}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => handleNavigate('/case-study/onelastsmile')}
             style={{
               background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '12px', padding: '16px 20px',
-              color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-mono)',
-              fontSize: '0.6rem', letterSpacing: '3px',
-              textTransform: 'uppercase', cursor: transitioning ? 'default' : 'pointer',
-              transition: 'all 0.4s ease',
-              backdropFilter: 'blur(10px)',
-              width: '100%'
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '12px',
+              padding: '16px 24px',
+              color: 'rgba(255,255,255,0.4)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.6rem',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
             }}
           >
             Case Study
@@ -217,105 +342,31 @@ export default function FeaturedSpotlight() {
 
           <motion.button
             whileHover={{
-              background: 'rgba(225,48,108,0.1)',
-              boxShadow: '0 0 24px rgba(225,48,108,0.3)',
-              borderColor: 'rgba(225,48,108,0.6)',
-              color: '#fff'
+              background: 'rgba(255,255,255,0.05)',
+              borderColor: 'rgba(255,255,255,0.2)',
+              color: '#fff',
             }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleEnter('/showcase/onelastsmile')}
-            disabled={transitioning}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => handleNavigate('/journey/onelastsmile')}
             style={{
-              background: 'rgba(225,48,108,0.05)',
-              border: '1px solid rgba(225,48,108,0.25)',
-              borderRadius: '12px', padding: '16px 20px',
-              color: 'rgba(225,48,108,0.9)', fontFamily: 'var(--font-mono)',
-              fontSize: '0.6rem', letterSpacing: '3px',
-              textTransform: 'uppercase', cursor: transitioning ? 'default' : 'pointer',
-              transition: 'all 0.4s ease',
-              backdropFilter: 'blur(10px)',
-              width: '100%'
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '12px',
+              padding: '16px 24px',
+              color: 'rgba(255,255,255,0.4)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.6rem',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
             }}
           >
-            Special Access
+            Dev Journey
           </motion.button>
         </div>
-
-        {/* Atmosphere & Timer */}
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          transition={{ delay: 1, duration: 2 }}
-          style={{ marginTop: '48px', textAlign: 'center' }}
-        >
-          <div style={{
-            fontFamily: 'var(--font-body)', fontSize: '0.85rem',
-            color: 'rgba(255,255,255,0.4)', fontStyle: 'italic',
-            marginBottom: '16px', fontWeight: 300
-          }}>
-            "Some memories wait for the right day."
-          </div>
-
-          <div style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-            letterSpacing: '4px', color: 'rgba(225,48,108,0.7)',
-            display: 'flex', gap: '24px', justifyContent: 'center',
-            textTransform: 'uppercase', textShadow: '0 0 12px rgba(225,48,108,0.2)'
-          }}>
-            <span>{timeLeft.days.toString().padStart(2, '0')} Days</span>
-            <span>{timeLeft.hours.toString().padStart(2, '0')} Hrs</span>
-            <span>{timeLeft.minutes.toString().padStart(2, '0')} Min</span>
-            <span>{timeLeft.seconds.toString().padStart(2, '0')} Sec</span>
-          </div>
-          
-          <div style={{
-            marginTop: '16px', fontFamily: 'var(--font-mono)', 
-            fontSize: '0.55rem', letterSpacing: '2px', color: 'rgba(255,255,255,0.2)',
-            textTransform: 'uppercase'
-          }}>
-            Until January 3, 2027
-          </div>
-        </motion.div>
       </div>
     </div>
-
-    {/* Cinematic transition overlay */}
-    <AnimatePresence>
-      {transitioning && (
-        <motion.div
-          key="transition-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: 'easeInOut' }}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 99999,
-            background: '#020002',
-            pointerEvents: 'all',
-          }}
-        >
-          {/* Grain on overlay */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: GRAIN, opacity: 0.05,
-            mixBlendMode: 'overlay',
-          }} />
-          {/* Subtle crimson glow */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            style={{
-              position: 'absolute', top: '50%', left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 300, height: 300, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(180,38,68,0.2) 0%, transparent 70%)',
-              filter: 'blur(60px)',
-            }}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
     </>
   );
 }

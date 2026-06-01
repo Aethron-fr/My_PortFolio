@@ -17,5 +17,11 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // BUG-030: Enforce detection of unused variables to catch dead code early
+      'no-unused-vars': ['warn', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
+      // Disallow console.log in production (allow warn/error)
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
+    },
   },
 ])

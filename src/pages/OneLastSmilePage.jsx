@@ -112,6 +112,7 @@ export default function OneLastSmilePage() {
     return 'BIRTHDAY';
   });
   const [showStory, setShowStory] = useState(false);
+  const [finalChoice, setFinalChoice] = useState(null);
 
   // The one special hidden moment
   const [showHiddenMoment, setShowHiddenMoment] = useState(false);
@@ -231,7 +232,7 @@ export default function OneLastSmilePage() {
   
   if (entryStage === 'FINAL_CHOICE') {
     return <FinalChoice onComplete={(choice) => {
-      window.userFinalChoice = choice;
+      setFinalChoice(choice);
       setEntryStage('ONE_LAST_THING');
     }} />;
   }
@@ -240,7 +241,9 @@ export default function OneLastSmilePage() {
   
   if (entryStage === 'FINAL_LETTER') {
     return <FinalLetter onComplete={() => {
-      import('../utils/KeepsakeGenerator.js').then(m => m.generateKeepsakeHTML(window.userFinalChoice || 'keep'));
+      import('../utils/KeepsakeGenerator.js')
+        .then(m => m.generateKeepsakeHTML(finalChoice || 'keep'))
+        .catch(err => console.error("Failed to generate keepsake", err));
       setEntryStage('QUIET_AFTERMATH');
     }} />;
   }

@@ -4,6 +4,9 @@ class GlobalAudio {
     this.masterGain = null;
     this.rumbleGain = null;
     this.rainGain = null;
+    // BUG-023: Store ScriptProcessor node reference for proper cleanup
+    this.noiseNode = null;
+    this.lfoNode = null;
     this.initialized = false;
     this.isMuted = false;
     this.isDucked = false;
@@ -21,10 +24,13 @@ class GlobalAudio {
       this.masterGain.gain.value = this.isMuted ? 0 : 1;
       this.masterGain.connect(this.ctx.destination);
       
+      // NOTE: ScriptProcessorNode is deprecated but used for broad browser support.
+      // TODO: Migrate to AudioWorkletProcessor when browser support is sufficient.
       const bufferSize = 4096;
-      const noise = this.ctx.createScriptProcessor(bufferSize, 1, 1);
+      // BUG-023: Store as instance property so it can be disconnected in destroy()
+      this.noiseNode = this.ctx.createScriptProcessor(bufferSize, 1, 1);
       let lastOut = 0.0;
-      noise.onaudioprocess = (e) => {
+      this.noiseNode.onaudioprocess = (e) => {
         const out = e.outputBuffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
           const white = Math.random() * 2 - 1;
@@ -38,14 +44,15 @@ class GlobalAudio {
       rumbleFilter.type = 'lowpass';
       rumbleFilter.frequency.value = 150;
       
-      const lfo = this.ctx.createOscillator();
-      lfo.type = 'sine';
-      lfo.frequency.value = 0.2; 
+      // BUG-023: Store LFO oscillator for cleanup
+      this.lfoNode = this.ctx.createOscillator();
+      this.lfoNode.type = 'sine';
+      this.lfoNode.frequency.value = 0.2; 
       const lfoGain = this.ctx.createGain();
       lfoGain.gain.value = 15;
-      lfo.connect(lfoGain);
+      this.lfoNode.connect(lfoGain);
       lfoGain.connect(rumbleFilter.frequency);
-      lfo.start();
+      this.lfoNode.start();
 
       this.rumbleGain = this.ctx.createGain();
       this.rumbleGain.gain.value = 0;
@@ -62,11 +69,11 @@ class GlobalAudio {
       this.rainGain = this.ctx.createGain();
       this.rainGain.gain.value = 0;
 
-      noise.connect(rumbleFilter);
+      this.noiseNode.connect(rumbleFilter);
       rumbleFilter.connect(this.rumbleGain);
       this.rumbleGain.connect(this.masterGain);
 
-      noise.connect(rainBandpass);
+      this.noiseNode.connect(rainBandpass);
       rainBandpass.connect(rainHighpass);
       rainHighpass.connect(this.rainGain);
       this.rainGain.connect(this.masterGain);
@@ -134,6 +141,24 @@ class GlobalAudio {
       this.rainGain.gain.setValueAtTime(this.rainGain.gain.value, now);
       this.rainGain.gain.linearRampToValueAtTime(0, now + 3);
     }
+  }
+
+  // BUG-023: Proper cleanup method — disconnects ScriptProcessor to prevent memory leak
+  destroy() {
+    try {
+      if (this.lfoNode) {
+        this.lfoNode.stop();
+        this.lfoNode.disconnect();
+      }
+      if (this.noiseNode) {
+        this.noiseNode.disconnect();
+        this.noiseNode.onaudioprocess = null;
+      }
+      if (this.ctx) {
+        this.ctx.close();
+      }
+    } catch (_) {}
+    this.initialized = false;
   }
 }
 

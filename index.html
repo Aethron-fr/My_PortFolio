@@ -3,6 +3,15 @@
 <!-- 🤍 -->
 <html lang="en">
   <head>
+    <!-- Theme: must run before page paint to prevent flash of wrong theme -->
+    <script>
+      (function() {
+        var t = localStorage.getItem('_theme');
+        if (t === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,22 +25,25 @@
     <meta name="theme-color" content="#06060a" />
     <meta name="robots" content="index, follow" />
     
-    <!-- Open Graph Metadata -->
+    <!-- Open Graph Metadata (absolute URLs required for social sharing) -->
     <meta property="og:title" content="Swapnadip Ghosh | Premium Developer Portfolio" />
     <meta property="og:description" content="Explore an interactive, high-performance developer portfolio built with React 19, Vite, and Framer Motion." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/favicon.jpg" />
+    <meta property="og:image" content="https://swapnadip-ghosh.vercel.app/favicon.jpg" />
     <meta property="og:url" content="https://swapnadip-ghosh.vercel.app/" />
 
-    <!-- Twitter Card -->
+    <!-- Twitter Card (absolute URLs required) -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Swapnadip Ghosh | Premium Developer Portfolio" />
     <meta name="twitter:description" content="High-performance interactive developer portfolio." />
-    <meta name="twitter:image" content="/favicon.jpg" />
+    <meta name="twitter:image" content="https://swapnadip-ghosh.vercel.app/favicon.jpg" />
     
     <!-- Fonts Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- INFO-001: Preload critical heading font to eliminate FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC1C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin />
     
     <!-- Icons (Font Awesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />

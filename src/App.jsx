@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail,
@@ -12,9 +11,7 @@ import {
   Globe,
   Award,
   User,
-  Heart,
   ArrowUpRight,
-  Lock,
 } from 'lucide-react';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
@@ -25,7 +22,18 @@ import DeveloperJourney from './components/DeveloperJourney';
 import FeaturedSpotlight from './components/FeaturedSpotlight';
 import CreativeInfluences from './components/CreativeInfluences';
 import BeyondTheScreen from './components/BeyondTheScreen';
+import { usePuzzle } from './context/PuzzleContext';
 import './App.css';
+
+// BUG-010: Single source of truth for nav hrefs — used by both desktop and mobile navs
+const NAV_HREF_MAP = {
+  'Home': '#home',
+  'About': '#about',
+  'Experience': '#experience',
+  'Work': '#work',
+  'Journey': '#journey',
+  'Contact': '#contact',
+};
 
 const EXPLORING_PHRASES = [
   'currently rebuilding things.',
@@ -53,7 +61,7 @@ function CurrentlyExploring() {
   return (
     <div style={{
       fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
-      color: 'rgba(255,255,255,0.22)', letterSpacing: '1.5px',
+      color: 'var(--text-dim)', letterSpacing: '1.5px',
       marginBottom: '28px', minHeight: '18px',
       transition: 'opacity 0.4s ease',
       opacity: visible ? 1 : 0,
@@ -63,17 +71,161 @@ function CurrentlyExploring() {
   );
 }
 
+// BUG-005: Compute time-based greeting at module level (pure function, no side effects)
+function getTimeGreeting() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12)  return `good morning. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
+  if (h >= 12 && h < 17) return `good afternoon. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
+  if (h >= 17 && h < 22) return `good evening. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
+  return `late night. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
+}
+
+// ── Premium Theme Toggle ─────────────────────────────────────────────────────
+function ThemeToggle() {
+  const [isNight, setIsNight] = useState(() => {
+    // Default: night (dark). If user saved a preference, use it.
+    return localStorage.getItem('_theme') !== 'light';
+  });
+
+  // Apply theme cleanly — no broken global transitions
+  useEffect(() => {
+    const root = document.documentElement;
+    // Brief class for smooth bg transition only
+    root.classList.add('theme-transitioning');
+    if (isNight) {
+      root.removeAttribute('data-theme');
+      root.style.removeProperty('background-color'); // Let CSS handle it
+    } else {
+      root.setAttribute('data-theme', 'light');
+      root.style.removeProperty('background-color'); // Let CSS handle it
+    }
+    localStorage.setItem('_theme', isNight ? 'night' : 'light');
+    const t = setTimeout(() => root.classList.remove('theme-transitioning'), 600);
+    return () => clearTimeout(t);
+  }, [isNight]);
+
+  return (
+    <motion.button
+      onClick={() => setIsNight(n => !n)}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 2.5, duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
+      whileHover={{ scale: 1.12 }}
+      whileTap={{ scale: 0.9 }}
+      aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
+      style={{
+        position: 'fixed',
+        bottom: 28,
+        left: 28,
+        zIndex: 9998,
+        width: 46,
+        height: 46,
+        borderRadius: '50%',
+        border: 'none',
+        outline: 'none',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // The background is a radial gradient that shifts with theme
+        background: isNight
+          ? 'radial-gradient(circle at 35% 35%, #1a1f3a 0%, #0c0d1a 100%)'
+          : 'radial-gradient(circle at 65% 35%, #2a2015 0%, #1a1508 100%)',
+        boxShadow: isNight
+          ? '0 0 0 1px rgba(140,160,255,0.18), 0 4px 20px rgba(80,100,220,0.2), inset 0 1px 0 rgba(255,255,255,0.06)'
+          : '0 0 0 1px rgba(255,185,30,0.25), 0 4px 20px rgba(240,160,20,0.25), inset 0 1px 0 rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+      }}
+    >
+      {/* Ambient glow ring behind button */}
+      <motion.div
+        animate={isNight
+          ? { opacity: [0.3, 0.6, 0.3], scale: [1, 1.15, 1] }
+          : { opacity: [0.4, 0.7, 0.4], scale: [1, 1.2, 1] }
+        }
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        style={{
+          position: 'absolute',
+          inset: -6,
+          borderRadius: '50%',
+          background: isNight
+            ? 'radial-gradient(circle, rgba(100,130,255,0.15) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(255,180,20,0.2) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Icon swap with rotation */}
+      <AnimatePresence mode="wait">
+        {isNight ? (
+          <motion.div
+            key="moon"
+            initial={{ opacity: 0, rotate: -45, scale: 0.5 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: 45, scale: 0.5 }}
+            transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+          >
+            {/* Crescent moon — drawn precisely */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"
+                fill="rgba(200,215,255,0.9)"
+                filter="drop-shadow(0 0 3px rgba(160,190,255,0.6))"
+              />
+            </svg>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="sun"
+            initial={{ opacity: 0, rotate: 45, scale: 0.5 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: -45, scale: 0.5 }}
+            transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+          >
+            {/* Sun — clean circle + rays */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="4.5" fill="rgba(255,200,30,0.95)" />
+              {/* 8 rays */}
+              {[0,45,90,135,180,225,270,315].map((deg, i) => {
+                const rad = (deg * Math.PI) / 180;
+                return (
+                  <line
+                    key={i}
+                    x1={12 + 6.8 * Math.cos(rad)} y1={12 + 6.8 * Math.sin(rad)}
+                    x2={12 + 8.8 * Math.cos(rad)} y2={12 + 8.8 * Math.sin(rad)}
+                    stroke="rgba(255,190,20,0.85)"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  />
+                );
+              })}
+            </svg>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
+
+
+
 export default function App() {
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasEntered, setHasEntered] = useState(false);
+  // Show the welcome modal only on the very first visit — localStorage persists across reloads
+  const [hasEntered, setHasEntered] = useState(
+    () => localStorage.getItem('_portfolio_visited') === '1'
+  );
   const [scrolled, setScrolled] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [timeGreeting, setTimeGreeting] = useState('');
+  const [submitError, setSubmitError] = useState(false);
+  // BUG-005: timeGreeting now computed and displayed properly
+  const [timeGreeting] = useState(getTimeGreeting);
   const [showHint, setShowHint] = useState(false);
+
+  const progressBarRef = useRef(null);
 
   useEffect(() => {
     // Hint fades in after 3 seconds, stays for 8, then vanishes forever.
@@ -83,27 +235,6 @@ export default function App() {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, []);
-
-  const progressBarRef = useRef(null);
-
-  // Time-based greeting
-
-  // Auto-fill test mode logic
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Secret combo to auto-fill (Ctrl + Shift + F)
-      if (e.ctrlKey && e.shiftKey && e.key === 'F') {
-        setContactForm({
-          name: 'Developer Test',
-          email: 'test@example.com',
-          message: 'Testing the contact form logic and responsiveness.'
-        });
-        alert('Test data injected into form');
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Disable automatic scroll restoration, reset scroll to top on reload, and clear URL hash
@@ -142,20 +273,21 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleGoogleSignIn = async () => {
-    setIsAuthenticating(true);
-    // Simulate verification for aesthetic purposes
-    setTimeout(() => {
-      setIsVerified(true);
-      setIsAuthenticating(false);
-    }, 1500);
-  };
+  // BUG-004: Removed fake Google Sign-In — it was a simulation that never called Firebase.
+  // The email field is now editable so users can type their email directly.
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
-    if (!contactForm.name || !contactForm.email || !contactForm.message) return;
+    // BUG-003: Proper validation including email format check
+    if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) return;
+    if (!/\S+@\S+\.\S+/.test(contactForm.email)) {
+      setSubmitError('Please enter a valid email address.');
+      setTimeout(() => setSubmitError(false), 4000);
+      return;
+    }
 
     setIsSubmitting(true);
+    setSubmitError(false);
 
     try {
       const res = await fetch("https://formsubmit.co/ajax/ghoshswapnadip7@gmail.com", {
@@ -202,10 +334,9 @@ export default function App() {
     { name: 'React.js', level: '85%', icon: <Laptop size={24} style={{ color: 'var(--accent-cyber)' }} />, desc: 'High-performance UI & modular context logic' },
     { name: 'Node.js & Express', level: '80%', icon: <Server size={24} style={{ color: 'var(--accent-violet)' }} />, desc: 'Scalable REST APIs & token auth systems' },
     { name: 'Python & Django', level: '85%', icon: <Database size={24} style={{ color: 'var(--accent-secondary)' }} />, desc: 'Secure database models & MVC core architecture' },
-    { name: 'Git & GitHub', level: '90%', icon: <i className="fa-brands fa-github" style={{ fontSize: '24px', color: '#fff' }}></i>, desc: 'Version pipelines & collaborative team integrations' }
+    { name: 'Git & GitHub', level: '90%', icon: <i className="fa-brands fa-github" style={{ fontSize: '24px', color: 'var(--text-primary)' }}></i>, desc: 'Version pipelines & collaborative team integrations' }
   ];
-
-  const navItems = ['Home', 'About', 'Experience', 'Work', 'Journey', 'Contact'];
+  const navItems = ['Home', 'About', 'Experience', 'Work', 'Journey'];
 
   return (
     <>
@@ -213,21 +344,32 @@ export default function App() {
       <CanvasBackground />
 
       <AnimatePresence>
-        {!hasEntered && <WelcomeModal key="welcome" onEnter={() => setHasEntered(true)} />}
+        {!hasEntered && (
+          <WelcomeModal
+            key="welcome"
+            onEnter={() => {
+              // Mark as visited so the modal never shows again on this device
+              localStorage.setItem('_portfolio_visited', '1');
+              setHasEntered(true);
+            }}
+          />
+        )}
       </AnimatePresence>
 
-      {/* Scroll Progress Indicator */}
-      <div 
-        ref={progressBarRef} 
-        style={{
-          position: 'fixed', top: 0, left: 0,
-          height: '2px', width: '0%',
-          background: 'linear-gradient(90deg, rgba(180,40,70,0.8), rgba(200,60,90,0.6))',
-          boxShadow: '0 0 8px rgba(180,40,70,0.55), 0 0 2px rgba(180,40,70,0.9)',
-          zIndex: 9999,
-          transition: 'width 0.08s linear',
-        }}
-      />
+      {/* BUG-019: Scroll Progress Indicator — only visible after entering the site */}
+      {hasEntered && (
+        <div 
+          ref={progressBarRef} 
+          style={{
+            position: 'fixed', top: 0, left: 0,
+            height: '2px', width: '0%',
+            background: 'linear-gradient(90deg, rgba(180,40,70,0.8), rgba(200,60,90,0.6))',
+            boxShadow: '0 0 8px rgba(180,40,70,0.55), 0 0 2px rgba(180,40,70,0.9)',
+            zIndex: 9999,
+            transition: 'width 0.08s linear',
+          }}
+        />
+      )}
 
       {/* NAVBAR */}
       <header 
@@ -274,7 +416,7 @@ export default function App() {
               }} />
               <span style={{
                 fontFamily: 'var(--font-mono)', fontSize: '0.52rem',
-                color: 'rgba(255,255,255,0.3)', letterSpacing: '1.5px',
+                color: 'var(--text-dim)', letterSpacing: '1.5px',
                 textTransform: 'uppercase',
               }}>
                 Build Active
@@ -283,35 +425,17 @@ export default function App() {
           </div>
 
           {/* Desktop Nav Links */}
+          {/* BUG-018: Using CSS class for hover instead of fragile onMouseOver/onMouseOut */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '28px' }} className="desktop-only-flex">
-            {navItems.map((item) => {
-              const hrefMap = {
-                'Home': '#home',
-                'About': '#about',
-                'Experience': '#experience',
-                'Work': '#work',
-                'Journey': '#journey',
-                'Contact': '#contact',
-              };
-              return (
-                <a
-                  key={item}
-                  href={hrefMap[item] || `#${item.toLowerCase()}`}
-                  style={{
-                    color: 'var(--text-muted)',
-                    textDecoration: 'none',
-                    fontSize: '0.88rem',
-                    fontWeight: '500',
-                    transition: 'color 0.3s',
-                    letterSpacing: '0.2px',
-                  }}
-                  onMouseOver={(e) => e.target.style.color = '#fff'}
-                  onMouseOut={(e) => e.target.style.color = 'var(--text-muted)'}
-                >
-                  {item}
-                </a>
-              );
-            })}
+            {navItems.map((item) => (
+              <a
+                key={item}
+                href={NAV_HREF_MAP[item] || `#${item.toLowerCase()}`}
+                className="nav-link"
+              >
+                {item}
+              </a>
+            ))}
             <a href="#contact" className="btn-neon-outline" style={{ padding: '7px 18px', fontSize: '0.82rem' }}>
               Contact
             </a>
@@ -371,6 +495,7 @@ export default function App() {
       </header>
 
       {/* MOBILE TRANSITORY NAV OVERLAY */}
+      {/* BUG-010: Mobile nav now uses same NAV_HREF_MAP as desktop for consistency */}
       {mobileMenuOpen && (
         <div 
           style={{
@@ -386,14 +511,15 @@ export default function App() {
             gap: '30px',
             animation: 'fadeIn 0.3s var(--transition-smooth)'
           }}
+          data-overlay="true"
         >
           {navItems.map((item) => (
             <a 
               key={item}
-              href={item === 'Upcoming Projects' ? '#upcoming' : `#${item.toLowerCase().replace(' ', '-')}`}
+              href={NAV_HREF_MAP[item] || `#${item.toLowerCase()}`}
               onClick={() => setMobileMenuOpen(false)}
               style={{
-                color: '#fff',
+                color: 'var(--text-primary)',
                 textDecoration: 'none',
                 fontSize: '1.6rem',
                 fontWeight: '400',
@@ -416,7 +542,7 @@ export default function App() {
       )}
 
       {/* HERO SECTION */}
-      <section id="home" className="hero-section">
+      <section id="home" className="hero-section" style={{ background: 'var(--bg-hero)' }}>
         <div className="hero-glow-blob" />
         <div className="hero-content">
           {/* Time greeting */}
@@ -427,7 +553,7 @@ export default function App() {
               transition={{ duration: 1, delay: 0.8 }}
               style={{
                 fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-                color: 'rgba(255,255,255,0.28)', letterSpacing: '2px',
+                color: 'var(--text-dim)', letterSpacing: '2px',
                 marginBottom: '20px',
               }}
             >
@@ -441,7 +567,7 @@ export default function App() {
             lineHeight: 1.3,
             marginBottom: '16px',
             letterSpacing: '-0.5px',
-            color: '#ffffff'
+            color: 'var(--text-primary)'
           }}>
             Swapnadip Ghosh
           </h1>
@@ -470,43 +596,22 @@ export default function App() {
           </div>
 
           {/* Social icons */}
+          {/* BUG-016: Added aria-label to all social icon links for screen reader accessibility */}
           <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
             {[
-              { icon: <i className="fa-brands fa-github" style={{ fontSize: '20px' }}></i>, link: 'https://github.com/Aethron-fr' },
-              { icon: <i className="fa-brands fa-linkedin-in" style={{ fontSize: '20px' }}></i>, link: 'https://www.linkedin.com/in/swapnadip-ghosh-3669b33a1/' },
-              { icon: <i className="fa-brands fa-instagram" style={{ fontSize: '20px' }}></i>, link: 'https://www.instagram.com/its_swapnadip108/' },
-              { icon: <i className="fa-brands fa-x-twitter" style={{ fontSize: '20px' }}></i>, link: 'https://x.com/swapnadip_108' },
-              { icon: <Mail size={20} />, link: 'mailto:ghoshswapnadip7@gmail.com' }
-            ].map((soc, idx) => (
+              { icon: <i className="fa-brands fa-github" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'GitHub', link: 'https://github.com/Aethron-fr' },
+              { icon: <i className="fa-brands fa-linkedin-in" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'LinkedIn', link: 'https://www.linkedin.com/in/swapnadip-ghosh-3669b33a1/' },
+              { icon: <i className="fa-brands fa-instagram" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'Instagram', link: 'https://www.instagram.com/its_swapnadip108/' },
+              { icon: <i className="fa-brands fa-x-twitter" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'X (Twitter)', link: 'https://x.com/swapnadip_108' },
+              { icon: <Mail size={20} aria-hidden="true" />, label: 'Email', link: 'mailto:ghoshswapnadip7@gmail.com' }
+            ].map((soc) => (
               <a 
-                key={idx}
+                key={soc.label}
                 href={soc.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid var(--border-glass)',
-                  color: 'var(--text-muted)',
-                  transition: 'all 0.3s var(--transition-elastic)',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.background = 'var(--insta-gradient)';
-                  e.currentTarget.style.transform = 'translateY(-5px) scale(1.1)';
-                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(225, 48, 108, 0.35)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.color = 'var(--text-muted)';
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
+                aria-label={soc.label}
+                className="social-icon-link"
               >
                 {soc.icon}
               </a>
@@ -519,18 +624,18 @@ export default function App() {
       <section id="about" style={{
         position: 'relative', zIndex: 2,
         padding: '80px 0 60px',
-        background: 'linear-gradient(to bottom, #06060a, #09090f)',
+        background: 'var(--bg-section)',
       }}>
         <div className="container" style={{ maxWidth: 720 }}>
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-            letterSpacing: '5px', color: 'rgba(255,255,255,0.2)',
+            letterSpacing: '5px', color: 'var(--text-dim)',
             textTransform: 'uppercase', marginBottom: 28,
           }}>
             About
           </div>
           <p style={{
-            fontSize: '1.05rem', color: 'rgba(255,255,255,0.65)',
+            fontSize: '1.05rem', color: 'var(--text-muted)',
             lineHeight: 1.9, fontWeight: 300, marginBottom: 20,
             maxWidth: 640,
           }}>
@@ -538,7 +643,7 @@ export default function App() {
             building interfaces that feel considered. Fast, intentional, and honest in how they move.
           </p>
           <p style={{
-            fontSize: '0.95rem', color: 'rgba(255,255,255,0.32)',
+            fontSize: '0.95rem', color: 'var(--text-dim)',
             lineHeight: 1.9, fontWeight: 300, maxWidth: 600,
           }}>
             Currently focused on cinematic UI systems, motion design, and the quiet engineering
@@ -551,7 +656,7 @@ export default function App() {
       <section id="experience" style={{
         position: 'relative', zIndex: 2,
         padding: '60px 0 80px',
-        background: '#09090f',
+        background: 'var(--bg-section-alt)',
       }}>
         <div className="container">
           <div style={{ marginBottom: 40 }}>
@@ -564,7 +669,7 @@ export default function App() {
             </div>
             <h2 style={{
               fontSize: '1.6rem', fontWeight: 400,
-              color: 'rgba(255,255,255,0.75)',
+              color: 'var(--text-secondary)',
               letterSpacing: '-0.5px', margin: 0,
             }}>
               A project built outside the ordinary.
@@ -578,20 +683,20 @@ export default function App() {
       <section id="work" style={{
         position: 'relative', zIndex: 2,
         padding: '60px 0 80px',
-        background: 'linear-gradient(to bottom, #09090f, #06060a)',
+        background: 'var(--bg-section)',
       }}>
         <div className="container">
           <div style={{ marginBottom: 40 }}>
             <div style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-              letterSpacing: '5px', color: 'rgba(255,255,255,0.18)',
+              letterSpacing: '5px', color: 'var(--text-dim)',
               textTransform: 'uppercase', marginBottom: 12,
             }}>
               Selected Work
             </div>
             <h2 style={{
               fontSize: '1.6rem', fontWeight: 400,
-              color: 'rgba(255,255,255,0.65)',
+              color: 'var(--text-muted)',
               letterSpacing: '-0.5px', margin: 0,
             }}>
               Open source and shipped work from the GitHub archive.
@@ -608,20 +713,20 @@ export default function App() {
       <BeyondTheScreen />
 
       {/* DEVELOPER JOURNEY */}
-      <section id="journey" className="section-padding" style={{ position: 'relative', zIndex: 2, background: '#06060a' }}>
+      <section id="journey" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'var(--bg-section-alt)' }}>
         <div className="container">
           {/* Section header */}
           <div style={{ marginBottom: 48 }}>
             <div style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-              letterSpacing: '5px', color: 'rgba(255,255,255,0.18)',
+              letterSpacing: '5px', color: 'var(--text-dim)',
               textTransform: 'uppercase', marginBottom: 12,
             }}>
               Background
             </div>
             <h2 style={{
               fontSize: '1.6rem', fontWeight: 400,
-              color: 'rgba(255,255,255,0.65)',
+              color: 'var(--text-muted)',
               letterSpacing: '-0.5px', margin: 0,
             }}>
               Who I am and how I got here.
@@ -639,12 +744,12 @@ export default function App() {
                 <User size={18} />
                 <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Profile</span>
               </div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 500, marginBottom: '16px', color: '#fff' }}>Swapnadip Ghosh</h3>
-              <p style={{ lineHeight: '1.8', marginBottom: '16px', color: 'rgba(255,255,255,0.55)', fontSize: '0.95rem' }}>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 500, marginBottom: '16px', color: 'var(--text-primary)' }}>Swapnadip Ghosh</h3>
+              <p style={{ lineHeight: '1.8', marginBottom: '16px', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
                 Full Stack Developer based in West Bengal, India. I work across React, Node, and Python —
                 writing interfaces that load fast, animate cleanly, and hold up under real conditions.
               </p>
-              <p style={{ lineHeight: '1.8', color: 'rgba(255,255,255,0.38)', fontSize: '0.92rem' }}>
+              <p style={{ lineHeight: '1.8', color: 'var(--text-dim)', fontSize: '0.92rem' }}>
                 I'm most interested in the intersection of engineering quality and interaction design —
                 where the code is invisible and only the experience remains.
               </p>
@@ -659,10 +764,10 @@ export default function App() {
                 <Award size={18} />
                 <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Philosophy</span>
               </div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 400, color: 'rgba(255,255,255,0.82)', marginBottom: '12px', lineHeight: 1.5 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 400, color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.5 }}>
                 "Serious about the craft. Not about the performance of it."
               </h3>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.38)', lineHeight: '1.7' }}>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', lineHeight: '1.7' }}>
                 Good interfaces feel obvious in hindsight. Getting there takes obsessive iteration.
               </p>
             </div>
@@ -672,7 +777,7 @@ export default function App() {
           <div style={{ marginBottom: '52px' }}>
             <div style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-              letterSpacing: '4px', color: 'rgba(255,255,255,0.15)',
+              letterSpacing: '4px', color: 'var(--text-dim)',
               textTransform: 'uppercase', marginBottom: 28,
             }}>
               Core Stack
@@ -682,13 +787,13 @@ export default function App() {
                 <div key={idx} className="skill-card">
                   <div style={{
                     width: '48px', height: '48px', borderRadius: '10px',
-                    background: 'rgba(255, 255, 255, 0.02)',
+                    background: 'var(--bg-card)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     border: '1px solid var(--border-glass)', marginBottom: '10px'
                   }}>
                     {skill.icon}
                   </div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#fff', margin: 0 }}>{skill.name}</h4>
+                  <h4 style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>{skill.name}</h4>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: '1.4', margin: '4px 0 0 0' }}>{skill.desc}</p>
                   <div style={{ width: '100%', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', marginTop: '8px', overflow: 'hidden' }}>
                     <div style={{ width: skill.level, height: '100%', background: 'var(--insta-gradient)' }} />
@@ -702,7 +807,7 @@ export default function App() {
           <div>
             <div style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-              letterSpacing: '4px', color: 'rgba(255,255,255,0.15)',
+              letterSpacing: '4px', color: 'var(--text-dim)',
               textTransform: 'uppercase', marginBottom: 28,
             }}>
               Timeline
@@ -718,14 +823,14 @@ export default function App() {
       <section style={{
         position: 'relative', zIndex: 2,
         padding: '52px 0 48px',
-        background: 'linear-gradient(to bottom, #05050b, #06060a)',
-        borderTop: '1px solid rgba(255,255,255,0.03)',
+        background: 'var(--bg-section-alt)',
+        borderTop: '1px solid var(--border-glass)',
       }}>
         <div className="container" style={{ maxWidth: 640 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 20, marginBottom: 24 }}>
             <div style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-              letterSpacing: '5px', color: 'rgba(255,255,255,0.16)',
+              letterSpacing: '5px', color: 'var(--text-dim)',
               textTransform: 'uppercase',
             }}>
               Now
@@ -748,13 +853,13 @@ export default function App() {
               <div key={label} style={{ display: 'flex', gap: 20, alignItems: 'baseline' }}>
                 <div style={{
                   fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-                  color: 'rgba(255,255,255,0.2)', letterSpacing: '2px',
+                  color: 'var(--text-dim)', letterSpacing: '2px',
                   minWidth: 72, textTransform: 'uppercase',
                 }}>
                   {label}
                 </div>
                 <div style={{
-                  fontSize: '0.88rem', color: 'rgba(255,255,255,0.48)',
+                  fontSize: '0.88rem', color: 'var(--text-muted)',
                   fontWeight: 300, lineHeight: 1.6,
                 }}>
                   {value}
@@ -766,18 +871,21 @@ export default function App() {
       </section>
 
       {/* CONTACT SECTION */}
-      <section id="contact" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(to bottom, #06060a, #040407)' }}>
+      <section id="contact" className="section-padding" style={{
+        position: 'relative', zIndex: 2,
+        background: 'var(--bg-section)',
+      }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
             <div style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-              letterSpacing: '5px', color: 'rgba(255,255,255,0.18)',
+              letterSpacing: '5px', color: 'var(--text-dim)',
               textTransform: 'uppercase', marginBottom: 12,
             }}>
               Contact
             </div>
             <h2 style={{ fontSize: '1.8rem', fontWeight: 400, letterSpacing: '-0.5px', marginBottom: 12 }}>Get in touch.</h2>
-            <p style={{ maxWidth: '500px', margin: '0 auto', fontSize: '0.9rem', color: 'rgba(255,255,255,0.32)', lineHeight: 1.8 }}>
+            <p style={{ maxWidth: '500px', margin: '0 auto', fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
               Open to work, collaboration, or just a conversation about building things well.
             </p>
           </div>
@@ -800,22 +908,22 @@ export default function App() {
                   }}
                 />
                 <div>
-                  <h3 style={{ fontSize: '1.35rem', fontWeight: '600', color: '#fff', margin: '0 0 4px' }}>Swapnadip Ghosh</h3>
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', fontWeight: '400', letterSpacing: '0.5px', fontFamily: 'var(--font-mono)' }}>Full Stack Developer</span>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: '600', color: 'var(--text-primary)', margin: '0 0 4px' }}>Swapnadip Ghosh</h3>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: '400', letterSpacing: '0.5px', fontFamily: 'var(--font-mono)' }}>Full Stack Developer</span>
                 </div>
               </div>
-              <p style={{ fontSize: '0.92rem', lineHeight: '1.8', marginBottom: '28px', color: 'rgba(255,255,255,0.45)', fontWeight: '300' }}>
+              <p style={{ fontSize: '0.92rem', lineHeight: '1.8', marginBottom: '28px', color: 'var(--text-muted)', fontWeight: '300' }}>
                 Open to work, collaboration, or just a conversation about building things well. Email is always the best channel.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
-                    <Mail size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                    <Mail size={15} style={{ color: 'var(--text-muted)' }} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>email</div>
-                    <a href="mailto:ghoshswapnadip7@gmail.com" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', fontWeight: '400' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>email</div>
+                    <a href="mailto:ghoshswapnadip7@gmail.com" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: '400' }}>
                       ghoshswapnadip7@gmail.com
                     </a>
                   </div>
@@ -823,11 +931,11 @@ export default function App() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
-                    <Globe size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                    <Globe size={15} style={{ color: 'var(--text-muted)' }} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>based in</div>
-                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', fontWeight: '400' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>based in</div>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: '400' }}>
                       West Bengal, India
                     </span>
                   </div>
@@ -835,11 +943,12 @@ export default function App() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
-                    <FileText size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                    <FileText size={15} style={{ color: 'var(--text-muted)' }} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>resume</div>
-                    <a href="#" className="interactive" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>resume</div>
+                    {/* BUG-014: Fixed Download CV link — now points to actual PDF */}
+                    <a href="/resume.pdf" download="Swapnadip_Ghosh_Resume.pdf" className="interactive" style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span>Download CV</span>
                       <ArrowUpRight size={13} style={{ opacity: 0.6 }} />
                     </a>
@@ -849,13 +958,16 @@ export default function App() {
             </div>
 
             {/* Interactive Form */}
+            {/* BUG-004: Removed fake Google auth gate. BUG-006: Email is now editable. */}
+            {/* BUG-017: Labels linked to inputs via htmlFor/id pairs */}
             <div className="glass-panel" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
               <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                  <label htmlFor="contact-name" style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'var(--text-dim)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
                     Name
                   </label>
                   <input
+                    id="contact-name"
                     type="text"
                     required
                     placeholder="e.g. Swarnadip Mitra"
@@ -866,8 +978,8 @@ export default function App() {
                       padding: '14px 18px',
                       borderRadius: '12px',
                       border: '1px solid var(--border-glass)',
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      color: '#fff',
+                      background: 'var(--bg-card)',
+                      color: 'var(--text-primary)',
                       outline: 'none',
                       fontSize: '0.95rem',
                       transition: 'border-color 0.3s'
@@ -878,34 +990,39 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                  <label htmlFor="contact-email" style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'var(--text-dim)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
                     Email
                   </label>
+                  {/* BUG-003/006: Email field is now editable — removed readOnly */}
                   <input
+                    id="contact-email"
                     type="email"
                     required
-                    readOnly
-                    placeholder="Verified Google Email"
+                    placeholder="your@email.com"
                     value={contactForm.email}
+                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                     style={{
                       width: '100%',
                       padding: '14px 18px',
                       borderRadius: '12px',
                       border: '1px solid var(--border-glass)',
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      color: '#a3a3a3',
+                      background: 'var(--bg-card)',
+                      color: 'var(--text-primary)',
                       outline: 'none',
                       fontSize: '0.95rem',
-                      cursor: 'not-allowed'
+                      transition: 'border-color 0.3s'
                     }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border-glass)'}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                  <label htmlFor="contact-message" style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'var(--text-dim)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
                     Message
                   </label>
                   <textarea
+                    id="contact-message"
                     required
                     rows={4}
                     placeholder="What's on your mind?"
@@ -916,8 +1033,8 @@ export default function App() {
                       padding: '14px 18px',
                       borderRadius: '12px',
                       border: '1px solid var(--border-glass)',
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      color: '#fff',
+                      background: 'var(--bg-card)',
+                      color: 'var(--text-primary)',
                       outline: 'none',
                       fontSize: '0.95rem',
                       fontFamily: 'inherit',
@@ -941,8 +1058,13 @@ export default function App() {
                 </button>
 
                 {submitSuccess && (
-                  <div style={{ padding: '12px 16px', background: 'rgba(80,200,120,0.06)', border: '1px solid rgba(80,200,120,0.18)', color: 'rgba(140,220,160,0.85)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
-                    Sent. I'll get back to you soon.
+                  <div role="status" style={{ padding: '12px 16px', background: 'rgba(80,200,120,0.06)', border: '1px solid rgba(80,200,120,0.18)', color: 'rgba(140,220,160,0.85)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
+                    Sent. I&apos;ll get back to you soon.
+                  </div>
+                )}
+                {submitError && (
+                  <div role="alert" style={{ padding: '12px 16px', background: 'rgba(225,48,108,0.06)', border: '1px solid rgba(225,48,108,0.2)', color: 'rgba(225,130,150,0.9)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
+                    {submitError}
                   </div>
                 )}
               </form>
@@ -951,11 +1073,11 @@ export default function App() {
         </div>
       </section>
 
-      <footer style={{ position: 'relative', zIndex: 2, padding: '120px 0 60px', background: '#040406' }}>
+      <footer style={{ position: 'relative', zIndex: 2, padding: '120px 0 60px', background: 'var(--bg-footer)' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <p style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
-            color: 'rgba(255,255,255,0.15)', letterSpacing: '3px',
+            color: 'var(--text-dim)', letterSpacing: '3px',
             margin: 0, fontWeight: 300, textTransform: 'lowercase',
           }}>
             quietly becoming something.
@@ -979,7 +1101,7 @@ export default function App() {
           >
             <span style={{ 
               fontFamily: 'var(--font-mono)', fontSize: '0.55rem', 
-              color: 'rgba(255,255,255,0.15)', letterSpacing: '2px',
+              color: 'var(--text-dim)', letterSpacing: '2px',
               textTransform: 'lowercase', lineHeight: 1.6
             }}>
               there is a memory hidden in the architecture.<br/>
@@ -989,35 +1111,12 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Embedded CSS for responsive elements and dynamic fades */}
-      <style>{`
-        .desktop-only-flex {
-          display: flex !important;
-        }
-        .mobile-only-block {
-          display: none !important;
-        }
-        
-        @media (max-width: 1024px) {
-          .desktop-only-flex {
-            display: none !important;
-          }
-          .mobile-only-block {
-            display: block !important;
-          }
-          .bento-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .bento-grid > div {
-            grid-column: span 1 !important;
-          }
-        }
+      {/* ── Day / Night Mode Toggle ─────────────────────────────────────────── */}
+      <ThemeToggle />
 
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+
+      {/* BUG-015: Removed inline <style> block — all styles now live in App.css to avoid
+           duplication and conflicting breakpoints (was 1024px here vs 768px in App.css) */}
     </>
   );
 }

@@ -28,6 +28,7 @@ const INFLUENCES = [
 function InfluenceCard({ influence, index }) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -45,16 +46,17 @@ function InfluenceCard({ influence, index }) {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.2, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
       style={{
-        background: 'rgba(255,255,255,0.015)',
-        border: '1px solid rgba(255,255,255,0.045)',
+        background: 'var(--bg-card)',
+        border: isHovered ? '1px solid var(--border-glass-hover)' : '1px solid var(--border-glass)',
         borderRadius: 14,
         padding: '28px 28px 28px 32px',
         position: 'relative',
         overflow: 'hidden',
-        transition: 'border-color 0.4s ease',
+        transition: 'border-color 0.4s ease, transform 0.3s ease',
+        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
       }}
-      onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
-      onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.045)'}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Left accent bar */}
       <div style={{
@@ -67,7 +69,7 @@ function InfluenceCard({ influence, index }) {
         <div>
           <h3 style={{
             fontSize: '0.98rem', fontWeight: 500,
-            color: 'rgba(255,255,255,0.82)',
+            color: 'var(--text-primary)',
             margin: '0 0 4px',
             letterSpacing: '-0.2px',
           }}>
@@ -75,7 +77,7 @@ function InfluenceCard({ influence, index }) {
           </h3>
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-            color: 'rgba(255,255,255,0.22)', letterSpacing: '2px',
+            color: 'var(--text-dim)', letterSpacing: '2px',
           }}>
             {influence.studio} · {influence.year}
           </div>
@@ -83,7 +85,7 @@ function InfluenceCard({ influence, index }) {
       </div>
 
       <p style={{
-        fontSize: '0.88rem', color: 'rgba(255,255,255,0.38)',
+        fontSize: '0.88rem', color: 'var(--text-muted)',
         lineHeight: 1.75, fontWeight: 300, margin: 0,
         maxWidth: 520,
       }}>
@@ -110,7 +112,7 @@ export default function CreativeInfluences() {
     <section style={{
       position: 'relative', zIndex: 2,
       padding: '72px 0 80px',
-      background: '#040406',
+      background: 'var(--bg-section)',
     }}>
       <div className="container">
         {/* Header */}
@@ -130,13 +132,13 @@ export default function CreativeInfluences() {
           </div>
           <h2 style={{
             fontSize: '1.4rem', fontWeight: 300,
-            color: 'rgba(255,255,255,0.7)',
+            color: 'var(--text-primary)',
             letterSpacing: '-0.5px', margin: '0 0 16px',
           }}>
             Shaped by environment.
           </h2>
           <p style={{
-            fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)',
+            fontSize: '0.9rem', color: 'var(--text-muted)',
             lineHeight: 1.85, fontWeight: 300, maxWidth: 560, margin: 0,
           }}>
             Interfaces informed by cinematic pacing. Where environment dictates the feeling, and silence holds weight.

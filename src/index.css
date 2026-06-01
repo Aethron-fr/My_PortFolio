@@ -6,42 +6,125 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Modern Dark HSL Palette */
-  --bg-dark: #06060a;
-  --bg-panel: rgba(13, 13, 23, 0.45);
-  --bg-card: rgba(18, 18, 32, 0.55);
-  --border-glass: rgba(255, 255, 255, 0.06);
-  --border-glass-hover: rgba(255, 255, 255, 0.12);
-  
-  /* Primary Gradients & Accents (Instagram / Cyber themed) */
-  --accent-primary: #E1306C; /* Instagram Pink */
-  --accent-secondary: #FF5E3A; /* Orange Sunset */
-  --accent-cyber: #00F7FF; /* Cyan Cyber */
-  --accent-violet: #8F00FF; /* Electric Purple */
-  
+  color-scheme: dark;
+
+  /* ── Core backgrounds ── */
+  --bg-base:    #06060a;
+  --bg-surface: #0d0d16;
+  --bg-panel:   rgba(22, 22, 30, 0.65);
+  --bg-card:    rgba(14, 14, 20, 0.85);
+  --bg-dark:    #020002;
+  --bg-hero:    transparent;
+  --bg-section: linear-gradient(to bottom, #06060a, #09090f);
+  --bg-section-alt: #09090f;
+  --bg-footer:  #040406; /* legacy alias */
+
+  /* ── Borders ── */
+  --border:       rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --border-glass:       rgba(255, 255, 255, 0.06); /* legacy alias */
+  --border-glass-hover: rgba(255, 255, 255, 0.14); /* legacy alias */
+
+  /* ── Typography ── */
+  --text-primary:   #f0eeff;
+  --text-secondary: rgba(240, 238, 255, 0.55);
+  --text-muted:     rgba(240, 238, 255, 0.3);
+  --text-dim:       rgba(240, 238, 255, 0.15);
+
+  /* ── Accent ── */
+  --accent-primary:   #E1306C;
+  --accent-secondary: #FF5E3A;
+  --accent-cyber:     #00F7FF;
+  --accent-violet:    #8F00FF;
+
+  /* ── Shadows ── */
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.6);
+  --shadow-md:  0 8px 32px rgba(0,0,0,0.7);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,0.8);
+
+  /* ── Nav ── */
+  --nav-bg-scrolled: rgba(6, 6, 10, 0.85);
+  --nav-border:      rgba(255, 255, 255, 0.04);
+
+  /* ── Gradients (unchanged) ── */
   --insta-gradient: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  --neon-gradient: linear-gradient(135deg, var(--accent-cyber) 0%, var(--accent-violet) 100%);
-  --glow-gradient: linear-gradient(135deg, #e1306c 0%, #f09433 100%);
-  
-  /* Typography */
-  --text-primary: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  
+  --neon-gradient:  linear-gradient(135deg, var(--accent-cyber) 0%, var(--accent-violet) 100%);
+  --glow-gradient:  linear-gradient(135deg, #e1306c 0%, #f09433 100%);
+
+  /* ── Fonts ── */
   --font-heading: 'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif;
-  --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  --font-mono: 'Fira Code', ui-monospace, monospace;
-  
-  /* Transition Curves */
-  --transition-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+  --font-body:    'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-mono:    'Fira Code', ui-monospace, monospace;
+
+  /* ── Easing ── */
+  --transition-smooth:  cubic-bezier(0.23, 1, 0.32, 1);
   --transition-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Cinematic Palette Extensions */
+  /* ── Cinematic extras ── */
   --crimson-deep: #7f1d1d;
-  --amber-glow: #d97706;
-  --indigo-dark: #1e1b4b;
-  --violet-soft: #6d28d9;
+  --amber-glow:   #d97706;
+  --indigo-dark:  #1e1b4b;
+  --violet-soft:  #6d28d9;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DAY MODE — clean, crisp, professional light theme
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* ── Backgrounds ── */
+  --bg-base:    #F7F8FA;
+  --bg-surface: #FFFFFF;
+  --bg-panel:   rgba(255, 255, 255, 0.75);
+  --bg-card:    #FFFFFF;
+  --bg-dark:    #F7F8FA;
+  --bg-hero:    linear-gradient(180deg, #FFFFFF 0%, #F7F8FA 100%);
+  --bg-section: #F7F8FA;
+  --bg-section-alt: #FFFFFF;
+  --bg-footer:  #E5E7EB;
+
+  /* ── Borders ── */
+  --border:       #E5E7EB;
+  --border-hover: #D1D5DB;
+  --border-glass:       #E5E7EB;
+  --border-glass-hover: #D1D5DB;
+
+  /* ── Typography ── */
+  --text-primary:   #111827;
+  --text-secondary: #4B5563;
+  --text-muted:     #6B7280;
+  --text-dim:       #9CA3AF;
+
+  /* ── Accents ── */
+  --accent-primary:   #06B6D4;
+  --accent-secondary: #8B5CF6;
+  --accent-cyber:     #06B6D4;
+  --accent-violet:    #8B5CF6;
+  --accent-success:   #10B981;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.05); /* User-specified card shadow */
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.08);
+
+  /* ── Nav ── */
+  --nav-bg-scrolled: rgba(255, 255, 255, 0.85);
+  --nav-border:      #E5E7EB;
+}
+
+/* ── Body/html respond to theme ── */
+html { background-color: var(--bg-base); }
+body { background-color: var(--bg-base); color: var(--text-primary); }
+
+/* ── Smooth theme switch (body + panels only, NOT all elements) ── */
+html, body, .glass-panel, header, footer {
+  transition: background-color 0.4s cubic-bezier(0.23,1,0.32,1),
+              color 0.4s cubic-bezier(0.23,1,0.32,1),
+              border-color 0.4s cubic-bezier(0.23,1,0.32,1);
+}
+
+
 
 /* Ping animation for blinking dots */
 @keyframes ping {
@@ -268,7 +351,7 @@ p {
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
-  color: #fff;
+  color: var(--text-primary);
   background: transparent;
   cursor: pointer;
   overflow: hidden;

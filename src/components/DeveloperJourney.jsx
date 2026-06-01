@@ -98,7 +98,7 @@ export default function DeveloperJourney() {
                   border: '1px solid',
                   borderColor: isActive ? step.color : 'var(--border-glass)',
                   background: isActive ? 'rgba(255, 255, 255, 0.02)' : 'var(--bg-panel)',
-                  color: '#fff',
+                  color: 'var(--text-primary)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all 0.4s var(--transition-smooth)',
@@ -119,7 +119,7 @@ export default function DeveloperJourney() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#fff',
+                  color: 'var(--text-primary)',
                   boxShadow: isActive ? `0 0 15px ${step.color}` : 'none',
                   transition: 'all 0.3s'
                 }}>
@@ -174,7 +174,7 @@ export default function DeveloperJourney() {
               </span>
             </div>
 
-            <h3 style={{ fontSize: '1.6rem', color: '#fff', marginBottom: '14px', fontWeight: '300' }}>
+            <h3 style={{ fontSize: '1.6rem', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: '300' }}>
               {JOURNEY_STEPS[activeStep].title}
             </h3>
             

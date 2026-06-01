@@ -1,42 +1,47 @@
 import { useState, useEffect } from 'react';
 import { ExternalLink, Star, GitFork, Search, Sparkles } from 'lucide-react';
 
+// BUG-021: Fallback data uses 0 for stats — avoids showing fake/inflated numbers
 const FALLBACK_PROJECTS = [
   {
     id: 1,
     name: "PortFolioMaker",
     description: "An elite, automated MERN stack and modular CSS compiler engine allowing developers to package high-performance portfolio sites in under 20KB.",
     language: "JavaScript",
-    stargazers_count: 32,
-    forks_count: 8,
-    html_url: "https://github.com/Aethron-fr/My_PortFolio"
+    stargazers_count: 0,
+    forks_count: 0,
+    html_url: "https://github.com/Aethron-fr/My_PortFolio",
+    isFallback: true,
   },
   {
     id: 2,
     name: "OneLastSmile",
     description: "A gorgeous, deeply cinematic emotional memory portfolio web application built with Framer Motion, JWT token authorization, and custom background particles.",
     language: "React",
-    stargazers_count: 28,
-    forks_count: 6,
-    html_url: "https://github.com/Aethron-fr"
+    stargazers_count: 0,
+    forks_count: 0,
+    html_url: "https://github.com/Aethron-fr",
+    isFallback: true,
   },
   {
     id: 3,
     name: "School Website Portal",
     description: "A production-grade campus web system featuring secure authentication sessions, student/teacher records databases, and real-time latency diagnostics.",
     language: "JavaScript",
-    stargazers_count: 24,
-    forks_count: 4,
-    html_url: "https://github.com/Aethron-fr"
+    stargazers_count: 0,
+    forks_count: 0,
+    html_url: "https://github.com/Aethron-fr",
+    isFallback: true,
   },
   {
     id: 4,
     name: "GitHub Cyber Profile",
     description: "A premium, customized cyberpunk-themed developer showcase featuring animated telemetry badges, visual graphs, and dynamic hardware telemetries.",
     language: "HTML",
-    stargazers_count: 19,
-    forks_count: 2,
-    html_url: "https://github.com/Aethron-fr/Aethron-fr"
+    stargazers_count: 0,
+    forks_count: 0,
+    html_url: "https://github.com/Aethron-fr/Aethron-fr",
+    isFallback: true,
   }
 ];
 
@@ -45,6 +50,7 @@ export default function GithubProjects() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('All');
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     fetch('https://api.github.com/users/Aethron-fr/repos')
@@ -62,25 +68,27 @@ export default function GithubProjects() {
         // If the user has empty repositories list, use fallbacks
         if (filteredData.length === 0) {
           setRepos(FALLBACK_PROJECTS);
+          setIsOffline(true);
         } else {
-          // Merge custom descriptions for the main highlighted projects if found in API
+          // BUG-022: Use spread to avoid mutating the original API response object
           const mergedData = filteredData.map(repo => {
             if (repo.name.toLowerCase().includes('portfolio')) {
-              repo.language = 'React';
-              repo.description = "An elite MERN stack compiler and Vite-based portfolio website operating on a hardware-accelerated fluid render loop.";
-            } else if (repo.name.toLowerCase().includes('onelastsmile')) {
-              repo.language = 'React';
-              repo.description = "A deeply cinematic emotional memory portfolio web application built with Framer Motion and JWT token authorization.";
+              return { ...repo, language: 'React', description: "An elite MERN stack compiler and Vite-based portfolio website operating on a hardware-accelerated fluid render loop." };
+            }
+            if (repo.name.toLowerCase().includes('onelastsmile')) {
+              return { ...repo, language: 'React', description: "A deeply cinematic emotional memory portfolio web application built with Framer Motion and JWT token authorization." };
             }
             return repo;
           });
           setRepos(mergedData.length > 0 ? mergedData : FALLBACK_PROJECTS);
+          if (mergedData.length === 0) setIsOffline(true);
         }
         setLoading(false);
       })
       .catch((err) => {
         console.warn('Using fallback repository data due to API limit/error:', err);
         setRepos(FALLBACK_PROJECTS);
+        setIsOffline(true);
         setLoading(false);
       });
   }, []);
@@ -114,6 +122,21 @@ export default function GithubProjects() {
 
   return (
     <div style={{ marginTop: '40px' }}>
+      {/* BUG-021: Offline mode indicator */}
+      {isOffline && (
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '4px 12px', borderRadius: 20, marginBottom: 20,
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.05)',
+          fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
+          color: 'var(--text-dim)', letterSpacing: '2px',
+        }}>
+          <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,200,50,0.6)' }} />
+          offline mode — cached data
+        </div>
+      )}
+
       {/* Search and Filters panel */}
       <div style={{
         display: 'flex',
@@ -141,13 +164,14 @@ export default function GithubProjects() {
             placeholder="Search projects..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Search repositories"
             style={{
               width: '100%',
               padding: '12px 16px 12px 42px',
               borderRadius: '50px',
               border: '1px solid var(--border-glass)',
               background: 'rgba(255, 255, 255, 0.03)',
-              color: '#fff',
+              color: 'var(--text-primary)',
               outline: 'none',
               fontSize: '0.9rem',
               transition: 'border-color 0.3s',
@@ -167,13 +191,14 @@ export default function GithubProjects() {
             <button
               key={lang}
               onClick={() => setSelectedLanguage(lang)}
+              aria-pressed={selectedLanguage === lang}
               style={{
                 padding: '8px 18px',
                 borderRadius: '50px',
                 border: '1px solid',
                 borderColor: selectedLanguage === lang ? 'transparent' : 'var(--border-glass)',
                 background: selectedLanguage === lang ? 'var(--insta-gradient)' : 'rgba(255, 255, 255, 0.02)',
-                color: '#fff',
+                color: 'var(--text-primary)',
                 fontSize: '0.85rem',
                 fontWeight: '600',
                 cursor: 'pointer',
@@ -210,19 +235,22 @@ export default function GithubProjects() {
                   <span className="project-tag">
                     {repo.language || 'Code'}
                   </span>
-                  <div style={{ display: 'flex', gap: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Star size={14} style={{ color: '#fbbf24' }} />
-                      <span>{repo.stargazers_count}</span>
+                  {/* BUG-021: Only show stats if not in fallback/offline mode */}
+                  {!repo.isFallback && (
+                    <div style={{ display: 'flex', gap: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Star size={14} style={{ color: '#fbbf24' }} />
+                        <span>{repo.stargazers_count}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <GitFork size={14} style={{ color: 'var(--accent-cyber)' }} />
+                        <span>{repo.forks_count}</span>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <GitFork size={14} style={{ color: 'var(--accent-cyber)' }} />
-                      <span>{repo.forks_count}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
-                <h4 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '10px', color: '#fff' }}>
+                <h4 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '10px', color: 'var(--text-primary)' }}>
                   {repo.name}
                 </h4>
                 
@@ -236,7 +264,12 @@ export default function GithubProjects() {
                   <Sparkles size={12} style={{ color: 'var(--accent-primary)' }} />
                   Operational System
                 </span>
-                <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={repo.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${repo.name} repository on GitHub`}
+                >
                   <span>View Repository</span>
                   <ExternalLink size={14} />
                 </a>
@@ -245,7 +278,7 @@ export default function GithubProjects() {
           ))
         ) : (
           <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-            No repositories found matching "{searchTerm}" under "{selectedLanguage}".
+            No repositories found matching &ldquo;{searchTerm}&rdquo; under &ldquo;{selectedLanguage}&rdquo;.
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MemoryFragment } from '../context/PuzzleContext';
 
 // ─── Rain Lines Effect ────────────────────────────────────────────────────────
 function RainCanvas({ opacity = 0.12 }) {
@@ -137,13 +138,6 @@ function AtmosphereCard({ atm, index }) {
     if (atm.id === 'rain') {
       hoverTimer.current = setTimeout(() => {
         setShowSecret(true);
-        try {
-          const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
-          if (!stored['puzzle_hover']) {
-            stored['puzzle_hover'] = Date.now();
-            localStorage.setItem('_p_clues', JSON.stringify(stored));
-          }
-        } catch {}
       }, 8000);
     }
   };
@@ -230,7 +224,7 @@ function AtmosphereCard({ atm, index }) {
       }}>
         <p style={{
           fontSize: '0.88rem', fontWeight: 300,
-          color: 'rgba(255,255,255,0.65)',
+          color: 'var(--text-secondary)',
           lineHeight: 1.4, margin: 0,
           fontStyle: 'normal',
           letterSpacing: '-0.2px',
@@ -239,7 +233,7 @@ function AtmosphereCard({ atm, index }) {
         </p>
 
         <p style={{
-          fontSize: '0.72rem', color: 'rgba(255,255,255,0.22)',
+          fontSize: '0.72rem', color: 'var(--text-dim)',
           lineHeight: 1.65, fontWeight: 300, margin: 0,
         }}>
           {atm.note}
@@ -253,7 +247,7 @@ function AtmosphereCard({ atm, index }) {
             transition={{ duration: 2.5 }}
             style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-              color: 'rgba(255,255,255,0.38)', letterSpacing: '2px',
+              color: 'var(--text-muted)', letterSpacing: '2px',
               margin: '10px 0 0', pointerEvents: 'none',
             }}
           >
@@ -290,11 +284,12 @@ export default function BeyondTheScreen() {
     <section style={{
       position: 'relative', zIndex: 2,
       padding: '72px 0 80px',
-      background: 'linear-gradient(to bottom, #07070d, #05050b)',
+      background: 'var(--bg-section)',
     }}>
       <div className="container">
 
         {/* Header */}
+        <MemoryFragment id="frag1" text="Some memories never leave." style={{ bottom: '2%', right: '5%' }} />
         <motion.div
           ref={headerRef}
           initial={{ opacity: 0, y: 16 }}
@@ -304,20 +299,20 @@ export default function BeyondTheScreen() {
         >
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-            letterSpacing: '5px', color: 'rgba(255,255,255,0.16)',
+            letterSpacing: '5px', color: 'var(--text-dim)',
             textTransform: 'uppercase', marginBottom: 12,
           }}>
             Beyond The Screen
           </div>
           <h2 style={{
             fontSize: '1.55rem', fontWeight: 400,
-            color: 'rgba(255,255,255,0.65)',
+            color: 'var(--text-secondary)',
             letterSpacing: '-0.5px', margin: '0 0 14px',
           }}>
             Drawn toward unfamiliar environments.
           </h2>
           <p style={{
-            fontSize: '0.88rem', color: 'rgba(255,255,255,0.25)',
+            fontSize: '0.88rem', color: 'var(--text-dim)',
             lineHeight: 1.85, fontWeight: 300, maxWidth: 480, margin: 0,
           }}>
             Some places change the way you think. Drawn toward rain, cold air, quiet streets, and movement.
@@ -349,13 +344,13 @@ export default function BeyondTheScreen() {
           <div style={{ width: 28, height: '1px', background: 'rgba(255,255,255,0.06)', marginBottom: 28 }} />
 
           <p style={{
-            fontSize: '1rem', color: 'rgba(255,255,255,0.48)',
+            fontSize: '1rem', color: 'var(--text-muted)',
             lineHeight: 1.95, fontWeight: 300, margin: '0 0 16px',
           }}>
             Still exploring what kind of places feel like home.
           </p>
           <p style={{
-            fontSize: '0.9rem', color: 'rgba(255,255,255,0.2)',
+            fontSize: '0.9rem', color: 'var(--text-dim)',
             lineHeight: 1.9, fontWeight: 300, margin: 0,
           }}>
             Not in a rush. Just building toward it.
@@ -371,7 +366,7 @@ export default function BeyondTheScreen() {
         >
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-            letterSpacing: '4px', color: 'rgba(255,255,255,0.1)',
+            letterSpacing: '4px', color: 'var(--text-dim)',
             textTransform: 'uppercase', marginBottom: 20,
           }}>
             The kind of space where the right things get made
@@ -395,7 +390,7 @@ export default function BeyondTheScreen() {
             {/* Bottom fade */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: 'linear-gradient(to bottom, transparent 40%, rgba(5,5,11,0.75) 100%)',
+              background: 'linear-gradient(to bottom, transparent 40%, var(--bg-section-alt) 100%)',
               pointerEvents: 'none',
             }} />
             {/* Grain overlay */}

@@ -1,87 +1,122 @@
-// the puzzle is not a game.
-// it is a memory.
-// A.
-// 🤍
-// I used to hate the rain.
-// winter, 2021.
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const PuzzleContext = createContext(null);
 export const usePuzzle = () => useContext(PuzzleContext);
 
-// 5 clues — each discovered through a different kind of attention
-const CLUE_KEYS = [
-  'puzzle_rain',    // click background 7 times (not buttons)
-  'puzzle_hover',   // hover BeyondTheScreen rain panel 8+ seconds
-  'puzzle_story',   // reach Chapter 3 of StoryMode
-  'puzzle_night',   // visit site between midnight and 5AM
-  'puzzle_idle',    // be idle 60s on /onelastsmile
-];
+const REQUIRED_FRAGMENTS = 4;
 
-const REQUIRED = 4; // need 4 of 5 — one is always forgiven
+// Audio for fragment discovery - tiny, fragile sound
+function playDiscoverySound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = 'sine';
+    // High, delicate frequency
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+    
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start();
+    osc.stop(ctx.currentTime + 1.5);
+    
+    setTimeout(() => ctx.close().catch(() => {}), 2000);
+  } catch {}
+}
 
 export function PuzzleProvider({ children }) {
-  const [clues, setClues] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('_p_clues') || '{}'); }
-    catch { return {}; }
+  const [fragments, setFragments] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('_p_fragments') || '[]'); }
+    catch { return []; }
   });
   const [solved, setSolved] = useState(() => localStorage.getItem('_p_solved') === '1');
   const [showReveal, setShowReveal] = useState(false);
 
-  // Poll localStorage every 3s — catches clues set by other components
+  // Sync state across tabs
   useEffect(() => {
     const sync = () => {
       try {
-        const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
-        setClues(prev => {
+        const stored = JSON.parse(localStorage.getItem('_p_fragments') || '[]');
+        setFragments(prev => {
           if (JSON.stringify(prev) === JSON.stringify(stored)) return prev;
           return stored;
         });
-      } catch {}
+      } catch (_) {}
     };
-    const interval = setInterval(sync, 3000);
     window.addEventListener('storage', sync);
-    return () => { clearInterval(interval); window.removeEventListener('storage', sync); };
-  }, []);
-
-  // Night clue — auto if visiting between midnight and 5AM
-  useEffect(() => {
-    const h = new Date().getHours();
-    if (h >= 0 && h < 5) {
-      try {
-        const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
-        if (!stored['puzzle_night']) {
-          stored['puzzle_night'] = Date.now();
-          localStorage.setItem('_p_clues', JSON.stringify(stored));
-          setClues(stored);
-        }
-      } catch {}
-    }
+    return () => window.removeEventListener('storage', sync);
   }, []);
 
   // Check for solve condition
   useEffect(() => {
     if (solved) return;
-    const found = Object.keys(clues).filter(k => CLUE_KEYS.includes(k)).length;
-    if (found >= REQUIRED) {
+    if (fragments.length >= REQUIRED_FRAGMENTS) {
       const t = setTimeout(() => {
         setSolved(true);
         localStorage.setItem('_p_solved', '1');
         setShowReveal(true);
-      }, 2400);
+      }, 1500); // Short delay after the last click
       return () => clearTimeout(t);
     }
-  }, [clues, solved]);
+  }, [fragments, solved]);
+
+  const discoverFragment = useCallback((id) => {
+    setFragments(prev => {
+      if (prev.includes(id)) return prev;
+      const next = [...prev, id];
+      localStorage.setItem('_p_fragments', JSON.stringify(next));
+      playDiscoverySound();
+      return next;
+    });
+  }, []);
 
   const dismissReveal = useCallback(() => setShowReveal(false), []);
-  const triggerReveal  = useCallback(() => {
-    setSolved(false); // allow re-trigger for testing
+  const triggerReveal = useCallback(() => {
+    setSolved(false); 
     setShowReveal(true);
   }, []);
 
   return (
-    <PuzzleContext.Provider value={{ clues, solved, showReveal, dismissReveal, triggerReveal }}>
+    <PuzzleContext.Provider value={{ fragments, solved, showReveal, dismissReveal, triggerReveal, discoverFragment }}>
       {children}
     </PuzzleContext.Provider>
+  );
+}
+
+// ─── The Memory Fragment Component ──────────────────────────────────────────
+export function MemoryFragment({ id, text, style }) {
+  const { fragments, discoverFragment } = usePuzzle();
+  const isFound = fragments.includes(id);
+
+  if (isFound) return null; // Disappears quietly once found
+
+  return (
+    <motion.div
+      initial={{ opacity: 0.15 }}
+      whileHover={{ opacity: 0.8, textShadow: '0 0 12px rgba(255,255,255,0.4)' }}
+      onClick={() => discoverFragment(id)}
+      style={{
+        position: 'absolute',
+        fontFamily: 'var(--font-mono)',
+        fontSize: '0.65rem',
+        letterSpacing: '2px',
+        color: 'rgba(255,255,255,0.6)',
+        cursor: 'pointer',
+        userSelect: 'none',
+        zIndex: 50,
+        transition: 'opacity 0.8s ease, text-shadow 0.8s ease',
+        ...style
+      }}
+    >
+      {text}
+    </motion.div>
   );
 }
