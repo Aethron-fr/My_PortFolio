@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import OneLastSmileFeatures from './OneLastSmileFeatures';
 import MagneticButton from './MagneticButton';
+import { audioController } from '../audio';
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
@@ -162,6 +163,20 @@ export default function FeaturedSpotlight() {
     rawX.set(e.clientX - rect.left);
     rawY.set(e.clientY - rect.top);
   };
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        audioController.setSection('onelastsmile');
+      } else {
+        audioController.setSection('home');
+      }
+    }, { threshold: 0.3 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const handleNavigate = (dest) => {
     if (transitioning) return;

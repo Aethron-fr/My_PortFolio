@@ -2,14 +2,27 @@ class GlobalAudio {
   constructor() {
     this.ctx = null;
     this.masterGain = null;
-    this.rumbleGain = null;
-    this.rainGain = null;
-    // BUG-023: Store ScriptProcessor node reference for proper cleanup
+    this.droneGain = null;
+    this.textureGain = null;
+    this.pianoGain = null;
+    this.globalFilter = null;
+    
+    // Nodes
+    this.oscillators = [];
+    this.lfoNodes = [];
     this.noiseNode = null;
-    this.lfoNode = null;
+    
+    // State
     this.initialized = false;
-    this.isMuted = false;
+    this.isEnabled = false; // OFF by default
     this.isDucked = false;
+    this.isIdle = false;
+    this.isNight = true;
+    this.scrollDepth = 0;
+    this.currentSection = 'home';
+    
+    // Loop timings
+    this.pianoInterval = null;
   }
 
   init() {
@@ -17,17 +30,61 @@ class GlobalAudio {
     try {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       
-      // Mute persistence check
-      this.isMuted = localStorage.getItem('ols_muted') === '1';
+      // OFF by default. User must explicitly enable.
+      this.isEnabled = localStorage.getItem('ols_audio_enabled') === '1';
 
+      // 1. Master Chain
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.value = this.isMuted ? 0 : 1;
-      this.masterGain.connect(this.ctx.destination);
+      this.masterGain.gain.value = this.isEnabled ? 1 : 0;
       
-      // NOTE: ScriptProcessorNode is deprecated but used for broad browser support.
-      // TODO: Migrate to AudioWorkletProcessor when browser support is sufficient.
+      this.globalFilter = this.ctx.createBiquadFilter();
+      this.globalFilter.type = 'lowpass';
+      this.globalFilter.frequency.value = 1200; // Drops during idle
+      this.globalFilter.Q.value = 0.5;
+
+      this.masterGain.connect(this.globalFilter);
+      this.globalFilter.connect(this.ctx.destination);
+
+      // 2. Drone Engine (Interstellar/Blade Runner base)
+      this.droneGain = this.ctx.createGain();
+      this.droneGain.gain.value = 0.15;
+      this.droneGain.connect(this.masterGain);
+
+      // Fundmental Drones (A1 = 55Hz, E2 = 82.41Hz, A2 = 110Hz)
+      const freqs = [55.0, 82.41, 110.0];
+      freqs.forEach((freq, i) => {
+        const osc = this.ctx.createOscillator();
+        osc.type = i === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = freq;
+        
+        const oscGain = this.ctx.createGain();
+        oscGain.gain.value = 0.1;
+        
+        // Slow LFO to modulate amplitude (breathing)
+        const lfo = this.ctx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.05 + (i * 0.02); // Very slow 20s breathing
+        const lfoGain = this.ctx.createGain();
+        lfoGain.gain.value = 0.08;
+        
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscGain.gain);
+        osc.connect(oscGain);
+        oscGain.connect(this.droneGain);
+        
+        osc.start();
+        lfo.start();
+        
+        this.oscillators.push(osc);
+        this.lfoNodes.push(lfo);
+      });
+
+      // 3. Texture Layer (Rain/Vinyl crackle feel)
+      this.textureGain = this.ctx.createGain();
+      this.textureGain.gain.value = 0; // Brought up by scroll depth
+      this.textureGain.connect(this.masterGain);
+
       const bufferSize = 4096;
-      // BUG-023: Store as instance property so it can be disconnected in destroy()
       this.noiseNode = this.ctx.createScriptProcessor(bufferSize, 1, 1);
       let lastOut = 0.0;
       this.noiseNode.onaudioprocess = (e) => {
@@ -36,48 +93,34 @@ class GlobalAudio {
           const white = Math.random() * 2 - 1;
           out[i] = (lastOut + (0.02 * white)) / 1.02;
           lastOut = out[i];
-          out[i] *= 3.5;
+          out[i] *= 3.0; // Brown noise texture
         }
       };
-
-      const rumbleFilter = this.ctx.createBiquadFilter();
-      rumbleFilter.type = 'lowpass';
-      rumbleFilter.frequency.value = 150;
       
-      // BUG-023: Store LFO oscillator for cleanup
-      this.lfoNode = this.ctx.createOscillator();
-      this.lfoNode.type = 'sine';
-      this.lfoNode.frequency.value = 0.2; 
-      const lfoGain = this.ctx.createGain();
-      lfoGain.gain.value = 15;
-      this.lfoNode.connect(lfoGain);
-      lfoGain.connect(rumbleFilter.frequency);
-      this.lfoNode.start();
-
-      this.rumbleGain = this.ctx.createGain();
-      this.rumbleGain.gain.value = 0;
-
-      const rainBandpass = this.ctx.createBiquadFilter();
-      rainBandpass.type = 'bandpass';
-      rainBandpass.frequency.value = 800;
-      rainBandpass.Q.value = 0.4;
-
-      const rainHighpass = this.ctx.createBiquadFilter();
-      rainHighpass.type = 'highpass';
-      rainHighpass.frequency.value = 300;
-
-      this.rainGain = this.ctx.createGain();
-      this.rainGain.gain.value = 0;
-
-      this.noiseNode.connect(rumbleFilter);
-      rumbleFilter.connect(this.rumbleGain);
-      this.rumbleGain.connect(this.masterGain);
-
-      this.noiseNode.connect(rainBandpass);
-      rainBandpass.connect(rainHighpass);
-      rainHighpass.connect(this.rainGain);
-      this.rainGain.connect(this.masterGain);
+      const textureFilter = this.ctx.createBiquadFilter();
+      textureFilter.type = 'bandpass';
+      textureFilter.frequency.value = 400;
+      textureFilter.Q.value = 0.8;
       
+      this.noiseNode.connect(textureFilter);
+      textureFilter.connect(this.textureGain);
+
+      // 4. OneLastSmile Piano Textures
+      this.pianoGain = this.ctx.createGain();
+      this.pianoGain.gain.value = 0;
+      this.pianoGain.connect(this.masterGain);
+      
+      this.startPianoGenerativeLoop();
+
+      // Tab visibility observer
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (this.ctx.state === 'running') this.ctx.suspend();
+        } else {
+          if (this.ctx.state === 'suspended' && this.isEnabled) this.ctx.resume();
+        }
+      });
+
       this.initialized = true;
     } catch(err) {
       console.warn("Web Audio API not supported", err);
@@ -85,78 +128,161 @@ class GlobalAudio {
   }
 
   resume() {
-    if (this.ctx && this.ctx.state === 'suspended') {
+    if (this.ctx && this.ctx.state === 'suspended' && this.isEnabled) {
       this.ctx.resume();
     }
   }
 
-  toggleMute() {
+  toggleAudio() {
     if (!this.initialized) this.init();
-    this.isMuted = !this.isMuted;
-    localStorage.setItem('ols_muted', this.isMuted ? '1' : '0');
+    this.isEnabled = !this.isEnabled;
+    localStorage.setItem('ols_audio_enabled', this.isEnabled ? '1' : '0');
+    
+    if (this.isEnabled && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
     
     const now = this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
-    this.masterGain.gain.linearRampToValueAtTime(this.isMuted ? 0 : (this.isDucked ? 0.3 : 1), now + 1);
+    this.masterGain.gain.linearRampToValueAtTime(this.isEnabled ? (this.isDucked ? 0.3 : 1.0) : 0, now + 1.5);
+  }
+
+  // --- BEHAVIOR STATE METHODS ---
+
+  setIdle(isIdle) {
+    if (!this.initialized || !this.isEnabled) return;
+    this.isIdle = isIdle;
+    const now = this.ctx.currentTime;
+    
+    this.globalFilter.frequency.cancelScheduledValues(now);
+    this.masterGain.gain.cancelScheduledValues(now);
+
+    if (isIdle) {
+      // Warm, soft, meditative state
+      this.globalFilter.frequency.linearRampToValueAtTime(400, now + 5.0);
+      this.masterGain.gain.linearRampToValueAtTime(0.6, now + 5.0);
+    } else {
+      // Alert, active state
+      this.globalFilter.frequency.linearRampToValueAtTime(1200, now + 2.0);
+      this.masterGain.gain.linearRampToValueAtTime(1.0, now + 2.0);
+    }
+  }
+
+  setScrollDepth(depth) {
+    if (!this.initialized || !this.isEnabled) return;
+    this.scrollDepth = depth;
+    const now = this.ctx.currentTime;
+    
+    // Deepen the drone and bring in texture (rain/dust) as they scroll
+    this.textureGain.gain.cancelScheduledValues(now);
+    const targetTexture = 0.05 + (depth * 0.15); // Max 0.20
+    this.textureGain.gain.linearRampToValueAtTime(targetTexture, now + 1.0);
+  }
+
+  setSection(section) {
+    if (!this.initialized || !this.isEnabled) return;
+    this.currentSection = section;
+    const now = this.ctx.currentTime;
+    
+    this.pianoGain.gain.cancelScheduledValues(now);
+    if (section === 'onelastsmile') {
+      // Bring up emotional piano textures
+      this.pianoGain.gain.linearRampToValueAtTime(1.0, now + 4.0);
+    } else {
+      this.pianoGain.gain.linearRampToValueAtTime(0.0, now + 3.0);
+    }
+  }
+
+  setTheme(isNight) {
+    if (!this.initialized || !this.isEnabled) return;
+    this.isNight = isNight;
+    // We could shift the fundamental drone frequencies here for day/night
+    // For now, keeping it extremely subtle to avoid jarring transitions.
   }
 
   setDucking(active) {
-    if (!this.initialized) this.init();
-    if (this.isMuted) return;
+    if (!this.initialized || !this.isEnabled) return;
     this.isDucked = active;
-
     const now = this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
-    // Smooth volume drop for deep reading moments
-    this.masterGain.gain.linearRampToValueAtTime(active ? 0.3 : 1, now + 2);
+    this.masterGain.gain.linearRampToValueAtTime(active ? 0.25 : (this.isIdle ? 0.6 : 1.0), now + 1.5);
   }
 
-  setRumble(active) {
-    if (!this.initialized) this.init();
-    this.resume();
-    if (!this.rumbleGain) return;
+  // --- GENERATORS ---
+
+  startPianoGenerativeLoop() {
+    // Generates a soft, sporadic FM synthesis ping (like a distant piano)
+    const scale = [440.0, 493.88, 523.25, 659.25, 783.99]; // A Minor Pentatonic
     
-    const now = this.ctx.currentTime;
-    this.rumbleGain.gain.cancelScheduledValues(now);
-    if (active) {
-      this.rumbleGain.gain.setValueAtTime(this.rumbleGain.gain.value, now);
-      this.rumbleGain.gain.linearRampToValueAtTime(0.6, now + 4);
-    } else {
-      this.rumbleGain.gain.setValueAtTime(this.rumbleGain.gain.value, now);
-      this.rumbleGain.gain.linearRampToValueAtTime(0, now + 2);
-    }
+    const playNote = () => {
+      if (!this.isEnabled || this.currentSection !== 'onelastsmile') return;
+      
+      const now = this.ctx.currentTime;
+      const freq = scale[Math.floor(Math.random() * scale.length)];
+      
+      const osc = this.ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      const env = this.ctx.createGain();
+      env.gain.value = 0;
+      env.gain.setValueAtTime(0, now);
+      env.gain.linearRampToValueAtTime(0.15, now + 1.0); // Soft attack
+      env.gain.exponentialRampToValueAtTime(0.001, now + 5.0); // Long decay
+      
+      osc.connect(env);
+      env.connect(this.pianoGain);
+      
+      osc.start(now);
+      osc.stop(now + 6.0);
+    };
+
+    // Play a note every 4 to 8 seconds randomly
+    const loop = () => {
+      playNote();
+      this.pianoInterval = setTimeout(loop, 4000 + (Math.random() * 4000));
+    };
+    loop();
   }
 
-  setRain(active) {
+  playMoonSecret() {
     if (!this.initialized) this.init();
+    if (!this.isEnabled) return; // Respect user preference even for secrets
     this.resume();
-    if (!this.rainGain) return;
 
     const now = this.ctx.currentTime;
-    this.rainGain.gain.cancelScheduledValues(now);
-    if (active) {
-      this.rainGain.gain.setValueAtTime(this.rainGain.gain.value, now);
-      this.rainGain.gain.linearRampToValueAtTime(0.08, now + 3);
-    } else {
-      this.rainGain.gain.setValueAtTime(this.rainGain.gain.value, now);
-      this.rainGain.gain.linearRampToValueAtTime(0, now + 3);
-    }
+    
+    // Very soft ethereal chime
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 880; // High A
+    
+    const env = this.ctx.createGain();
+    env.gain.setValueAtTime(0, now);
+    env.gain.linearRampToValueAtTime(0.2, now + 0.1);
+    env.gain.exponentialRampToValueAtTime(0.001, now + 4.0);
+    
+    osc.connect(env);
+    env.connect(this.masterGain);
+    
+    osc.start(now);
+    osc.stop(now + 4.5);
   }
 
-  // BUG-023: Proper cleanup method — disconnects ScriptProcessor to prevent memory leak
+  // Backwards compatibility for old methods if they were used
+  setRumble(active) { this.setSection(active ? 'onelastsmile' : 'home'); }
+  setRain(active) { this.setSection(active ? 'onelastsmile' : 'home'); }
+
   destroy() {
     try {
-      if (this.lfoNode) {
-        this.lfoNode.stop();
-        this.lfoNode.disconnect();
-      }
+      if (this.pianoInterval) clearTimeout(this.pianoInterval);
+      this.oscillators.forEach(o => { o.stop(); o.disconnect(); });
+      this.lfoNodes.forEach(l => { l.stop(); l.disconnect(); });
       if (this.noiseNode) {
         this.noiseNode.disconnect();
         this.noiseNode.onaudioprocess = null;
       }
-      if (this.ctx) {
-        this.ctx.close();
-      }
+      if (this.ctx) this.ctx.close();
     } catch (e) { console.warn("Audio cleanup error:", e); }
     this.initialized = false;
   }

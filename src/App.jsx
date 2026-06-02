@@ -12,7 +12,10 @@ import {
   Award,
   User,
   ArrowUpRight,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
+import { audioController } from './audio';
 import MagneticButton from './components/MagneticButton';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
@@ -71,6 +74,40 @@ function CurrentlyExploring() {
   );
 }
 
+function AudioToggle() {
+  const [isEnabled, setIsEnabled] = useState(() => localStorage.getItem('ols_audio_enabled') === '1');
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleToggle = () => {
+    audioController.toggleAudio();
+    setIsEnabled(!isEnabled);
+  };
+
+  return (
+    <motion.button
+      onClick={handleToggle}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2.6, duration: 0.8, type: 'spring' }}
+      whileHover={{ scale: 1.08, y: -5 }}
+      whileTap={{ scale: 0.85 }}
+      aria-label={isEnabled ? 'Disable atmospheric audio' : 'Enable atmospheric audio'}
+      style={{
+        position: 'fixed', bottom: 94, right: 34, zIndex: 9998,
+        width: 44, height: 44, borderRadius: '50%',
+        background: 'var(--bg-card)', border: '1px solid var(--border-glass)',
+        color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', backdropFilter: 'blur(10px)',
+        boxShadow: isHovered ? '0 10px 20px var(--shadow-color)' : 'none',
+      }}
+    >
+      {isEnabled ? <Volume2 size={16} strokeWidth={1.5} /> : <VolumeX size={16} strokeWidth={1.5} opacity={0.5} />}
+    </motion.button>
+  );
+}
+
 // BUG-005: Compute time-based greeting at module level (pure function, no side effects)
 function getTimeGreeting() {
   const h = new Date().getHours();
@@ -88,31 +125,7 @@ function ThemeToggle() {
 
   const [isHovered, setIsHovered] = useState(false);
 
-  // High-tech UI mechanical click sound for tactile feedback
-  const playTechClick = () => {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      const ctx = new AudioContext();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      // A sharp, high-tech 'snapping' frequency drop
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(isNight ? 900 : 1200, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.04);
-      
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.04);
-    } catch(e) {
-      console.warn("AudioContext error during click sound:", e);
-    }
-  };
+
 
   useEffect(() => {
     const root = document.documentElement;
@@ -130,8 +143,8 @@ function ThemeToggle() {
   }, [isNight]);
 
   const handleToggle = () => {
-    playTechClick();
     setIsNight(!isNight);
+    audioController.setTheme(!isNight);
   };
 
   return (
@@ -348,6 +361,30 @@ export default function App() {
 
   const progressBarRef = useRef(null);
 
+  // Behavioral Ambient Audio: Idle tracking (20s)
+  useEffect(() => {
+    let timeout;
+    const resetIdle = () => {
+      if (audioController.isIdle) audioController.setIdle(false);
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        audioController.setIdle(true);
+      }, 20000);
+    };
+    window.addEventListener('mousemove', resetIdle, { passive: true });
+    window.addEventListener('keydown', resetIdle, { passive: true });
+    window.addEventListener('scroll', resetIdle, { passive: true });
+    window.addEventListener('touchstart', resetIdle, { passive: true });
+    resetIdle();
+    return () => {
+      window.removeEventListener('mousemove', resetIdle);
+      window.removeEventListener('keydown', resetIdle);
+      window.removeEventListener('scroll', resetIdle);
+      window.removeEventListener('touchstart', resetIdle);
+      clearTimeout(timeout);
+    };
+  }, []);
+
   useEffect(() => {
     // Hint fades in after 3 seconds, stays for 8, then vanishes forever.
     const t1 = setTimeout(() => setShowHint(true), 3000);
@@ -384,6 +421,7 @@ export default function App() {
             const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPercent = totalScroll > 0 ? (window.scrollY / totalScroll) * 100 : 0;
             progressBar.style.width = `${scrollPercent}%`;
+            audioController.setScrollDepth(scrollPercent / 100);
           }
           ticking = false;
         });
@@ -1243,6 +1281,7 @@ export default function App() {
 
       {/* ── Day / Night Mode Toggle ─────────────────────────────────────────── */}
       <ThemeToggle />
+      <AudioToggle />
 
 
       {/* BUG-015: Removed inline <style> block — all styles now live in App.css to avoid
