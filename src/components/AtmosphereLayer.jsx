@@ -34,6 +34,24 @@ export default function AtmosphereLayer() {
   const { triggerReveal } = usePuzzle();
   const [idlePhrase, setIdlePhrase] = useState('');
   const [showIdlePhrase, setShowIdlePhrase] = useState(false);
+  const [showMoonSecret, setShowMoonSecret] = useState(false);
+  const [moonHovered, setMoonHovered] = useState(false);
+  const moonTimerRef = require('react').useRef(null);
+  
+  const handleMoonInteractStart = () => {
+    setMoonHovered(true);
+    if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
+    moonTimerRef.current = setTimeout(() => {
+      setShowMoonSecret(true);
+      // Auto-hide after 6 seconds of showing
+      setTimeout(() => setShowMoonSecret(false), 6000);
+    }, 8000); // 8 seconds hold
+  };
+  
+  const handleMoonInteractEnd = () => {
+    setMoonHovered(false);
+    if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
+  };
 
   // Styled console message — once per session, visible only in DevTools
   // winter, 2021.

@@ -426,3 +426,30 @@ p {
 /* Hide scrollbars on horizontal scrolling rows */
 .scroll-row::-webkit-scrollbar { display: none; }
 .scroll-row { scrollbar-width: none; }
+
+
+/* Mobile Responsiveness & Contact Section */
+.contact-input {
+  padding: 14px 18px;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .contact-input {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .glass-panel {
+    padding: 24px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  .main-footer {
+    padding-bottom: 120px !important;
+  }
+}

@@ -890,7 +890,7 @@ export default function App() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'start' }}>
+          <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'start' }}>
             {/* Direct details */}
             <div className="glass-panel" style={{ padding: '36px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
@@ -923,7 +923,7 @@ export default function App() {
                   </div>
                   <div>
                     <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>email</div>
-                    <a href="mailto:ghoshswapnadip7@gmail.com" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: '400' }}>
+                    <a href="mailto:ghoshswapnadip7@gmail.com" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: '400', wordBreak: 'break-word', display: 'block', paddingRight: '10px' }}>
                       ghoshswapnadip7@gmail.com
                     </a>
                   </div>
@@ -973,15 +973,14 @@ export default function App() {
                     placeholder="e.g. Swarnadip Mitra"
                     value={contactForm.name}
                     onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    className="contact-input"
                     style={{
                       width: '100%',
-                      padding: '14px 18px',
                       borderRadius: '12px',
                       border: '1px solid var(--border-glass)',
                       background: 'var(--bg-card)',
                       color: 'var(--text-primary)',
                       outline: 'none',
-                      fontSize: '0.95rem',
                       transition: 'border-color 0.3s'
                     }}
                     onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
@@ -1001,15 +1000,14 @@ export default function App() {
                     placeholder="your@email.com"
                     value={contactForm.email}
                     onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    className="contact-input"
                     style={{
                       width: '100%',
-                      padding: '14px 18px',
                       borderRadius: '12px',
                       border: '1px solid var(--border-glass)',
                       background: 'var(--bg-card)',
                       color: 'var(--text-primary)',
                       outline: 'none',
-                      fontSize: '0.95rem',
                       transition: 'border-color 0.3s'
                     }}
                     onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
@@ -1028,15 +1026,14 @@ export default function App() {
                     placeholder="What's on your mind?"
                     value={contactForm.message}
                     onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    className="contact-input"
                     style={{
                       width: '100%',
-                      padding: '14px 18px',
                       borderRadius: '12px',
                       border: '1px solid var(--border-glass)',
                       background: 'var(--bg-card)',
                       color: 'var(--text-primary)',
                       outline: 'none',
-                      fontSize: '0.95rem',
                       fontFamily: 'inherit',
                       lineHeight: '1.5',
                       resize: 'none',
@@ -1073,7 +1070,7 @@ export default function App() {
         </div>
       </section>
 
-      <footer style={{ position: 'relative', zIndex: 2, padding: '120px 0 60px', background: 'var(--bg-footer)' }}>
+      <footer className="main-footer" style={{ position: 'relative', zIndex: 2, padding: '120px 0 80px', background: 'var(--bg-footer)' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <p style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
