@@ -812,10 +812,6 @@ export default function App() {
       </section>
 
       {/* FEATURED EXPERIENCE — OneLastSmile */}
-      <Suspense fallback={<div style={{ minHeight: '800px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" /></div>}>
-        <FeaturedSpotlight />
-      </Suspense>
-
       <section id="experience" style={{
         position: 'relative', zIndex: 2,
         padding: '60px 0 80px',
@@ -838,7 +834,9 @@ export default function App() {
               A project built outside the ordinary.
             </h2>
           </div>
-          <FeaturedSpotlight />
+          <Suspense fallback={<div style={{ minHeight: '800px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" /></div>}>
+            <FeaturedSpotlight />
+          </Suspense>
         </div>
       </section>
 
