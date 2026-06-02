@@ -384,6 +384,7 @@ p {
 .btn-neon-outline:hover {
   transform: translateY(-2px) scale(1.01);
   box-shadow: 0 10px 25px rgba(0, 247, 255, 0.15);
+  color: #fff;
 }
 
 .btn-neon-outline:hover::before {
