@@ -374,8 +374,10 @@ export default function BeyondTheScreen() {
 
           <div style={{
             position: 'relative', borderRadius: 18, overflow: 'hidden',
-            border: '1px solid rgba(255,255,255,0.04)',
+            border: '1px solid var(--border-glass)',
             maxWidth: 820,
+            WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
+            maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
           }}>
             <img
               src="/workspace.png"
@@ -387,12 +389,6 @@ export default function BeyondTheScreen() {
                 filter: 'saturate(0.65) brightness(0.8)',
               }}
             />
-            {/* Bottom fade */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(to bottom, transparent 40%, var(--bg-section-alt) 100%)',
-              pointerEvents: 'none',
-            }} />
             {/* Grain overlay */}
             <div style={{
               position: 'absolute', inset: 0,
