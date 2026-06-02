@@ -177,15 +177,16 @@ export default function AtmosphereLayer() {
             {showMoonSecret && (
               <motion.div
                 key="moon-secret"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 0.7, y: 0 }}
-                exit={{ opacity: 0, y: -5, transition: { duration: 4 } }}
-                transition={{ duration: 3, ease: 'easeOut' }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 0.8, y: 0 }}
+                exit={{ opacity: 0, y: -10, transition: { duration: 3, ease: 'easeInOut' } }}
+                transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }} // Smooth decel
                 style={{
                   fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-                  color: 'rgba(255,255,255,0.7)', letterSpacing: '1px',
+                  color: 'rgba(255,255,255,0.75)', letterSpacing: '1px',
                   textAlign: 'right', whiteSpace: 'pre-line', lineHeight: 1.6,
                   textTransform: 'none', // Sentence case per request
+                  willChange: 'transform, opacity', // Force GPU acceleration
                 }}
               >
                 {"Some people become like the moon.\nBeautiful, constant, and always a little out of reach."}
@@ -197,11 +198,11 @@ export default function AtmosphereLayer() {
           <motion.div
             key="moon-phase"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.22 }}
+            animate={{ opacity: 0.3 }}
             exit={{ opacity: 0 }}
             style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-              color: 'rgba(220,230,255,0.5)',
+              fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+              color: 'rgba(220,230,255,0.6)',
               letterSpacing: '2px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               pointerEvents: 'auto', cursor: 'default',
@@ -216,7 +217,7 @@ export default function AtmosphereLayer() {
             // Prevent context menu from interrupting long press on mobile
             onContextMenu={(e) => e.preventDefault()}
           >
-            <span style={{ fontSize: '0.9rem', opacity: 0.6 }}>{moonPhase}</span>
+            <span style={{ fontSize: '1.05rem', opacity: 0.75 }}>{moonPhase}</span>
           </motion.div>
         </motion.div>
       </AnimatePresence>
