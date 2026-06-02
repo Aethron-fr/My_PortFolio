@@ -167,9 +167,9 @@ export default function AtmosphereLayer() {
           animate={{ opacity: 1 }}
           transition={{ duration: 3, delay: 2 }}
           style={{
-            position: 'fixed', bottom: 20, right: 24,
+            position: 'fixed', bottom: 20, left: 24, // MOVED TO LEFT CORNER
             zIndex: 100,
-            display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12,
+            display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 12, // ALIGN START
             pointerEvents: 'none',
           }}
         >
@@ -184,7 +184,7 @@ export default function AtmosphereLayer() {
                 style={{
                   fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
                   color: 'rgba(255,255,255,0.75)', letterSpacing: '1px',
-                  textAlign: 'right', whiteSpace: 'pre-line', lineHeight: 1.6,
+                  textAlign: 'left', whiteSpace: 'pre-line', lineHeight: 1.6, // ALIGN LEFT
                   textTransform: 'none', // Sentence case per request
                   willChange: 'transform, opacity', // Force GPU acceleration
                 }}

@@ -106,20 +106,20 @@ function ThemeToggle() {
 
   return (
     <motion.button
-      onClick={() => setIsNight(n => !n)}
+      onClick={() => setIsNight(!isNight)}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 2.5, duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
-      whileHover={{ scale: 1.12 }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={{ scale: 1.15, rotate: isNight ? 15 : -15 }}
+      whileTap={{ scale: 0.8, rotate: 180 }} // Upgraded spin effect on click
       aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
       style={{
         position: 'fixed',
         bottom: 28,
-        left: 28,
+        right: 28, // MOVED TO RIGHT SIDE
         zIndex: 9998,
-        width: 46,
-        height: 46,
+        width: 48,
+        height: 48,
         borderRadius: '50%',
         border: 'none',
         outline: 'none',
@@ -132,69 +132,70 @@ function ThemeToggle() {
           ? 'radial-gradient(circle at 35% 35%, #1a1f3a 0%, #0c0d1a 100%)'
           : 'radial-gradient(circle at 65% 35%, #2a2015 0%, #1a1508 100%)',
         boxShadow: isNight
-          ? '0 0 0 1px rgba(140,160,255,0.18), 0 4px 20px rgba(80,100,220,0.2), inset 0 1px 0 rgba(255,255,255,0.06)'
-          : '0 0 0 1px rgba(255,185,30,0.25), 0 4px 20px rgba(240,160,20,0.25), inset 0 1px 0 rgba(255,255,255,0.08)',
+          ? '0 0 0 1px rgba(140,160,255,0.18), 0 4px 25px rgba(80,100,220,0.3), inset 0 1px 0 rgba(255,255,255,0.06)'
+          : '0 0 0 1px rgba(255,185,30,0.25), 0 4px 25px rgba(240,160,20,0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
         backdropFilter: 'blur(20px)',
+        transition: 'background 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1)', // Smooth CSS transitions
       }}
     >
       {/* Ambient glow ring behind button */}
       <motion.div
         animate={isNight
-          ? { opacity: [0.3, 0.6, 0.3], scale: [1, 1.15, 1] }
-          : { opacity: [0.4, 0.7, 0.4], scale: [1, 1.2, 1] }
+          ? { opacity: [0.3, 0.7, 0.3], scale: [1, 1.25, 1] }
+          : { opacity: [0.4, 0.8, 0.4], scale: [1, 1.3, 1] }
         }
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         style={{
           position: 'absolute',
-          inset: -6,
+          inset: -8, // Slightly larger glow
           borderRadius: '50%',
           background: isNight
-            ? 'radial-gradient(circle, rgba(100,130,255,0.15) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(255,180,20,0.2) 0%, transparent 70%)',
+            ? 'radial-gradient(circle, rgba(100,130,255,0.2) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(255,180,20,0.25) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />
 
-      {/* Icon swap with rotation */}
+      {/* Icon swap with rotation and blur */}
       <AnimatePresence mode="wait">
         {isNight ? (
           <motion.div
             key="moon"
-            initial={{ opacity: 0, rotate: -45, scale: 0.5 }}
-            animate={{ opacity: 1, rotate: 0, scale: 1 }}
-            exit={{ opacity: 0, rotate: 45, scale: 0.5 }}
-            transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+            initial={{ opacity: 0, rotate: -90, scale: 0.3, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, rotate: 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, rotate: 90, scale: 0.3, filter: 'blur(4px)' }}
+            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
           >
             {/* Crescent moon — drawn precisely */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path
                 d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"
-                fill="rgba(200,215,255,0.9)"
-                filter="drop-shadow(0 0 3px rgba(160,190,255,0.6))"
+                fill="rgba(200,215,255,0.95)"
+                filter="drop-shadow(0 0 4px rgba(160,190,255,0.8))"
               />
             </svg>
           </motion.div>
         ) : (
           <motion.div
             key="sun"
-            initial={{ opacity: 0, rotate: 45, scale: 0.5 }}
-            animate={{ opacity: 1, rotate: 0, scale: 1 }}
-            exit={{ opacity: 0, rotate: -45, scale: 0.5 }}
-            transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+            initial={{ opacity: 0, rotate: 90, scale: 0.3, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, rotate: 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, rotate: -90, scale: 0.3, filter: 'blur(4px)' }}
+            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
           >
             {/* Sun — clean circle + rays */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="4.5" fill="rgba(255,200,30,0.95)" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="5" fill="rgba(255,200,30,0.95)" />
               {/* 8 rays */}
               {[0,45,90,135,180,225,270,315].map((deg, i) => {
                 const rad = (deg * Math.PI) / 180;
                 return (
                   <line
                     key={i}
-                    x1={12 + 6.8 * Math.cos(rad)} y1={12 + 6.8 * Math.sin(rad)}
-                    x2={12 + 8.8 * Math.cos(rad)} y2={12 + 8.8 * Math.sin(rad)}
-                    stroke="rgba(255,190,20,0.85)"
-                    strokeWidth="1.6"
+                    x1={12 + 7.5 * Math.cos(rad)} y1={12 + 7.5 * Math.sin(rad)}
+                    x2={12 + 9.5 * Math.cos(rad)} y2={12 + 9.5 * Math.sin(rad)}
+                    stroke="rgba(255,190,20,0.9)"
+                    strokeWidth="1.8"
                     strokeLinecap="round"
                   />
                 );
