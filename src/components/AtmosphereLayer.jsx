@@ -203,14 +203,18 @@ export default function AtmosphereLayer() {
               fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
               color: 'rgba(220,230,255,0.5)',
               letterSpacing: '2px',
-              display: 'flex', alignItems: 'center', gap: 8,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               pointerEvents: 'auto', cursor: 'default',
+              padding: '24px', margin: '-24px', // Invisible extended hitbox
+              userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none',
             }}
             onMouseEnter={handleMoonInteractStart}
             onMouseLeave={handleMoonInteractEnd}
             onTouchStart={handleMoonInteractStart}
             onTouchEnd={handleMoonInteractEnd}
             onTouchCancel={handleMoonInteractEnd}
+            // Prevent context menu from interrupting long press on mobile
+            onContextMenu={(e) => e.preventDefault()}
           >
             <span style={{ fontSize: '0.9rem', opacity: 0.6 }}>{moonPhase}</span>
           </motion.div>
