@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAtmosphere } from '../context/AtmosphereContext';
 import { usePuzzle } from '../context/PuzzleContext';
@@ -36,7 +36,7 @@ export default function AtmosphereLayer() {
   const [showIdlePhrase, setShowIdlePhrase] = useState(false);
   const [showMoonSecret, setShowMoonSecret] = useState(false);
   const [moonHovered, setMoonHovered] = useState(false);
-  const moonTimerRef = require('react').useRef(null);
+  const moonTimerRef = useRef(null);
   
   const handleMoonInteractStart = () => {
     setMoonHovered(true);
