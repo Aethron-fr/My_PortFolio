@@ -164,7 +164,7 @@ export default function AtmosphereLayer() {
         <motion.div
           key="moon-container"
           initial={{ opacity: 0 }}
-          animate={{ opacity: isLateNight ? 0.4 : 0.15 }}
+          animate={{ opacity: isLateNight ? 0.9 : 0.5 }}
           transition={{ duration: 3, delay: 2 }}
           style={{
             position: 'fixed', bottom: 20, right: 24,
@@ -178,12 +178,12 @@ export default function AtmosphereLayer() {
               <motion.div
                 key="moon-secret"
                 initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 0.7, y: 0 }}
+                animate={{ opacity: 0.85, y: 0 }}
                 exit={{ opacity: 0, y: -5, transition: { duration: 4 } }}
                 transition={{ duration: 3, ease: 'easeOut' }}
                 style={{
-                  fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-                  color: 'rgba(255,255,255,0.7)', letterSpacing: '1px',
+                  fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+                  color: 'rgba(255,255,255,0.9)', letterSpacing: '1px',
                   textAlign: 'right', whiteSpace: 'pre-line', lineHeight: 1.6,
                   textTransform: 'none', // Sentence case per request
                 }}
@@ -196,9 +196,9 @@ export default function AtmosphereLayer() {
           <motion.div
             style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-              color: 'rgba(220,230,255,0.5)', letterSpacing: '2px',
+              color: 'rgba(220,230,255,0.8)', letterSpacing: '2px',
               display: 'flex', alignItems: 'center', gap: 8,
-              pointerEvents: 'auto', cursor: 'default',
+              pointerEvents: 'auto', cursor: 'pointer',
             }}
             onMouseEnter={handleMoonInteractStart}
             onMouseLeave={handleMoonInteractEnd}
@@ -206,7 +206,7 @@ export default function AtmosphereLayer() {
             onTouchEnd={handleMoonInteractEnd}
             onTouchCancel={handleMoonInteractEnd}
           >
-            <span style={{ fontSize: '0.9rem', opacity: 0.6 }}>{moonPhase}</span>
+            <span style={{ fontSize: '1.2rem' }}>{moonPhase}</span>
           </motion.div>
         </motion.div>
       </AnimatePresence>
