@@ -197,16 +197,20 @@ export default function PuzzleReveal() {
 
   useEffect(() => {
     if (!showReveal) {
-      setActive(null);
-      setPhase('idle');
-      setShowHeart(false);
-      return;
+      const tReset = setTimeout(() => {
+        setActive(null);
+        setPhase('idle');
+        setShowHeart(false);
+      }, 50);
+      return () => clearTimeout(tReset);
     }
 
-    setPhase('running');
-    setShowHeart(false);
-    setShowSubtitle(false);
-    setShowSecretMessage(false);
+    setTimeout(() => {
+      setPhase('running');
+      setShowHeart(false);
+      setShowSubtitle(false);
+      setShowSecretMessage(false);
+    }, 0);
 
     // Start ambient rain audio
     audioRef.current = createRainAudio();

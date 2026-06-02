@@ -43,9 +43,9 @@ export function AtmosphereProvider({ children }) {
   const [moonPhase] = useState(getMoonPhase);
 
   const idleTimer = useRef(null);
-  const sessionStart = useRef(Date.now());
+  const sessionStart = useRef(null);
   const slowHoverCount = useRef(0);
-  const lastMoveTime = useRef(Date.now());
+  const lastMoveTime = useRef(null);
 
   // Late-night detection (22:00 – 05:00)
   useEffect(() => {
@@ -82,6 +82,7 @@ export function AtmosphereProvider({ children }) {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const now = Date.now();
+          if (!lastMoveTime.current) lastMoveTime.current = now;
           const dt = now - lastMoveTime.current;
           const dx = e.clientX - lastX;
           const dy = e.clientY - lastY;
@@ -103,6 +104,7 @@ export function AtmosphereProvider({ children }) {
   // Trust level — increases with time and exploration depth
   useEffect(() => {
     const compute = () => {
+      if (!sessionStart.current) sessionStart.current = Date.now();
       const elapsed = (Date.now() - sessionStart.current) / 1000;
       const storyVisits = parseInt(sessionStorage.getItem('ols_visits') || '0');
       const slowHovers = slowHoverCount.current;

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { MemoryFragment } from '../context/PuzzleContext';
 
 // ─── Rain Lines Effect ────────────────────────────────────────────────────────

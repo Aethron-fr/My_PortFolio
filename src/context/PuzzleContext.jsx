@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const PuzzleContext = createContext(null);
 export const usePuzzle = () => useContext(PuzzleContext);
@@ -49,7 +49,7 @@ export function PuzzleProvider({ children }) {
           if (JSON.stringify(prev) === JSON.stringify(stored)) return prev;
           return stored;
         });
-      } catch (_) {}
+      } catch(e) { /* ignore */ }
     };
     window.addEventListener('storage', sync);
     return () => window.removeEventListener('storage', sync);

@@ -16,15 +16,20 @@ export default function IdleMessages() {
 
   useEffect(() => {
     if (isIdle) {
-      const randomMsg = IDLE_MESSAGES[Math.floor(Math.random() * IDLE_MESSAGES.length)];
-      setMessage(randomMsg);
-      setVisible(true);
+      const tStart = setTimeout(() => {
+        const randomMsg = IDLE_MESSAGES[Math.floor(Math.random() * IDLE_MESSAGES.length)];
+        setMessage(randomMsg);
+        setVisible(true);
+      }, 0);
 
       // The message fades out on its own after 6 seconds even if still idle
       const t = setTimeout(() => setVisible(false), 6000);
-      return () => clearTimeout(t);
+      return () => {
+        clearTimeout(tStart);
+        clearTimeout(t);
+      };
     } else {
-      setVisible(false);
+      setTimeout(() => setVisible(false), 0);
     }
   }, [isIdle]);
 

@@ -107,8 +107,7 @@ export default function AtmosphereLayer() {
 
     if (!phrase) return; // All phrases shown this session
 
-    setIdlePhrase(phrase);
-    setShowIdlePhrase(true);
+    setTimeout(() => { setIdlePhrase(phrase); setShowIdlePhrase(true); }, 0);
 
     // Disappears after 6s
     const t = setTimeout(() => setShowIdlePhrase(false), 6_000);
@@ -175,8 +174,13 @@ export default function AtmosphereLayer() {
               color: 'rgba(220,230,255,0.5)',
               letterSpacing: '2px', zIndex: 100,
               display: 'flex', alignItems: 'center', gap: 8,
-              pointerEvents: 'none',
+              pointerEvents: 'auto', cursor: 'default',
             }}
+            onMouseEnter={handleMoonInteractStart}
+            onMouseLeave={handleMoonInteractEnd}
+            onTouchStart={handleMoonInteractStart}
+            onTouchEnd={handleMoonInteractEnd}
+            onTouchCancel={handleMoonInteractEnd}
           >
             <span style={{ fontSize: '0.9rem', opacity: 0.6 }}>{moonPhase}</span>
           </motion.div>

@@ -28,28 +28,7 @@ function SegmentedCountdown({ targetDate }) {
     return () => clearInterval(t);
   }, [targetDate]);
 
-  const Segment = ({ label, value }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-      <div style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: 8,
-        padding: '12px 14px',
-        backdropFilter: 'blur(10px)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
-      }}>
-        <span style={{
-          fontFamily: 'var(--font-mono)', fontSize: '1.4rem', fontWeight: 300,
-          color: 'rgba(255,255,255,0.9)', letterSpacing: '2px',
-        }}>{value}</span>
-      </div>
-      <span style={{
-        fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '2px',
-        color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase',
-      }}>{label}</span>
-    </div>
-  );
-
+  
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
@@ -140,6 +119,29 @@ function ExperienceModal({ isOpen, onClose }) {
     </AnimatePresence>
   );
 }
+
+
+const Segment = ({ label, value }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+    <div style={{
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      borderRadius: 8,
+      padding: '12px 14px',
+      backdropFilter: 'blur(10px)',
+      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+    }}>
+      <span style={{
+        fontFamily: 'var(--font-mono)', fontSize: '1.4rem', fontWeight: 300,
+        color: 'rgba(255,255,255,0.9)', letterSpacing: '2px',
+      }}>{value}</span>
+    </div>
+    <span style={{
+      fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '2px',
+      color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase',
+    }}>{label}</span>
+  </div>
+);
 
 export default function FeaturedSpotlight() {
   const navigate = useNavigate();
