@@ -88,6 +88,32 @@ function ThemeToggle() {
 
   const [isHovered, setIsHovered] = useState(false);
 
+  // High-tech UI mechanical click sound for tactile feedback
+  const playTechClick = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      // A sharp, high-tech 'snapping' frequency drop
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(isNight ? 900 : 1200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.04);
+      
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.04);
+    } catch(e) {
+      // Ignore audio errors silently
+    }
+  };
+
   useEffect(() => {
     const root = document.documentElement;
     root.classList.add('theme-transitioning');
@@ -103,63 +129,81 @@ function ThemeToggle() {
     return () => clearTimeout(t);
   }, [isNight]);
 
+  const handleToggle = () => {
+    playTechClick();
+    setIsNight(!isNight);
+  };
+
   return (
     <motion.button
-      onClick={() => setIsNight(!isNight)}
+      onClick={handleToggle}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 2.5, duration: 0.8, type: 'spring', stiffness: 200, damping: 20 }}
       whileHover={{ 
-        scale: 1.05, 
-        y: -4,
+        scale: 1.08, 
+        y: -5,
       }}
-      whileTap={{ scale: 0.9, rotate: 180 }} 
+      // Extreme mechanical spring compression on tap
+      whileTap={{ scale: 0.7, rotate: 180, transition: { type: 'spring', stiffness: 500, damping: 15 } }} 
       aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
       style={{
         position: 'fixed',
         bottom: 28,
         right: 28,
         zIndex: 9998,
-        width: 52,
-        height: 52,
+        width: 56, // Slightly larger for better touch target
+        height: 56,
         borderRadius: '50%',
         border: '1px solid',
         borderColor: isHovered 
-          ? 'rgba(255,255,255,0.25)' 
-          : 'rgba(255,255,255,0.05)',
+          ? 'rgba(255,255,255,0.4)' 
+          : 'rgba(255,255,255,0.08)',
         outline: 'none',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        // Ultra-modern frosted glass
         background: isNight
-          ? 'rgba(12, 13, 24, 0.45)'
-          : 'rgba(24, 20, 15, 0.45)',
+          ? 'rgba(10, 12, 22, 0.55)'
+          : 'rgba(255, 255, 255, 0.1)', // Brighter, clearer glass in day mode
         boxShadow: isHovered
-          ? (isNight ? '0 15px 35px rgba(80,110,255,0.4), inset 0 1px 0 rgba(255,255,255,0.1)' : '0 15px 35px rgba(255,180,30,0.4), inset 0 1px 0 rgba(255,255,255,0.1)')
-          : (isNight ? '0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02)' : '0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02)'),
-        backdropFilter: 'blur(12px) saturate(150%)',
-        WebkitBackdropFilter: 'blur(12px) saturate(150%)',
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          ? (isNight ? '0 20px 40px rgba(80,120,255,0.5), inset 0 2px 0 rgba(255,255,255,0.2)' : '0 20px 40px rgba(255,180,30,0.5), inset 0 2px 0 rgba(255,255,255,0.4)')
+          : (isNight ? '0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)' : '0 8px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2)'),
+        backdropFilter: 'blur(16px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
+      {/* Techy rotating dashed inner ring */}
+      <motion.div
+        animate={{ rotate: isHovered ? (isNight ? 90 : -90) : 0, opacity: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.5, type: 'spring' }}
+        style={{
+          position: 'absolute', inset: 4,
+          borderRadius: '50%',
+          border: '1px dashed',
+          borderColor: isNight ? 'rgba(100,150,255,0.3)' : 'rgba(255,150,50,0.3)',
+          pointerEvents: 'none',
+        }}
+      />
+
       {/* Dynamic ambient backdrop that blooms on hover */}
       <motion.div
         animate={{
-          opacity: isHovered ? 0.8 : 0.2,
-          scale: isHovered ? 1.5 : 1,
+          opacity: isHovered ? 0.9 : 0.15,
+          scale: isHovered ? 1.6 : 1,
         }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         style={{
           position: 'absolute',
           inset: 0,
           borderRadius: '50%',
           background: isNight
-            ? 'radial-gradient(circle, rgba(100,140,255,0.3) 0%, transparent 60%)'
-            : 'radial-gradient(circle, rgba(255,190,40,0.3) 0%, transparent 60%)',
+            ? 'radial-gradient(circle, rgba(100,150,255,0.35) 0%, transparent 60%)'
+            : 'radial-gradient(circle, rgba(255,200,50,0.35) 0%, transparent 60%)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
@@ -172,15 +216,15 @@ function ThemeToggle() {
             initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
             animate={{ opacity: 1, rotate: isHovered ? -15 : 0, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
-            transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 25 }}
+            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
             style={{ zIndex: 1 }}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
                 d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"
-                fill={isHovered ? "#fff" : "rgba(200,215,255,0.85)"}
-                filter={isHovered ? "drop-shadow(0 0 8px rgba(160,190,255,0.9))" : "none"}
-                style={{ transition: 'all 0.4s ease' }}
+                fill={isHovered ? "#fff" : "rgba(220,230,255,0.9)"}
+                filter={isHovered ? "drop-shadow(0 0 10px rgba(160,200,255,1))" : "none"}
+                style={{ transition: 'all 0.3s ease' }}
               />
             </svg>
           </motion.div>
@@ -190,11 +234,11 @@ function ThemeToggle() {
             initial={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
             animate={{ opacity: 1, rotate: isHovered ? 45 : 0, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
-            transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 25 }}
+            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
             style={{ zIndex: 1 }}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="5" fill={isHovered ? "#fff" : "rgba(255,200,30,0.9)"} style={{ transition: 'all 0.4s ease' }} />
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="5" fill={isHovered ? "#fff" : "rgba(255,210,40,1)"} style={{ transition: 'all 0.3s ease' }} />
               {[0,45,90,135,180,225,270,315].map((deg, i) => {
                 const rad = (deg * Math.PI) / 180;
                 return (
@@ -202,10 +246,10 @@ function ThemeToggle() {
                     key={i}
                     x1={12 + 7.5 * Math.cos(rad)} y1={12 + 7.5 * Math.sin(rad)}
                     x2={12 + 9.5 * Math.cos(rad)} y2={12 + 9.5 * Math.sin(rad)}
-                    stroke={isHovered ? "#fff" : "rgba(255,190,20,0.8)"}
-                    strokeWidth="2"
+                    stroke={isHovered ? "#fff" : "rgba(255,200,40,0.9)"}
+                    strokeWidth="2.2"
                     strokeLinecap="round"
-                    style={{ transition: 'all 0.4s ease' }}
+                    style={{ transition: 'all 0.3s ease' }}
                   />
                 );
               })}
