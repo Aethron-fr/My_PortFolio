@@ -160,11 +160,11 @@ const FeatureCard = ({
             fontSize: '1.1rem', color: 'rgba(255, 255, 255, 0.7)',
             lineHeight: 1.8, fontWeight: 300, marginTop: '8px'
           }}>
-            <p style={{ margin: 0 }}>This website contains secrets.</p>
-            <p style={{ margin: 0 }}>Some appear after waiting. Some require exploration.</p>
-            <p style={{ margin: 0 }}>Some are intentionally difficult to discover.</p>
+            <p style={{ margin: 0 }}>This architecture contains deliberate secrets.</p>
+            <p style={{ margin: 0 }}>Some reveal themselves only to those who wait in the dark. Some demand deep exploration.</p>
+            <p style={{ margin: 0 }}>Not everything is designed to be found.</p>
             <p style={{ margin: 0, color: 'rgba(255, 255, 255, 0.4)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', marginTop: '16px' }}>
-              Not everything is shown immediately.
+              But everything has a purpose.
             </p>
           </div>
         )}
@@ -254,15 +254,14 @@ export default function OneLastSmileFeatures() {
         <FeatureCard 
           className="bento-card-hero"
           title="OneLastSmile" 
-          subtitle="The most ambitious project I have ever built. A cinematic web experience created as a personal gift, exploring memory, permanence, emotion and digital storytelling."
+          subtitle="More than a portfolio—a digital monument. Built as a deeply personal cinematic experience that explores human memory, emotional permanence, and the absolute boundaries of narrative web architecture."
           items={[
-            "Multi-phase narrative journey",
-            "Emotional decision system",
-            "Permanent endings",
-            "Offline Keepsake Generator",
-            "Hidden discoveries",
-            "Return visitor memory",
-            "Atmospheric audio design"
+            "Four-Phase Narrative Arc",
+            "Permanent Consequences",
+            "Stateful Memory Engine",
+            "Procedural Keepsake Generation",
+            "Adaptive Audio Soundscapes",
+            "Time-Aware Environments"
           ]}
           delay={0.1}
           accentColor="#0ea5e9" // Cyan
@@ -275,12 +274,11 @@ export default function OneLastSmileFeatures() {
           className="bento-card-emotional"
           title="Emotional Design" 
           items={[
-            "Cinematic storytelling",
-            "Music-driven immersion",
-            "Emotional progression",
-            "One-time philosophy",
-            "Memory interactions",
-            "Narrative pacing"
+            "Psychological Pacing",
+            "Music-Driven Euphoria",
+            "One-Time Experience Model",
+            "Cinematic Visual Language",
+            "Empathy-First Architecture"
           ]}
           delay={0.2}
           accentColor="#f43f5e" // Purple/Pink
@@ -292,12 +290,11 @@ export default function OneLastSmileFeatures() {
           className="bento-card-interaction"
           title="Interaction System" 
           items={[
-            "Hidden puzzles",
-            "Memory fragments",
-            "Secret discoveries",
-            "Interactive reveals",
-            "Context-aware responses",
-            "Progressive exploration"
+            "Zero-Guidance Exploration",
+            "Physics-Based UI Feedback",
+            "Context-Aware Responses",
+            "Hidden ARG-Style Puzzles",
+            "Rewarding Deep Curiosity"
           ]}
           delay={0.3}
           accentColor="#8b5cf6" // Violet
@@ -309,12 +306,11 @@ export default function OneLastSmileFeatures() {
           className="bento-card-tech"
           title="Architecture" 
           items={[
-            "React",
-            "Framer Motion",
-            "Context API",
-            "Local Storage",
-            "Dynamic State",
-            "Custom Logic"
+            "React 18 Concurrent State",
+            "Hardware-Accelerated Motion",
+            "Global Context Injection",
+            "Persistent Storage Matrix",
+            "Custom Render-Loop Logic"
           ]}
           delay={0.4}
           accentColor="#10b981" // Emerald
@@ -326,12 +322,11 @@ export default function OneLastSmileFeatures() {
           className="bento-card-effects"
           title="Advanced Effects" 
           items={[
-            "Real-time lunar system",
-            "Cinematic grain",
-            "Glassmorphism layers",
-            "Dynamic atmosphere",
-            "Advanced motion",
-            "Responsive visual arch"
+            "Real-Time Lunar Tracking",
+            "Procedural Film Grain",
+            "Deep Glassmorphism",
+            "Atmospheric Weather Engine",
+            "Magnetic Hover Physics"
           ]}
           delay={0.5}
           accentColor="#f59e0b" // Amber
@@ -343,10 +338,10 @@ export default function OneLastSmileFeatures() {
           className="bento-card-audio"
           title="Audio Engine" 
           items={[
-            "Web Audio API",
-            "Procedural ambient sound",
-            "UI click synthesis",
-            "Environmental layers"
+            "Spatial Web Audio API",
+            "Algorithmic Ambient Drones",
+            "Synthesized Haptic Clicks",
+            "Emotionally Reactive Stems"
           ]}
           delay={0.6}
           accentColor="#3b82f6" // Blue
