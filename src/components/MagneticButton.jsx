@@ -7,16 +7,18 @@ export default function MagneticButton({
   onClick,
   style,
   className,
-  intensity = 0.4,
+  intensity = 0.1, // Drastically reduced for a subtle, premium feel
   withAudio = true,
-  glowColor = 'rgba(255,255,255,0.15)'
+  glowColor = 'rgba(255,255,255,0.08)',
+  ...props
 }) {
   const ref = useRef(null);
   
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
+  // Softer spring for a more elegant, expensive feel
+  const springConfig = { stiffness: 200, damping: 20, mass: 0.2 };
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
 
@@ -26,6 +28,7 @@ export default function MagneticButton({
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
+    // Very slight magnetic pull (max 5-10px)
     x.set((e.clientX - centerX) * intensity);
     y.set((e.clientY - centerY) * intensity);
   };
@@ -47,9 +50,8 @@ export default function MagneticButton({
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       whileHover={{ 
-        scale: 1.03,
-        boxShadow: `0 10px 30px ${glowColor}`,
-        borderColor: glowColor.replace('0.15', '0.4').replace('0.1', '0.3'), // bump opacity
+        scale: 1.02,
+        boxShadow: `0 8px 24px ${glowColor}`,
       }}
       whileTap={{ scale: 0.97 }}
       style={{
@@ -58,6 +60,7 @@ export default function MagneticButton({
         ...style
       }}
       className={className}
+      {...props}
     >
       {children}
     </motion.button>
