@@ -30,7 +30,7 @@ const FeatureCard = ({
   const spotlightStyle = useMotionTemplate`
     radial-gradient(
       450px circle at ${mouseX}px ${mouseY}px,
-      rgba(255,255,255,0.04),
+      ${accentColor}15,
       transparent 80%
     )
   `;
@@ -45,11 +45,11 @@ const FeatureCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
+      whileHover={{ y: -4, boxShadow: 'var(--shadow-lg)' }}
       className={`bento-card ${className}`}
       style={{
-        background: 'rgba(10, 10, 14, 0.65)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-glass)',
         borderRadius: '24px',
         padding: isHero ? '48px' : '32px',
         backdropFilter: 'blur(20px)',
@@ -60,6 +60,7 @@ const FeatureCard = ({
         overflow: 'hidden',
         cursor: 'default',
         transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+        boxShadow: 'var(--shadow-sm)',
         ...style
       }}
     >
@@ -88,11 +89,10 @@ const FeatureCard = ({
             width: isHero ? '56px' : '40px', 
             height: isHero ? '56px' : '40px', 
             borderRadius: '12px',
-            background: `linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))`,
-            border: `1px solid rgba(255,255,255,0.06)`,
+            background: `linear-gradient(135deg, ${accentColor}1A, ${accentColor}05)`,
+            border: `1px solid ${accentColor}33`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', 
             color: accentColor,
-            boxShadow: `inset 0 0 20px ${accentColor}15`
           }}>
             {icon}
           </div>
@@ -101,7 +101,7 @@ const FeatureCard = ({
               fontFamily: 'var(--font-mono)', 
               fontSize: isHero ? '1rem' : '0.8rem', 
               letterSpacing: '3px',
-              color: 'rgba(255,255,255,0.95)', 
+              color: 'var(--text-primary)', 
               textTransform: 'uppercase', 
               margin: 0,
             }}>
@@ -113,7 +113,7 @@ const FeatureCard = ({
         {/* Optional Subtitle for Hero */}
         {subtitle && (
           <p style={{ 
-            fontSize: '1.2rem', color: 'rgba(255,255,255,0.85)', 
+            fontSize: '1.2rem', color: 'var(--text-secondary)', 
             lineHeight: 1.6, fontWeight: 300, margin: '8px 0 16px 0',
             maxWidth: '90%'
           }}>
@@ -143,8 +143,8 @@ const FeatureCard = ({
                 <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: accentColor, opacity: 0.8 }} />
                 <span style={{ 
                   fontSize: isHero ? '1.05rem' : '0.9rem', 
-                  color: 'rgba(255,255,255,0.6)', 
-                  fontWeight: 300, 
+                  color: 'var(--text-secondary)', 
+                  fontWeight: 400, 
                   letterSpacing: '0.3px' 
                 }}>
                   {item}
@@ -158,13 +158,13 @@ const FeatureCard = ({
         {isFooter && !items && (
           <div style={{
             display: 'flex', flexDirection: 'column', gap: '16px',
-            fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)',
-            lineHeight: 1.8, fontWeight: 300, marginTop: '8px'
+            fontSize: '1.1rem', color: 'var(--text-secondary)',
+            lineHeight: 1.8, fontWeight: 400, marginTop: '8px'
           }}>
             <p style={{ margin: 0 }}>This website contains secrets.</p>
             <p style={{ margin: 0 }}>Some appear after waiting. Some require exploration.</p>
             <p style={{ margin: 0 }}>Some are intentionally difficult to discover.</p>
-            <p style={{ margin: 0, color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', marginTop: '16px' }}>
+            <p style={{ margin: 0, color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', marginTop: '16px' }}>
               Not everything is shown immediately.
             </p>
           </div>
@@ -177,7 +177,6 @@ const FeatureCard = ({
 
 export default function OneLastSmileFeatures() {
   
-  // Custom CSS for the Bento Grid layout to handle responsiveness cleanly
   useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
@@ -240,11 +239,11 @@ export default function OneLastSmileFeatures() {
           Behind The Experience
         </div>
         <h3 style={{
-          fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 300, color: 'rgba(255, 255, 255, 0.95)',
+          fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 400, color: 'var(--text-primary)',
           margin: '0 auto', letterSpacing: '-0.5px', maxWidth: '800px', lineHeight: 1.4
         }}>
           This portfolio is not a collection of pages. <br />
-          <span style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <span style={{ color: 'var(--text-dim)' }}>
             It is a living system built around emotion, interaction, atmosphere and storytelling.
           </span>
         </h3>
