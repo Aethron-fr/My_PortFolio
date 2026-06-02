@@ -10,7 +10,6 @@ class GlobalAudio {
     // Nodes
     this.oscillators = [];
     this.lfoNodes = [];
-    this.noiseNode = null;
     
     // State
     this.initialized = false;
@@ -50,11 +49,11 @@ class GlobalAudio {
       this.droneGain.gain.value = 0.15;
       this.droneGain.connect(this.masterGain);
 
-      // Fundmental Drones (A1 = 55Hz, E2 = 82.41Hz, A2 = 110Hz)
-      const freqs = [55.0, 82.41, 110.0];
+      // Fundamental Drones (Calm & Classic: C3, G3, C4 - Major Pentatonic feeling)
+      const freqs = [130.81, 196.00, 261.63];
       freqs.forEach((freq, i) => {
         const osc = this.ctx.createOscillator();
-        osc.type = i === 0 ? 'sine' : 'triangle';
+        osc.type = 'sine'; // All sine waves for ultra-smooth calm tone
         osc.frequency.value = freq;
         
         const oscGain = this.ctx.createGain();
@@ -79,31 +78,17 @@ class GlobalAudio {
         this.lfoNodes.push(lfo);
       });
 
-      // 3. Texture Layer (Rain/Vinyl crackle feel)
+      // 3. Texture Layer (Replaced with higher harmonic sine for scroll depth)
       this.textureGain = this.ctx.createGain();
-      this.textureGain.gain.value = 0; // Brought up by scroll depth
+      this.textureGain.gain.value = 0; 
       this.textureGain.connect(this.masterGain);
 
-      const bufferSize = 4096;
-      this.noiseNode = this.ctx.createScriptProcessor(bufferSize, 1, 1);
-      let lastOut = 0.0;
-      this.noiseNode.onaudioprocess = (e) => {
-        const out = e.outputBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          const white = Math.random() * 2 - 1;
-          out[i] = (lastOut + (0.02 * white)) / 1.02;
-          lastOut = out[i];
-          out[i] *= 3.0; // Brown noise texture
-        }
-      };
-      
-      const textureFilter = this.ctx.createBiquadFilter();
-      textureFilter.type = 'bandpass';
-      textureFilter.frequency.value = 400;
-      textureFilter.Q.value = 0.8;
-      
-      this.noiseNode.connect(textureFilter);
-      textureFilter.connect(this.textureGain);
+      const highOsc = this.ctx.createOscillator();
+      highOsc.type = 'sine';
+      highOsc.frequency.value = 523.25; // C5 (Calm bright harmonic)
+      highOsc.connect(this.textureGain);
+      highOsc.start();
+      this.oscillators.push(highOsc);
 
       // 4. OneLastSmile Piano Textures
       this.pianoGain = this.ctx.createGain();
@@ -173,9 +158,9 @@ class GlobalAudio {
     this.scrollDepth = depth;
     const now = this.ctx.currentTime;
     
-    // Deepen the drone and bring in texture (rain/dust) as they scroll
+    // Bring in a soft higher harmonic as they scroll deeper
     this.textureGain.gain.cancelScheduledValues(now);
-    const targetTexture = 0.05 + (depth * 0.15); // Max 0.20
+    const targetTexture = depth * 0.08; // Max 0.08, very subtle
     this.textureGain.gain.linearRampToValueAtTime(targetTexture, now + 1.0);
   }
 
@@ -212,7 +197,7 @@ class GlobalAudio {
 
   startPianoGenerativeLoop() {
     // Generates a soft, sporadic FM synthesis ping (like a distant piano)
-    const scale = [440.0, 493.88, 523.25, 659.25, 783.99]; // A Minor Pentatonic
+    const scale = [261.63, 329.63, 392.00, 523.25, 659.25]; // C Major Pentatonic (Calm, angelic)
     
     const playNote = () => {
       if (!this.isEnabled || this.currentSection !== 'onelastsmile') return;
