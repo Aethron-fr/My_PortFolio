@@ -338,7 +338,12 @@ export default function App() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(false);
   // BUG-005: timeGreeting now computed and displayed properly
-  const [timeGreeting] = useState(getTimeGreeting);
+  const [timeGreeting, setTimeGreeting] = useState(getTimeGreeting);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTimeGreeting(getTimeGreeting()), 10000);
+    return () => clearInterval(timer);
+  }, []);
   const [showHint, setShowHint] = useState(false);
 
   const progressBarRef = useRef(null);
