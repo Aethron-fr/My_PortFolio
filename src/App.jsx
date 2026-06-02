@@ -179,71 +179,79 @@ function ThemeToggle() {
     >
       {/* 3D Gyroscope Container */}
       <div style={{
-        position: 'absolute', inset: -30, 
-        perspective: '400px', 
+        position: 'absolute', inset: -32, 
+        perspective: '600px', 
         pointerEvents: 'none', 
         zIndex: -1,
         display: 'flex', alignItems: 'center', justifyContent: 'center'
       }}>
         
-        {/* Outer 3D Orbit */}
+        {/* Outer 3D Orbit - Sweeping Comet Trail */}
         <motion.div
-          initial={{ rotateX: 65, rotateY: 20, rotateZ: 0 }}
-          animate={{ rotateZ: 360 }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+          animate={{ 
+            rotateX: isHovered ? 0 : 65, 
+            rotateY: isHovered ? 0 : 25, 
+            rotateZ: 360 
+          }}
+          transition={{ 
+            rotateZ: { duration: isHovered ? 3 : 10, repeat: Infinity, ease: 'linear' },
+            rotateX: { duration: 0.5, type: 'spring', stiffness: 300, damping: 20 },
+            rotateY: { duration: 0.5, type: 'spring', stiffness: 300, damping: 20 }
+          }}
           style={{
-            position: 'absolute', inset: 6,
+            position: 'absolute', inset: 4,
             borderRadius: '50%',
-            border: '1.5px solid',
-            borderColor: isNight ? 'rgba(100,160,255,0.15)' : 'rgba(255,180,50,0.15)',
+            border: '1px solid',
+            borderColor: isNight ? 'rgba(100,160,255,0.1)' : 'rgba(255,180,50,0.1)',
             transformStyle: 'preserve-3d',
           }}
         >
-          {/* Planet */}
+          {/* Sweeping Neon Trail */}
           <div style={{
-            position: 'absolute', top: -3, left: '50%', marginLeft: -3,
-            width: 6, height: 6, borderRadius: '50%',
-            background: isNight ? '#8cb4ff' : '#ffb432',
-            boxShadow: isNight ? '0 0 15px #8cb4ff, 0 0 30px #8cb4ff' : '0 0 15px #ffb432, 0 0 30px #ffb432'
+            position: 'absolute', inset: -2, borderRadius: '50%',
+            background: isNight ? 'conic-gradient(from 0deg, transparent 60%, rgba(100,160,255,0.3) 85%, rgba(160,210,255,1) 100%)' : 'conic-gradient(from 0deg, transparent 60%, rgba(255,180,50,0.3) 85%, rgba(255,230,100,1) 100%)',
+            WebkitMaskImage: 'radial-gradient(transparent 66%, black 67%)',
+            maskImage: 'radial-gradient(transparent 66%, black 67%)',
+            filter: isNight ? 'drop-shadow(0 0 8px rgba(100,150,255,0.8))' : 'drop-shadow(0 0 8px rgba(255,180,50,0.8))'
           }} />
+          
+          {/* Tactical Crosshairs (appear only on hover) */}
+          <motion.div animate={{ opacity: isHovered ? 1 : 0 }} style={{ position: 'absolute', top: -3, left: '50%', marginLeft: -1, width: 2, height: 6, background: isNight ? '#8cb4ff' : '#ffb432' }} />
+          <motion.div animate={{ opacity: isHovered ? 1 : 0 }} style={{ position: 'absolute', bottom: -3, left: '50%', marginLeft: -1, width: 2, height: 6, background: isNight ? '#8cb4ff' : '#ffb432' }} />
+          <motion.div animate={{ opacity: isHovered ? 1 : 0 }} style={{ position: 'absolute', left: -3, top: '50%', marginTop: -1, height: 2, width: 6, background: isNight ? '#8cb4ff' : '#ffb432' }} />
+          <motion.div animate={{ opacity: isHovered ? 1 : 0 }} style={{ position: 'absolute', right: -3, top: '50%', marginTop: -1, height: 2, width: 6, background: isNight ? '#8cb4ff' : '#ffb432' }} />
         </motion.div>
 
-        {/* Inner 3D Orbit */}
+        {/* Inner 3D Orbit - Counter-spinning Dashed Trail */}
         <motion.div
-          initial={{ rotateX: -55, rotateY: -25, rotateZ: 0 }}
-          animate={{ rotateZ: -360 }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          animate={{ 
+            rotateX: isHovered ? 0 : -55, 
+            rotateY: isHovered ? 0 : -30, 
+            rotateZ: -360 
+          }}
+          transition={{ 
+            rotateZ: { duration: isHovered ? 2 : 7, repeat: Infinity, ease: 'linear' },
+            rotateX: { duration: 0.5, type: 'spring', stiffness: 300, damping: 20 },
+            rotateY: { duration: 0.5, type: 'spring', stiffness: 300, damping: 20 }
+          }}
           style={{
             position: 'absolute', inset: 12,
             borderRadius: '50%',
             border: '1.5px dashed',
-            borderColor: isNight ? 'rgba(140,180,255,0.25)' : 'rgba(255,200,80,0.25)',
+            borderColor: isNight ? 'rgba(140,180,255,0.15)' : 'rgba(255,200,80,0.15)',
             transformStyle: 'preserve-3d',
           }}
         >
-          {/* Satellite */}
+          {/* Inner White Comet Tail */}
           <div style={{
-            position: 'absolute', bottom: -2, left: '20%',
-            width: 4, height: 4, borderRadius: '50%',
-            background: '#fff',
-            boxShadow: '0 0 10px #fff'
+            position: 'absolute', inset: -2, borderRadius: '50%',
+            background: 'conic-gradient(from 180deg, transparent 70%, rgba(255,255,255,0.3) 95%, rgba(255,255,255,1) 100%)',
+            WebkitMaskImage: 'radial-gradient(transparent 65%, black 66%)',
+            maskImage: 'radial-gradient(transparent 65%, black 66%)',
+            filter: 'drop-shadow(0 0 5px rgba(255,255,255,0.9))'
           }} />
         </motion.div>
       </div>
-
-      {/* Techy rotating dashed inner ring (appears on hover) */}
-      <motion.div
-        animate={{ rotate: isHovered ? (isNight ? 90 : -90) : 0, opacity: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.5, type: 'spring' }}
-        style={{
-          position: 'absolute', inset: 4,
-          borderRadius: '50%',
-          border: '1px dashed',
-          borderColor: isNight ? 'rgba(100,150,255,0.3)' : 'rgba(255,150,50,0.3)',
-          pointerEvents: 'none',
-        }}
-      />
-
       {/* Dynamic ambient backdrop that blooms on hover */}
       <motion.div
         animate={{
