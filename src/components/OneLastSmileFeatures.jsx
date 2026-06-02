@@ -45,10 +45,10 @@ const FeatureCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
+      whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.6)' }}
       className={`bento-card ${className}`}
       style={{
-        background: 'rgba(10, 10, 14, 0.85)', // Cinematic dark tone
+        background: 'rgba(6, 6, 10, 0.95)', // Deep, solid black tone to prevent washed-out grey in Day Mode
         border: '1px solid rgba(255, 255, 255, 0.08)',
         borderRadius: '24px',
         padding: isHero ? '48px' : '32px',
