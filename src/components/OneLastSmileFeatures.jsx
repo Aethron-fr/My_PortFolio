@@ -1,32 +1,22 @@
 import { motion, useMotionValue, useMotionTemplate } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { Sparkles, Heart, MousePointer2, Layers, Cpu, Volume2, KeySquare } from 'lucide-react';
 
-const features = {
-  emotional: [
-    { title: 'Cinematic Narrative', desc: 'A multi-phase storytelling structure.' },
-    { title: 'One-Time Concept', desc: 'An experience designed to be felt, not repeated.' },
-    { title: 'Emotional Progression', desc: 'Pacing that breathes with the user.' },
-    { title: 'Interactive Choices', desc: 'Decisions carrying permanent weight.' },
-  ],
-  interactive: [
-    { title: 'Discoverable Secrets', desc: 'Quiet moments waiting to be found.' },
-    { title: 'Contextual Immersion', desc: 'Responses tuned to your environment.' },
-    { title: 'Hidden Fragments', desc: 'Pieces of memory scattered across the UI.' },
-    { title: 'Dynamic Ecosystem', desc: 'A lunar system tied to real-world time.' },
-  ],
-  technical: [
-    { title: 'Custom Audio Engine', desc: 'Web Audio API procedural synthesis.' },
-    { title: 'Advanced State', desc: 'Context-driven React architecture.' },
-    { title: 'CSS 3D Physics', desc: 'High-tension Framer Motion mechanics.' },
-    { title: 'Lunar Algorithms', desc: 'Real-time ephemeris calculations.' },
-  ]
-};
-
-const FeatureCard = ({ title, items, delay, icon, accentColor }) => {
+const FeatureCard = ({ 
+  title, 
+  subtitle,
+  items, 
+  icon, 
+  delay, 
+  accentColor, 
+  className = "",
+  style = {},
+  isHero = false,
+  isFooter = false
+}) => {
   const boundingRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
   
-  // Mouse tracking for the subtle spotlight
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -37,11 +27,10 @@ const FeatureCard = ({ title, items, delay, icon, accentColor }) => {
     mouseY.set(e.clientY - rect.top);
   };
 
-  // Extremely subtle, clean spotlight
   const spotlightStyle = useMotionTemplate`
     radial-gradient(
-      400px circle at ${mouseX}px ${mouseY}px,
-      rgba(255,255,255,0.03),
+      450px circle at ${mouseX}px ${mouseY}px,
+      rgba(255,255,255,0.04),
       transparent 80%
     )
   `;
@@ -56,25 +45,24 @@ const FeatureCard = ({ title, items, delay, icon, accentColor }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
+      className={`bento-card ${className}`}
       style={{
-        background: 'rgba(10, 10, 12, 0.6)',
+        background: 'rgba(10, 10, 14, 0.65)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
-        borderRadius: '20px',
-        padding: '36px',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
+        borderRadius: '24px',
+        padding: isHero ? '48px' : '32px',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '24px',
         position: 'relative',
         overflow: 'hidden',
         cursor: 'default',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-        transition: 'border-color 0.4s ease, box-shadow 0.4s ease'
+        transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+        ...style
       }}
     >
-      {/* Clean hover border & spotlight */}
       <motion.div
         style={{
           position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
@@ -83,74 +71,161 @@ const FeatureCard = ({ title, items, delay, icon, accentColor }) => {
         }}
       />
       
-      {/* Minimalist Top Glow */}
+      {/* Dynamic Top Glow matching accent color */}
       <div style={{
-        position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px',
-        background: `linear-gradient(90deg, transparent, ${accentColor}44, transparent)`,
-        opacity: isHovering ? 1 : 0.3,
+        position: 'absolute', top: 0, left: '10%', right: '10%', height: '1px',
+        background: `linear-gradient(90deg, transparent, ${accentColor}66, transparent)`,
+        opacity: isHovering ? 1 : 0.15,
         transition: 'opacity 0.5s ease',
         zIndex: 2
       }} />
 
-      {/* Header Section */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 2 }}>
-        <div style={{
-          width: '44px', height: '44px', borderRadius: '12px',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', 
-          color: accentColor,
-        }}>
-          {icon}
-        </div>
-        <h3 style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.85rem', letterSpacing: '2px',
-          color: 'rgba(255, 255, 255, 0.9)', textTransform: 'uppercase', margin: 0,
-          fontWeight: 400
-        }}>
-          {title}
-        </h3>
-      </div>
-
-      {/* List Items - Clean Typography */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '12px', position: 'relative', zIndex: 2 }}>
-        {items.map((item, i) => (
-          <div 
-            key={i} 
-            style={{ 
-              borderLeft: `1px solid rgba(255, 255, 255, 0.1)`, 
-              paddingLeft: '16px',
-            }}
-          >
-            <div style={{ fontSize: '1rem', color: 'rgba(255, 255, 255, 0.85)', fontWeight: 400, marginBottom: '6px', letterSpacing: '0.3px' }}>
-              {item.title}
-            </div>
-            <div style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.4)', lineHeight: 1.6, fontWeight: 300 }}>
-              {item.desc}
-            </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative', zIndex: 2, height: '100%' }}>
+        
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{
+            width: isHero ? '56px' : '40px', 
+            height: isHero ? '56px' : '40px', 
+            borderRadius: '12px',
+            background: `linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))`,
+            border: `1px solid rgba(255,255,255,0.06)`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            color: accentColor,
+            boxShadow: `inset 0 0 20px ${accentColor}15`
+          }}>
+            {icon}
           </div>
-        ))}
+          <div>
+            <h3 style={{
+              fontFamily: 'var(--font-mono)', 
+              fontSize: isHero ? '1rem' : '0.8rem', 
+              letterSpacing: '3px',
+              color: 'rgba(255,255,255,0.95)', 
+              textTransform: 'uppercase', 
+              margin: 0,
+            }}>
+              {title}
+            </h3>
+          </div>
+        </div>
+
+        {/* Optional Subtitle for Hero */}
+        {subtitle && (
+          <p style={{ 
+            fontSize: '1.2rem', color: 'rgba(255,255,255,0.85)', 
+            lineHeight: 1.6, fontWeight: 300, margin: '8px 0 16px 0',
+            maxWidth: '90%'
+          }}>
+            {subtitle}
+          </p>
+        )}
+
+        {/* List Content */}
+        {items && (
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: isFooter ? 'row' : 'column', 
+            flexWrap: 'wrap',
+            gap: isHero ? '16px' : '12px', 
+            marginTop: 'auto',
+            paddingTop: '16px'
+          }}>
+            {items.map((item, i) => (
+              <div 
+                key={i} 
+                style={{ 
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  width: isFooter ? 'calc(25% - 12px)' : '100%',
+                  minWidth: isFooter ? '200px' : 'auto'
+                }}
+              >
+                <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: accentColor, opacity: 0.8 }} />
+                <span style={{ 
+                  fontSize: isHero ? '1.05rem' : '0.9rem', 
+                  color: 'rgba(255,255,255,0.6)', 
+                  fontWeight: 300, 
+                  letterSpacing: '0.3px' 
+                }}>
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Footer special text */}
+        {isFooter && !items && (
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: '16px',
+            fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)',
+            lineHeight: 1.8, fontWeight: 300, marginTop: '8px'
+          }}>
+            <p style={{ margin: 0 }}>This website contains secrets.</p>
+            <p style={{ margin: 0 }}>Some appear after waiting. Some require exploration.</p>
+            <p style={{ margin: 0 }}>Some are intentionally difficult to discover.</p>
+            <p style={{ margin: 0, color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', marginTop: '16px' }}>
+              Not everything is shown immediately.
+            </p>
+          </div>
+        )}
+
       </div>
     </motion.div>
   );
 };
 
 export default function OneLastSmileFeatures() {
-  return (
-    <div style={{ marginTop: '32px', position: 'relative', zIndex: 10 }}>
+  
+  // Custom CSS for the Bento Grid layout to handle responsiveness cleanly
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .bento-grid-container {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 24px;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
       
-      {/* Clean elegant connector line */}
-      <motion.div 
-        initial={{ height: 0, opacity: 0 }}
-        whileInView={{ height: 60, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          width: '1px', background: 'linear-gradient(to bottom, rgba(255,255,255,0.15), transparent)',
-          margin: '0 auto 60px',
-        }} 
-      />
+      @media (min-width: 768px) {
+        .bento-grid-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .bento-card-hero { grid-column: span 2; }
+        .bento-card-footer { grid-column: span 2; }
+      }
+      
+      @media (min-width: 1024px) {
+        .bento-grid-container {
+          grid-template-columns: repeat(3, 1fr);
+          grid-auto-rows: minmax(220px, auto);
+        }
+        .bento-card-hero {
+          grid-column: span 2;
+          grid-row: span 2;
+        }
+        .bento-card-emotional { grid-column: 3; grid-row: 1; }
+        .bento-card-interaction { grid-column: 3; grid-row: 2; }
+        .bento-card-tech { grid-column: 1; grid-row: 3; }
+        .bento-card-effects { grid-column: 2; grid-row: 3; }
+        .bento-card-audio { grid-column: 3; grid-row: 3; }
+        .bento-card-footer {
+          grid-column: span 3;
+          grid-row: 4;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
 
+  return (
+    <div style={{ marginTop: '80px', position: 'relative', zIndex: 10, paddingBottom: '80px' }}>
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -158,60 +233,138 @@ export default function OneLastSmileFeatures() {
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         style={{ textAlign: 'center', marginBottom: '80px' }}
       >
-        <h3 style={{
-          fontSize: '2rem', fontWeight: 300, color: 'rgba(255, 255, 255, 0.9)',
-          margin: 0, letterSpacing: '-0.5px'
-        }}>
-          Inside the Architecture
-        </h3>
-        <p style={{
+        <div style={{
           fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '4px',
-          color: 'rgba(255, 255, 255, 0.3)', textTransform: 'uppercase', marginTop: '16px'
+          color: 'var(--accent-primary)', textTransform: 'uppercase', marginBottom: '24px'
         }}>
-          What makes it different
-        </p>
+          Behind The Experience
+        </div>
+        <h3 style={{
+          fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 300, color: 'rgba(255, 255, 255, 0.95)',
+          margin: '0 auto', letterSpacing: '-0.5px', maxWidth: '800px', lineHeight: 1.4
+        }}>
+          This portfolio is not a collection of pages. <br />
+          <span style={{ color: 'rgba(255,255,255,0.4)' }}>
+            It is a living system built around emotion, interaction, atmosphere and storytelling.
+          </span>
+        </h3>
       </motion.div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '24px',
-        width: '100%',
-        padding: '0 16px'
-      }}>
+      <div className="bento-grid-container">
+        
+        {/* CARD 1: HERO (Span 2x2) */}
         <FeatureCard 
-          title="Emotional Design" 
-          items={features.emotional} 
+          className="bento-card-hero"
+          title="OneLastSmile" 
+          subtitle="The most ambitious project I have ever built. A cinematic web experience created as a personal gift, exploring memory, permanence, emotion and digital storytelling."
+          items={[
+            "Multi-phase narrative journey",
+            "Emotional decision system",
+            "Permanent endings",
+            "Offline Keepsake Generator",
+            "Hidden discoveries",
+            "Return visitor memory",
+            "Atmospheric audio design"
+          ]}
           delay={0.1}
-          accentColor="#e11d48" // Classic muted rose
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          }
+          accentColor="#0ea5e9" // Cyan
+          isHero={true}
+          icon={<Sparkles size={28} strokeWidth={1.5} />}
         />
+
+        {/* CARD 2: EMOTIONAL DESIGN (Top Right) */}
         <FeatureCard 
-          title="Interaction" 
-          items={features.interactive} 
+          className="bento-card-emotional"
+          title="Emotional Design" 
+          items={[
+            "Cinematic storytelling",
+            "Music-driven immersion",
+            "Emotional progression",
+            "One-time philosophy",
+            "Memory interactions",
+            "Narrative pacing"
+          ]}
           delay={0.2}
-          accentColor="#0284c7" // Classic muted azure
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-            </svg>
-          }
+          accentColor="#f43f5e" // Purple/Pink
+          icon={<Heart size={20} strokeWidth={1.5} />}
         />
+
+        {/* CARD 3: INTERACTION SYSTEM (Mid Right) */}
         <FeatureCard 
-          title="Architecture" 
-          items={features.technical} 
+          className="bento-card-interaction"
+          title="Interaction System" 
+          items={[
+            "Hidden puzzles",
+            "Memory fragments",
+            "Secret discoveries",
+            "Interactive reveals",
+            "Context-aware responses",
+            "Progressive exploration"
+          ]}
           delay={0.3}
-          accentColor="#7c3aed" // Classic muted violet
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-            </svg>
-          }
+          accentColor="#8b5cf6" // Violet
+          icon={<MousePointer2 size={20} strokeWidth={1.5} />}
         />
+
+        {/* CARD 4: TECHNICAL ARCHITECTURE (Bottom Left) */}
+        <FeatureCard 
+          className="bento-card-tech"
+          title="Architecture" 
+          items={[
+            "React",
+            "Framer Motion",
+            "Context API",
+            "Local Storage",
+            "Dynamic State",
+            "Custom Logic"
+          ]}
+          delay={0.4}
+          accentColor="#10b981" // Emerald
+          icon={<Cpu size={20} strokeWidth={1.5} />}
+        />
+
+        {/* CARD 5: ADVANCED EFFECTS (Bottom Mid) */}
+        <FeatureCard 
+          className="bento-card-effects"
+          title="Advanced Effects" 
+          items={[
+            "Real-time lunar system",
+            "Cinematic grain",
+            "Glassmorphism layers",
+            "Dynamic atmosphere",
+            "Advanced motion",
+            "Responsive visual arch"
+          ]}
+          delay={0.5}
+          accentColor="#f59e0b" // Amber
+          icon={<Layers size={20} strokeWidth={1.5} />}
+        />
+
+        {/* CARD 6: AUDIO ENGINE (Bottom Right) */}
+        <FeatureCard 
+          className="bento-card-audio"
+          title="Audio Engine" 
+          items={[
+            "Web Audio API",
+            "Procedural ambient sound",
+            "UI click synthesis",
+            "Environmental layers"
+          ]}
+          delay={0.6}
+          accentColor="#3b82f6" // Blue
+          icon={<Volume2 size={20} strokeWidth={1.5} />}
+        />
+
+        {/* CARD 7: HIDDEN DETAILS (Full Width Footer) */}
+        <FeatureCard 
+          className="bento-card-footer"
+          title="Hidden Details" 
+          delay={0.7}
+          accentColor="#a855f7" // Purple
+          isFooter={true}
+          icon={<KeySquare size={24} strokeWidth={1.5} />}
+        />
+
       </div>
     </div>
   );
