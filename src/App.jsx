@@ -177,7 +177,51 @@ function ThemeToggle() {
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      {/* Techy rotating dashed inner ring */}
+      {/* Outer Gyroscope Orbit (Slow, Clockwise) */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'absolute', inset: -18,
+          borderRadius: '50%',
+          border: '1px solid',
+          borderColor: isNight ? 'rgba(100,150,255,0.12)' : 'rgba(255,180,50,0.15)',
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      >
+        {/* Orbiting Planet */}
+        <div style={{
+          position: 'absolute', top: -3, left: '50%', transform: 'translateX(-50%)',
+          width: 5, height: 5, borderRadius: '50%',
+          background: isNight ? '#8cb4ff' : '#ffb432',
+          boxShadow: isNight ? '0 0 10px #8cb4ff, 0 0 20px #8cb4ff' : '0 0 10px #ffb432, 0 0 20px #ffb432'
+        }} />
+      </motion.div>
+
+      {/* Inner Gyroscope Orbit (Fast, Counter-Clockwise, Dashed) */}
+      <motion.div
+        animate={{ rotate: -360 }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'absolute', inset: -8,
+          borderRadius: '50%',
+          border: '1px dashed',
+          borderColor: isNight ? 'rgba(140,180,255,0.2)' : 'rgba(255,200,80,0.2)',
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      >
+        {/* Orbiting Satellite */}
+        <div style={{
+          position: 'absolute', bottom: -2, left: '20%',
+          width: 3, height: 3, borderRadius: '50%',
+          background: '#fff',
+          boxShadow: '0 0 8px #fff'
+        }} />
+      </motion.div>
+
+      {/* Techy rotating dashed inner ring (appears on hover) */}
       <motion.div
         animate={{ rotate: isHovered ? (isNight ? 90 : -90) : 0, opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.5, type: 'spring' }}
