@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import OneLastSmileFeatures from './OneLastSmileFeatures';
+import MagneticButton from './MagneticButton';
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
@@ -292,14 +293,9 @@ export default function FeaturedSpotlight() {
           maxWidth: 640,
           margin: '0 auto',
         }}>
-          <motion.button
-            whileHover={{
-              background: 'rgba(255,255,255,0.08)',
-              borderColor: 'rgba(255,255,255,0.4)',
-              color: '#fff',
-            }}
-            whileTap={{ scale: 0.97 }}
+          <MagneticButton
             onClick={() => setModalOpen(true)}
+            glowColor="rgba(255,255,255,0.15)"
             style={{
               background: 'rgba(255,255,255,0.03)',
               border: '1px solid rgba(255,255,255,0.15)',
@@ -316,16 +312,11 @@ export default function FeaturedSpotlight() {
             }}
           >
             ✦ Experience
-          </motion.button>
+          </MagneticButton>
 
-          <motion.button
-            whileHover={{
-              background: 'rgba(255,255,255,0.05)',
-              borderColor: 'rgba(255,255,255,0.2)',
-              color: '#fff',
-            }}
-            whileTap={{ scale: 0.97 }}
+          <MagneticButton
             onClick={() => handleNavigate('/case-study/onelastsmile')}
+            glowColor="rgba(255,255,255,0.08)"
             style={{
               background: 'transparent',
               border: '1px solid rgba(255,255,255,0.08)',
@@ -341,16 +332,11 @@ export default function FeaturedSpotlight() {
             }}
           >
             Case Study
-          </motion.button>
+          </MagneticButton>
 
-          <motion.button
-            whileHover={{
-              background: 'rgba(255,255,255,0.05)',
-              borderColor: 'rgba(255,255,255,0.2)',
-              color: '#fff',
-            }}
-            whileTap={{ scale: 0.97 }}
+          <MagneticButton
             onClick={() => handleNavigate('/journey/onelastsmile')}
+            glowColor="rgba(255,255,255,0.08)"
             style={{
               background: 'transparent',
               border: '1px solid rgba(255,255,255,0.08)',
@@ -366,7 +352,7 @@ export default function FeaturedSpotlight() {
             }}
           >
             Dev Journey
-          </motion.button>
+          </MagneticButton>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ import {
   User,
   ArrowUpRight,
 } from 'lucide-react';
+import MagneticButton from './components/MagneticButton';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
@@ -1159,7 +1160,7 @@ export default function App() {
                   />
                 </div>
 
-                <button
+                <MagneticButton
                   type="submit"
                   disabled={isSubmitting}
                   className="btn-neon-glow"
@@ -1167,7 +1168,7 @@ export default function App() {
                 >
                   <Send size={15} style={{ opacity: 0.7 }} />
                   {isSubmitting ? 'Sending…' : 'Send Message'}
-                </button>
+                </MagneticButton>
 
                 {submitSuccess && (
                   <div role="status" style={{ padding: '12px 16px', background: 'rgba(80,200,120,0.06)', border: '1px solid rgba(80,200,120,0.18)', color: 'rgba(140,220,160,0.85)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>

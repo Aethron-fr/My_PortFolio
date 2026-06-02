@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ExternalLink, Star, GitFork, Search, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // BUG-021: Fallback data uses 0 for stats — avoids showing fake/inflated numbers
 const FALLBACK_PROJECTS = [
@@ -188,10 +189,12 @@ export default function GithubProjects() {
           flexWrap: 'wrap'
         }}>
           {getLanguages().map((lang) => (
-            <button
+            <motion.button
               key={lang}
               onClick={() => setSelectedLanguage(lang)}
               aria-pressed={selectedLanguage === lang}
+              whileHover={{ scale: 1.05, y: -2, boxShadow: '0 5px 15px rgba(0,0,0,0.2)' }}
+              whileTap={{ scale: 0.95 }}
               style={{
                 padding: '8px 18px',
                 borderRadius: '50px',
@@ -202,11 +205,11 @@ export default function GithubProjects() {
                 fontSize: '0.85rem',
                 fontWeight: '600',
                 cursor: 'pointer',
-                transition: 'all 0.3s var(--transition-smooth)',
+                transition: 'border-color 0.3s, background 0.3s, color 0.3s',
               }}
             >
               {lang}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -264,15 +267,18 @@ export default function GithubProjects() {
                   <Sparkles size={12} style={{ color: 'var(--accent-primary)' }} />
                   Operational System
                 </span>
-                <a
+                <motion.a
                   href={repo.html_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`View ${repo.name} repository on GitHub`}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
                 >
                   <span>View Repository</span>
                   <ExternalLink size={14} />
-                </a>
+                </motion.a>
               </div>
             </div>
           ))

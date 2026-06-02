@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import MagneticButton from './MagneticButton';
 
 export default function FinalChoice({ onComplete }) {
   const [chosen, setChosen] = useState(false);
@@ -35,24 +36,23 @@ export default function FinalChoice({ onComplete }) {
             transition={{ duration: 2 }}
             style={{ display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'center' }}
           >
-            <button
+            <MagneticButton
               onClick={() => handleChoice('keep')}
+              glowColor="rgba(0,247,255,0.2)"
               style={{
                 background: 'transparent', border: '1px solid rgba(0,247,255,0.4)',
                 color: 'rgba(255,255,255,0.9)', padding: '16px 48px',
                 borderRadius: '30px', fontFamily: 'var(--font-mono)',
                 fontSize: '0.7rem', letterSpacing: '4px', textTransform: 'uppercase',
                 cursor: 'pointer', transition: 'all 0.4s ease',
-                boxShadow: '0 0 20px rgba(0,247,255,0.05)'
               }}
-              onMouseOver={e => e.target.style.background = 'rgba(0,247,255,0.05)'}
-              onMouseOut={e => e.target.style.background = 'transparent'}
             >
               Keep This Story
-            </button>
+            </MagneticButton>
 
-            <button
+            <MagneticButton
               onClick={() => handleChoice('fade')}
+              glowColor="rgba(255,255,255,0.1)"
               style={{
                 background: 'transparent', border: 'none',
                 color: 'rgba(255,255,255,0.3)', padding: '16px 48px',
@@ -60,11 +60,9 @@ export default function FinalChoice({ onComplete }) {
                 letterSpacing: '4px', textTransform: 'uppercase',
                 cursor: 'pointer', transition: 'all 0.4s ease'
               }}
-              onMouseOver={e => e.target.style.color = 'rgba(255,255,255,0.8)'}
-              onMouseOut={e => e.target.style.color = 'rgba(255,255,255,0.3)'}
             >
               Let It Fade Away
-            </button>
+            </MagneticButton>
           </motion.div>
         ) : (
           <motion.div
