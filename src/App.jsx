@@ -177,49 +177,59 @@ function ThemeToggle() {
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      {/* Outer Gyroscope Orbit (Slow, Clockwise) */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute', inset: -18,
-          borderRadius: '50%',
-          border: '1px solid',
-          borderColor: isNight ? 'rgba(100,150,255,0.12)' : 'rgba(255,180,50,0.15)',
-          pointerEvents: 'none',
-          zIndex: -1,
-        }}
-      >
-        {/* Orbiting Planet */}
-        <div style={{
-          position: 'absolute', top: -3, left: '50%', transform: 'translateX(-50%)',
-          width: 5, height: 5, borderRadius: '50%',
-          background: isNight ? '#8cb4ff' : '#ffb432',
-          boxShadow: isNight ? '0 0 10px #8cb4ff, 0 0 20px #8cb4ff' : '0 0 10px #ffb432, 0 0 20px #ffb432'
-        }} />
-      </motion.div>
+      {/* 3D Gyroscope Container */}
+      <div style={{
+        position: 'absolute', inset: -30, 
+        perspective: '400px', 
+        pointerEvents: 'none', 
+        zIndex: -1,
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
+        
+        {/* Outer 3D Orbit */}
+        <motion.div
+          initial={{ rotateX: 65, rotateY: 20, rotateZ: 0 }}
+          animate={{ rotateZ: 360 }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+          style={{
+            position: 'absolute', inset: 6,
+            borderRadius: '50%',
+            border: '1.5px solid',
+            borderColor: isNight ? 'rgba(100,160,255,0.15)' : 'rgba(255,180,50,0.15)',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* Planet */}
+          <div style={{
+            position: 'absolute', top: -3, left: '50%', marginLeft: -3,
+            width: 6, height: 6, borderRadius: '50%',
+            background: isNight ? '#8cb4ff' : '#ffb432',
+            boxShadow: isNight ? '0 0 15px #8cb4ff, 0 0 30px #8cb4ff' : '0 0 15px #ffb432, 0 0 30px #ffb432'
+          }} />
+        </motion.div>
 
-      {/* Inner Gyroscope Orbit (Fast, Counter-Clockwise, Dashed) */}
-      <motion.div
-        animate={{ rotate: -360 }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute', inset: -8,
-          borderRadius: '50%',
-          border: '1px dashed',
-          borderColor: isNight ? 'rgba(140,180,255,0.2)' : 'rgba(255,200,80,0.2)',
-          pointerEvents: 'none',
-          zIndex: -1,
-        }}
-      >
-        {/* Orbiting Satellite */}
-        <div style={{
-          position: 'absolute', bottom: -2, left: '20%',
-          width: 3, height: 3, borderRadius: '50%',
-          background: '#fff',
-          boxShadow: '0 0 8px #fff'
-        }} />
-      </motion.div>
+        {/* Inner 3D Orbit */}
+        <motion.div
+          initial={{ rotateX: -55, rotateY: -25, rotateZ: 0 }}
+          animate={{ rotateZ: -360 }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          style={{
+            position: 'absolute', inset: 12,
+            borderRadius: '50%',
+            border: '1.5px dashed',
+            borderColor: isNight ? 'rgba(140,180,255,0.25)' : 'rgba(255,200,80,0.25)',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* Satellite */}
+          <div style={{
+            position: 'absolute', bottom: -2, left: '20%',
+            width: 4, height: 4, borderRadius: '50%',
+            background: '#fff',
+            boxShadow: '0 0 10px #fff'
+          }} />
+        </motion.div>
+      </div>
 
       {/* Techy rotating dashed inner ring (appears on hover) */}
       <motion.div
