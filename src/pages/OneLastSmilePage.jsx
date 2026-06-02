@@ -153,7 +153,7 @@ export default function OneLastSmilePage() {
           stored['puzzle_idle'] = Date.now();
           localStorage.setItem('_p_clues', JSON.stringify(stored));
         }
-      } catch {}
+      } catch (e) { console.warn("Audio Context init error:", e); }
     }, 6000); // 6s after idle triggers (idle itself = 40s, so ~46s total here)
     return () => clearTimeout(t);
   }, [isIdle]);

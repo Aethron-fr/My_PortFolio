@@ -165,7 +165,7 @@ export default function CanvasBackground() {
             stored['puzzle_rain'] = Date.now();
             localStorage.setItem('_p_clues', JSON.stringify(stored));
           }
-        } catch {}
+        } catch (e) { console.warn("Canvas background puzzle error:", e); }
       }
     };
     window.addEventListener('click', handleBgClick);

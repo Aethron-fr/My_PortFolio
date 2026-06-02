@@ -157,7 +157,7 @@ class GlobalAudio {
       if (this.ctx) {
         this.ctx.close();
       }
-    } catch (_) {}
+    } catch (e) { console.warn("Audio cleanup error:", e); }
     this.initialized = false;
   }
 }

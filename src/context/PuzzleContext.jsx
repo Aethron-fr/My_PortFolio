@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect } from 'rea
 import { motion } from 'framer-motion';
 
 const PuzzleContext = createContext(null);
+// eslint-disable-next-line react-refresh/only-export-components
 export const usePuzzle = () => useContext(PuzzleContext);
 
 const REQUIRED_FRAGMENTS = 4;
@@ -29,7 +30,9 @@ function playDiscoverySound() {
     osc.stop(ctx.currentTime + 1.5);
     
     setTimeout(() => ctx.close().catch(() => {}), 2000);
-  } catch {}
+  } catch (e) {
+    console.warn("Puzzle discovery audio failed:", e);
+  }
 }
 
 export function PuzzleProvider({ children }) {
@@ -49,7 +52,7 @@ export function PuzzleProvider({ children }) {
           if (JSON.stringify(prev) === JSON.stringify(stored)) return prev;
           return stored;
         });
-      } catch(e) { /* ignore */ }
+      } catch(e) { console.warn("Puzzle sync error:", e); }
     };
     window.addEventListener('storage', sync);
     return () => window.removeEventListener('storage', sync);

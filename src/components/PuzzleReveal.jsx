@@ -46,10 +46,11 @@ function createRainAudio() {
           gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 2.5);
           setTimeout(() => ctx.close().catch(() => {}), 3000);
-        } catch {}
+        } catch (e) { console.warn("Audio stop error:", e); }
       },
     };
-  } catch {
+  } catch (e) {
+    console.warn("Brown noise generation error:", e);
     return { stop() {} };
   }
 }

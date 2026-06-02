@@ -22,7 +22,6 @@ import DeveloperJourney from './components/DeveloperJourney';
 import FeaturedSpotlight from './components/FeaturedSpotlight';
 import CreativeInfluences from './components/CreativeInfluences';
 import BeyondTheScreen from './components/BeyondTheScreen';
-import { usePuzzle } from './context/PuzzleContext';
 import './App.css';
 
 // BUG-010: Single source of truth for nav hrefs — used by both desktop and mobile navs
@@ -110,7 +109,7 @@ function ThemeToggle() {
       osc.start();
       osc.stop(ctx.currentTime + 0.04);
     } catch(e) {
-      // Ignore audio errors silently
+      console.warn("AudioContext error during click sound:", e);
     }
   };
 

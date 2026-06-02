@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAtmosphere } from '../context/AtmosphereContext';
-import { usePuzzle } from '../context/PuzzleContext';
 
 // Phrases that emerge on idle — rotate through once per visit, never repeat same session
 const IDLE_PHRASES = [
@@ -22,24 +21,21 @@ const NIGHT_PHRASES = [
   'never mind.',
 ];
 
-const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
 // Tracks which phrases have been shown this session
 const shownPhrases = new Set();
 let phraseIndex = 0;
-let nightPhraseIndex = 0;
 
 export default function AtmosphereLayer() {
   const { isLateNight, isIdle, trustLevel, moonPhase } = useAtmosphere();
-  const { triggerReveal } = usePuzzle();
+
   const [idlePhrase, setIdlePhrase] = useState('');
   const [showIdlePhrase, setShowIdlePhrase] = useState(false);
   const [showMoonSecret, setShowMoonSecret] = useState(false);
-  const [moonHovered, setMoonHovered] = useState(false);
+
   const moonTimerRef = useRef(null);
   
   const handleMoonInteractStart = () => {
-    setMoonHovered(true);
     if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
     moonTimerRef.current = setTimeout(() => {
       setShowMoonSecret(true);
@@ -49,7 +45,6 @@ export default function AtmosphereLayer() {
   };
   
   const handleMoonInteractEnd = () => {
-    setMoonHovered(false);
     if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
   };
 
@@ -86,8 +81,9 @@ export default function AtmosphereLayer() {
   // Idle phrase system — shows a phrase after 40s idle, hides after 6s, never repeats
   useEffect(() => {
     if (!isIdle) {
-      setShowIdlePhrase(false);
-      return;
+      // Defer state update to break synchronous cascading render
+      const t = setTimeout(() => setShowIdlePhrase(false), 0);
+      return () => clearTimeout(t);
     }
 
     // Pick next unseen phrase

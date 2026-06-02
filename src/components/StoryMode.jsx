@@ -54,7 +54,7 @@ export default function StoryMode({ onClose, userEmail }) {
           stored['puzzle_story'] = Date.now();
           localStorage.setItem('_p_clues', JSON.stringify(stored));
         }
-      } catch {}
+      } catch (e) { console.warn("StoryMode audio error:", e); }
     }
   }, [chapter]);
 
