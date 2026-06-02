@@ -217,24 +217,6 @@ export default function AtmosphereLayer() {
         </motion.div>
       </AnimatePresence>
 
-          <motion.div
-            style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-              color: 'rgba(220,230,255,0.8)', letterSpacing: '2px',
-              display: 'flex', alignItems: 'center', gap: 8,
-              pointerEvents: 'auto', cursor: 'pointer',
-            }}
-            onMouseEnter={handleMoonInteractStart}
-            onMouseLeave={handleMoonInteractEnd}
-            onTouchStart={handleMoonInteractStart}
-            onTouchEnd={handleMoonInteractEnd}
-            onTouchCancel={handleMoonInteractEnd}
-          >
-            <span style={{ fontSize: '1.2rem' }}>{moonPhase}</span>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-
       {/* ── Idle phrase ───────────────────────────────────────────────────────── */}
       {/* Appears after 40s of no activity, fades out after 6s, never repeats */}
       <AnimatePresence>
