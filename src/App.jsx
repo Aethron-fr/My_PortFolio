@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail,
@@ -18,11 +18,11 @@ import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
-import GithubProjects from './components/GithubProjects';
-import DeveloperJourney from './components/DeveloperJourney';
-import FeaturedSpotlight from './components/FeaturedSpotlight';
-import CreativeInfluences from './components/CreativeInfluences';
-import BeyondTheScreen from './components/BeyondTheScreen';
+const GithubProjects = lazy(() => import('./components/GithubProjects'));
+const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
+const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
+const CreativeInfluences = lazy(() => import('./components/CreativeInfluences'));
+const BeyondTheScreen = lazy(() => import('./components/BeyondTheScreen'));
 import './App.css';
 
 // BUG-010: Single source of truth for nav hrefs — used by both desktop and mobile navs
@@ -774,6 +774,10 @@ export default function App() {
       </section>
 
       {/* FEATURED EXPERIENCE — OneLastSmile */}
+      <Suspense fallback={<div style={{ minHeight: '800px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" /></div>}>
+        <FeaturedSpotlight />
+      </Suspense>
+
       <section id="experience" style={{
         position: 'relative', zIndex: 2,
         padding: '60px 0 80px',
@@ -823,15 +827,21 @@ export default function App() {
               Open source and shipped work from the GitHub archive.
             </h2>
           </div>
-          <GithubProjects />
+          <Suspense fallback={<div style={{ height: '400px' }} />}>
+        <GithubProjects />
+      </Suspense>
         </div>
       </section>
 
       {/* CREATIVE INFLUENCES */}
-      <CreativeInfluences />
+      <Suspense fallback={<div style={{ height: '400px' }} />}>
+        <CreativeInfluences />
+      </Suspense>
 
       {/* BEYOND THE SCREEN */}
-      <BeyondTheScreen />
+      <Suspense fallback={<div style={{ height: '400px' }} />}>
+        <BeyondTheScreen />
+      </Suspense>
 
       {/* DEVELOPER JOURNEY */}
       <section id="journey" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'var(--bg-section-alt)' }}>
@@ -933,7 +943,9 @@ export default function App() {
             }}>
               Timeline
             </div>
-            <DeveloperJourney />
+            <Suspense fallback={<div style={{ height: '400px' }} />}>
+        <DeveloperJourney />
+      </Suspense>
           </div>
 
         </div>
