@@ -217,7 +217,11 @@ export default function AtmosphereLayer() {
             // Prevent context menu from interrupting long press on mobile
             onContextMenu={(e) => e.preventDefault()}
           >
-            <span style={{ fontSize: '1.05rem', opacity: 0.75 }}>{moonPhase}</span>
+            <span style={{ 
+              fontSize: '1.05rem', 
+              opacity: 0.8,
+              filter: 'grayscale(100%) brightness(200%) drop-shadow(0 0 6px rgba(220,230,255,0.4))'
+            }}>{moonPhase}</span>
           </motion.div>
         </motion.div>
       </AnimatePresence>
