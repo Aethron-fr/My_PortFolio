@@ -83,21 +83,20 @@ function getTimeGreeting() {
 // ── Premium Theme Toggle ─────────────────────────────────────────────────────
 function ThemeToggle() {
   const [isNight, setIsNight] = useState(() => {
-    // Default: night (dark). If user saved a preference, use it.
     return localStorage.getItem('_theme') !== 'light';
   });
 
-  // Apply theme cleanly — no broken global transitions
+  const [isHovered, setIsHovered] = useState(false);
+
   useEffect(() => {
     const root = document.documentElement;
-    // Brief class for smooth bg transition only
     root.classList.add('theme-transitioning');
     if (isNight) {
       root.removeAttribute('data-theme');
-      root.style.removeProperty('background-color'); // Let CSS handle it
+      root.style.removeProperty('background-color');
     } else {
       root.setAttribute('data-theme', 'light');
-      root.style.removeProperty('background-color'); // Let CSS handle it
+      root.style.removeProperty('background-color');
     }
     localStorage.setItem('_theme', isNight ? 'night' : 'light');
     const t = setTimeout(() => root.classList.remove('theme-transitioning'), 600);
@@ -107,86 +106,95 @@ function ThemeToggle() {
   return (
     <motion.button
       onClick={() => setIsNight(!isNight)}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 2.5, duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
-      whileHover={{ scale: 1.15, rotate: isNight ? 15 : -15 }}
-      whileTap={{ scale: 0.8, rotate: 180 }} // Upgraded spin effect on click
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2.5, duration: 0.8, type: 'spring', stiffness: 200, damping: 20 }}
+      whileHover={{ 
+        scale: 1.05, 
+        y: -4,
+      }}
+      whileTap={{ scale: 0.9, rotate: 180 }} 
       aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
       style={{
         position: 'fixed',
         bottom: 28,
-        right: 28, // MOVED TO RIGHT SIDE
+        right: 28,
         zIndex: 9998,
-        width: 48,
-        height: 48,
+        width: 52,
+        height: 52,
         borderRadius: '50%',
-        border: 'none',
+        border: '1px solid',
+        borderColor: isHovered 
+          ? 'rgba(255,255,255,0.25)' 
+          : 'rgba(255,255,255,0.05)',
         outline: 'none',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        // The background is a radial gradient that shifts with theme
+        // Ultra-modern frosted glass
         background: isNight
-          ? 'radial-gradient(circle at 35% 35%, #1a1f3a 0%, #0c0d1a 100%)'
-          : 'radial-gradient(circle at 65% 35%, #2a2015 0%, #1a1508 100%)',
-        boxShadow: isNight
-          ? '0 0 0 1px rgba(140,160,255,0.18), 0 4px 25px rgba(80,100,220,0.3), inset 0 1px 0 rgba(255,255,255,0.06)'
-          : '0 0 0 1px rgba(255,185,30,0.25), 0 4px 25px rgba(240,160,20,0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        transition: 'background 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1)', // Smooth CSS transitions
+          ? 'rgba(12, 13, 24, 0.45)'
+          : 'rgba(24, 20, 15, 0.45)',
+        boxShadow: isHovered
+          ? (isNight ? '0 15px 35px rgba(80,110,255,0.4), inset 0 1px 0 rgba(255,255,255,0.1)' : '0 15px 35px rgba(255,180,30,0.4), inset 0 1px 0 rgba(255,255,255,0.1)')
+          : (isNight ? '0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02)' : '0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02)'),
+        backdropFilter: 'blur(12px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(150%)',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      {/* Ambient glow ring behind button */}
+      {/* Dynamic ambient backdrop that blooms on hover */}
       <motion.div
-        animate={isNight
-          ? { opacity: [0.3, 0.7, 0.3], scale: [1, 1.25, 1] }
-          : { opacity: [0.4, 0.8, 0.4], scale: [1, 1.3, 1] }
-        }
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{
+          opacity: isHovered ? 0.8 : 0.2,
+          scale: isHovered ? 1.5 : 1,
+        }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
         style={{
           position: 'absolute',
-          inset: -8, // Slightly larger glow
+          inset: 0,
           borderRadius: '50%',
           background: isNight
-            ? 'radial-gradient(circle, rgba(100,130,255,0.2) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(255,180,20,0.25) 0%, transparent 70%)',
+            ? 'radial-gradient(circle, rgba(100,140,255,0.3) 0%, transparent 60%)'
+            : 'radial-gradient(circle, rgba(255,190,40,0.3) 0%, transparent 60%)',
           pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
 
-      {/* Icon swap with rotation and blur */}
       <AnimatePresence mode="wait">
         {isNight ? (
           <motion.div
             key="moon"
-            initial={{ opacity: 0, rotate: -90, scale: 0.3, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, rotate: 0, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, rotate: 90, scale: 0.3, filter: 'blur(4px)' }}
-            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+            initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, rotate: isHovered ? -15 : 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
+            transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 25 }}
+            style={{ zIndex: 1 }}
           >
-            {/* Crescent moon — drawn precisely */}
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path
                 d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"
-                fill="rgba(200,215,255,0.95)"
-                filter="drop-shadow(0 0 4px rgba(160,190,255,0.8))"
+                fill={isHovered ? "#fff" : "rgba(200,215,255,0.85)"}
+                filter={isHovered ? "drop-shadow(0 0 8px rgba(160,190,255,0.9))" : "none"}
+                style={{ transition: 'all 0.4s ease' }}
               />
             </svg>
           </motion.div>
         ) : (
           <motion.div
             key="sun"
-            initial={{ opacity: 0, rotate: 90, scale: 0.3, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, rotate: 0, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, rotate: -90, scale: 0.3, filter: 'blur(4px)' }}
-            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+            initial={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, rotate: isHovered ? 45 : 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
+            transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 25 }}
+            style={{ zIndex: 1 }}
           >
-            {/* Sun — clean circle + rays */}
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="5" fill="rgba(255,200,30,0.95)" />
-              {/* 8 rays */}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="5" fill={isHovered ? "#fff" : "rgba(255,200,30,0.9)"} style={{ transition: 'all 0.4s ease' }} />
               {[0,45,90,135,180,225,270,315].map((deg, i) => {
                 const rad = (deg * Math.PI) / 180;
                 return (
@@ -194,9 +202,10 @@ function ThemeToggle() {
                     key={i}
                     x1={12 + 7.5 * Math.cos(rad)} y1={12 + 7.5 * Math.sin(rad)}
                     x2={12 + 9.5 * Math.cos(rad)} y2={12 + 9.5 * Math.sin(rad)}
-                    stroke="rgba(255,190,20,0.9)"
-                    strokeWidth="1.8"
+                    stroke={isHovered ? "#fff" : "rgba(255,190,20,0.8)"}
+                    strokeWidth="2"
                     strokeLinecap="round"
+                    style={{ transition: 'all 0.4s ease' }}
                   />
                 );
               })}
