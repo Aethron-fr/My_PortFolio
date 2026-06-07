@@ -21,7 +21,6 @@ import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
-import NotFound from './pages/NotFound';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -340,19 +339,6 @@ function ThemeToggle() {
 
 
 export default function App() {
-  const [isProposalRoute, setIsProposalRoute] = useState(() => window.location.hash === '#things-i-never-said');
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      setIsProposalRoute(window.location.hash === '#things-i-never-said');
-    };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
-  if (isProposalRoute) {
-    return <NotFound />;
-  }
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Show the welcome modal only on the very first visit — localStorage persists across reloads
