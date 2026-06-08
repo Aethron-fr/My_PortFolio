@@ -84,27 +84,68 @@ function AudioToggle() {
   };
 
   return (
-    <motion.button
-      onClick={handleToggle}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.6, duration: 0.8, type: 'spring' }}
-      whileHover={{ scale: 1.08, y: -5 }}
-      whileTap={{ scale: 0.85 }}
-      aria-label={isEnabled ? 'Disable atmospheric audio' : 'Enable atmospheric audio'}
-      style={{
-        position: 'fixed', bottom: 94, right: 34, zIndex: 9998,
-        width: 44, height: 44, borderRadius: '50%',
-        background: 'var(--bg-card)', border: '1px solid var(--border-glass)',
-        color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        cursor: 'pointer', backdropFilter: 'blur(10px)',
-        boxShadow: isHovered ? '0 10px 20px var(--shadow-color)' : 'none',
-      }}
-    >
-      {isEnabled ? <Volume2 size={16} strokeWidth={1.5} /> : <VolumeX size={16} strokeWidth={1.5} opacity={0.5} />}
-    </motion.button>
+    <div style={{ position: 'fixed', bottom: 28, left: 28, zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Animated Sound Waves (Visible only when enabled) */}
+      <AnimatePresence>
+        {isEnabled && (
+          <>
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 2.5, opacity: 0 }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+              style={{
+                position: 'absolute',
+                width: 56, height: 56,
+                borderRadius: '50%',
+                border: '1px solid rgba(140,180,255,0.4)',
+                pointerEvents: 'none'
+              }}
+            />
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 3.5, opacity: 0 }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: "easeOut", delay: 0.5 }}
+              style={{
+                position: 'absolute',
+                width: 56, height: 56,
+                borderRadius: '50%',
+                border: '1px solid rgba(140,180,255,0.2)',
+                pointerEvents: 'none'
+              }}
+            />
+          </>
+        )}
+      </AnimatePresence>
+
+      <motion.button
+        onClick={handleToggle}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2.6, duration: 0.8, type: 'spring' }}
+        whileHover={{ scale: 1.08, y: -5 }}
+        whileTap={{ scale: 0.85 }}
+        aria-label={isEnabled ? 'Disable atmospheric audio' : 'Enable atmospheric audio'}
+        style={{
+          position: 'relative',
+          width: 56, height: 56, borderRadius: '50%',
+          background: isEnabled ? 'rgba(140, 180, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid',
+          borderColor: isHovered ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.08)',
+          color: isEnabled ? '#fff' : 'rgba(255,255,255,0.4)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', backdropFilter: 'blur(16px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+          boxShadow: isHovered 
+            ? '0 20px 40px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.2)' 
+            : '0 8px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        {isEnabled ? <Volume2 size={20} strokeWidth={1.5} /> : <VolumeX size={20} strokeWidth={1.5} />}
+      </motion.button>
+    </div>
   );
 }
 
