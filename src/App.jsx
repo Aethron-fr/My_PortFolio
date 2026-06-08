@@ -14,6 +14,8 @@ import {
   ArrowUpRight,
   Volume2,
   VolumeX,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { audioController } from './audio';
 import MagneticButton from './components/MagneticButton';
@@ -84,7 +86,7 @@ function AudioToggle() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: 28, left: 28, zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ position: 'fixed', bottom: 100, right: 28, zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {/* Animated Sound Waves (Visible only when enabled) */}
       <AnimatePresence>
         {isEnabled && (
@@ -326,41 +328,41 @@ function ThemeToggle() {
       />
 
       <AnimatePresence mode="wait">
-        <motion.div
-          key={isNight ? 'night' : 'light'}
-          initial={{ opacity: 0, scale: 0.5, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, scale: 0.5, filter: 'blur(10px)' }}
-          transition={{ duration: 0.5, type: 'spring', stiffness: 300, damping: 25 }}
-          style={{ zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          {isNight ? (
-            /* Moon Orb */
-            <div style={{
-              width: 22, height: 22, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #eef2ff 0%, #a5b4fc 100%)',
-              boxShadow: isHovered ? '0 0 15px rgba(165,180,252,0.8), inset -3px -3px 6px rgba(0,0,0,0.2)' : 'inset -3px -3px 6px rgba(0,0,0,0.3)',
-              position: 'relative', overflow: 'hidden',
-              transition: 'all 0.3s ease'
-            }}>
-              {/* Moon craters */}
-              <div style={{ position: 'absolute', top: 4, right: 4, width: 4, height: 4, borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
-              <div style={{ position: 'absolute', bottom: 6, left: 4, width: 6, height: 6, borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
-            </div>
-          ) : (
-            /* Sun Orb */
-            <div style={{
-              width: 22, height: 22, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #fef08a 0%, #f59e0b 100%)',
-              boxShadow: isHovered ? '0 0 20px rgba(245,158,11,1), 0 0 40px rgba(253,230,138,0.6)' : '0 0 10px rgba(245,158,11,0.6)',
-              position: 'relative',
-              transition: 'all 0.3s ease'
-            }}>
-              {/* Sun core glow */}
-              <div style={{ position: 'absolute', inset: 2, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', filter: 'blur(2px)' }} />
-            </div>
-          )}
-        </motion.div>
+        {isNight ? (
+          <motion.div
+            key="moon"
+            initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, rotate: isHovered ? -15 : 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
+            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
+            style={{ zIndex: 1, display: 'flex' }}
+          >
+            <Moon 
+              size={24} 
+              fill={isHovered ? "#fff" : "rgba(220,230,255,0.9)"} 
+              color={isHovered ? "#fff" : "rgba(220,230,255,0.9)"}
+              strokeWidth={1}
+              style={{ filter: isHovered ? 'drop-shadow(0 0 10px rgba(160,200,255,1))' : 'none', transition: 'all 0.3s ease' }} 
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="sun"
+            initial={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, rotate: isHovered ? 45 : 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
+            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
+            style={{ zIndex: 1, display: 'flex' }}
+          >
+            <Sun 
+              size={26} 
+              fill={isHovered ? "#fff" : "rgba(255,210,40,1)"} 
+              color={isHovered ? "#fff" : "rgba(255,210,40,1)"}
+              strokeWidth={1.5}
+              style={{ filter: isHovered ? 'drop-shadow(0 0 12px rgba(255,200,40,1))' : 'drop-shadow(0 0 4px rgba(255,200,40,0.5))', transition: 'all 0.3s ease' }} 
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
     </motion.button>
   );
