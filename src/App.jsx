@@ -97,7 +97,7 @@ function AudioToggle() {
                 position: 'absolute',
                 width: 56, height: 56,
                 borderRadius: '50%',
-                border: '1px solid rgba(140,180,255,0.4)',
+                border: '1px solid var(--text-dim)',
                 pointerEvents: 'none'
               }}
             />
@@ -109,7 +109,7 @@ function AudioToggle() {
                 position: 'absolute',
                 width: 56, height: 56,
                 borderRadius: '50%',
-                border: '1px solid rgba(140,180,255,0.2)',
+                border: '1px solid var(--border-glass)',
                 pointerEvents: 'none'
               }}
             />
@@ -130,16 +130,16 @@ function AudioToggle() {
         style={{
           position: 'relative',
           width: 56, height: 56, borderRadius: '50%',
-          background: isEnabled ? 'rgba(140, 180, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+          background: isEnabled ? 'var(--bg-card)' : 'var(--bg-surface)',
           border: '1px solid',
-          borderColor: isHovered ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.08)',
-          color: isEnabled ? '#fff' : 'rgba(255,255,255,0.4)',
+          borderColor: isHovered ? 'var(--border-glass-strong)' : 'var(--border-glass)',
+          color: isEnabled ? 'var(--text-primary)' : 'var(--text-dim)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', backdropFilter: 'blur(16px) saturate(180%)',
           WebkitBackdropFilter: 'blur(16px) saturate(180%)',
           boxShadow: isHovered 
-            ? '0 20px 40px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.2)' 
-            : '0 8px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+            ? '0 10px 30px var(--shadow-color), inset 0 1px 0 var(--border-glass-strong)' 
+            : '0 4px 20px var(--shadow-color), inset 0 1px 0 var(--border-glass)',
           transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
@@ -326,52 +326,41 @@ function ThemeToggle() {
       />
 
       <AnimatePresence mode="wait">
-        {isNight ? (
-          <motion.div
-            key="moon"
-            initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, rotate: isHovered ? -15 : 0, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
-            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
-            style={{ zIndex: 1 }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"
-                fill={isHovered ? "#fff" : "rgba(220,230,255,0.9)"}
-                filter={isHovered ? "drop-shadow(0 0 10px rgba(160,200,255,1))" : "none"}
-                style={{ transition: 'all 0.3s ease' }}
-              />
-            </svg>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="sun"
-            initial={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, rotate: isHovered ? 45 : 0, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
-            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
-            style={{ zIndex: 1 }}
-          >
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="5" fill={isHovered ? "#fff" : "rgba(255,210,40,1)"} style={{ transition: 'all 0.3s ease' }} />
-              {[0,45,90,135,180,225,270,315].map((deg, i) => {
-                const rad = (deg * Math.PI) / 180;
-                return (
-                  <line
-                    key={i}
-                    x1={12 + 7.5 * Math.cos(rad)} y1={12 + 7.5 * Math.sin(rad)}
-                    x2={12 + 9.5 * Math.cos(rad)} y2={12 + 9.5 * Math.sin(rad)}
-                    stroke={isHovered ? "#fff" : "rgba(255,200,40,0.9)"}
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    style={{ transition: 'all 0.3s ease' }}
-                  />
-                );
-              })}
-            </svg>
-          </motion.div>
-        )}
+        <motion.div
+          key={isNight ? 'night' : 'light'}
+          initial={{ opacity: 0, scale: 0.5, filter: 'blur(10px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 0.5, filter: 'blur(10px)' }}
+          transition={{ duration: 0.5, type: 'spring', stiffness: 300, damping: 25 }}
+          style={{ zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {isNight ? (
+            /* Moon Orb */
+            <div style={{
+              width: 22, height: 22, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #eef2ff 0%, #a5b4fc 100%)',
+              boxShadow: isHovered ? '0 0 15px rgba(165,180,252,0.8), inset -3px -3px 6px rgba(0,0,0,0.2)' : 'inset -3px -3px 6px rgba(0,0,0,0.3)',
+              position: 'relative', overflow: 'hidden',
+              transition: 'all 0.3s ease'
+            }}>
+              {/* Moon craters */}
+              <div style={{ position: 'absolute', top: 4, right: 4, width: 4, height: 4, borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
+              <div style={{ position: 'absolute', bottom: 6, left: 4, width: 6, height: 6, borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
+            </div>
+          ) : (
+            /* Sun Orb */
+            <div style={{
+              width: 22, height: 22, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #fef08a 0%, #f59e0b 100%)',
+              boxShadow: isHovered ? '0 0 20px rgba(245,158,11,1), 0 0 40px rgba(253,230,138,0.6)' : '0 0 10px rgba(245,158,11,0.6)',
+              position: 'relative',
+              transition: 'all 0.3s ease'
+            }}>
+              {/* Sun core glow */}
+              <div style={{ position: 'absolute', inset: 2, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', filter: 'blur(2px)' }} />
+            </div>
+          )}
+        </motion.div>
       </AnimatePresence>
     </motion.button>
   );
@@ -1302,7 +1291,7 @@ export default function App() {
             exit={{ opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 3, ease: 'easeInOut' }}
             style={{
-              position: 'fixed', bottom: 32, left: 32, zIndex: 90,
+              position: 'fixed', bottom: 100, left: 32, zIndex: 90,
               pointerEvents: 'none',
             }}
           >
