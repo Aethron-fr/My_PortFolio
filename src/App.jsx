@@ -86,7 +86,7 @@ function AudioToggle() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: 100, right: 28, zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ position: 'fixed', bottom: 150, right: 28, zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {/* Animated Sound Waves (Visible only when enabled) */}
       <AnimatePresence>
         {isEnabled && (
@@ -332,9 +332,17 @@ function ThemeToggle() {
           <motion.div
             key="moon"
             initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, rotate: isHovered ? -15 : 0, scale: 1, filter: 'blur(0px)' }}
+            animate={{ 
+              opacity: 1, 
+              rotate: isHovered ? -15 : 0, 
+              scale: isHovered ? 1.1 : [1, 1.05, 1], // Continuous gentle breathing
+              filter: 'blur(0px)' 
+            }}
             exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
-            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
+            transition={{ 
+              duration: 0.4, type: 'spring', stiffness: 400, damping: 25,
+              scale: { repeat: isHovered ? 0 : Infinity, duration: 3, ease: 'easeInOut' }
+            }}
             style={{ zIndex: 1, display: 'flex' }}
           >
             <Moon 
@@ -349,9 +357,18 @@ function ThemeToggle() {
           <motion.div
             key="sun"
             initial={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, rotate: isHovered ? 45 : 0, scale: 1, filter: 'blur(0px)' }}
+            animate={{ 
+              opacity: 1, 
+              rotate: isHovered ? 45 : [0, 10, 0], // Gentle sun wobble
+              scale: isHovered ? 1.1 : [1, 1.08, 1], 
+              filter: 'blur(0px)' 
+            }}
             exit={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
-            transition={{ duration: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
+            transition={{ 
+              duration: 0.4, type: 'spring', stiffness: 400, damping: 25,
+              scale: { repeat: isHovered ? 0 : Infinity, duration: 4, ease: 'easeInOut' },
+              rotate: { repeat: isHovered ? 0 : Infinity, duration: 8, ease: 'linear' }
+            }}
             style={{ zIndex: 1, display: 'flex' }}
           >
             <Sun 
