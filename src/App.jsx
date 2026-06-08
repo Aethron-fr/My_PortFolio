@@ -345,13 +345,20 @@ function ThemeToggle() {
             }}
             style={{ zIndex: 1, display: 'flex' }}
           >
-            <Moon 
-              size={24} 
-              fill={isHovered ? "#fff" : "rgba(220,230,255,0.9)"} 
-              color={isHovered ? "#fff" : "rgba(220,230,255,0.9)"}
-              strokeWidth={1}
-              style={{ filter: isHovered ? 'drop-shadow(0 0 10px rgba(160,200,255,1))' : 'none', transition: 'all 0.3s ease' }} 
-            />
+            <div style={{
+              width: 26, height: 26, borderRadius: '50%',
+              background: 'radial-gradient(circle at 30% 30%, #f1f5f9 0%, #cbd5e1 40%, #64748b 80%, #334155 100%)',
+              boxShadow: isHovered 
+                ? 'inset -4px -4px 6px rgba(0,0,0,0.8), 0 0 15px rgba(160,200,255,0.6), 0 0 30px rgba(160,200,255,0.3)' 
+                : 'inset -4px -4px 6px rgba(0,0,0,0.7), 0 0 5px rgba(160,200,255,0.2)',
+              position: 'relative', overflow: 'hidden',
+              transition: 'all 0.3s ease'
+            }}>
+              {/* Photorealistic Craters via radial-gradients */}
+              <div style={{ position: 'absolute', top: '15%', left: '45%', width: '25%', height: '25%', borderRadius: '50%', background: 'radial-gradient(circle, #475569 0%, #94a3b8 80%, #cbd5e1 100%)', boxShadow: 'inset 1px 1px 2px rgba(0,0,0,0.6)' }} />
+              <div style={{ position: 'absolute', top: '45%', left: '20%', width: '35%', height: '35%', borderRadius: '50%', background: 'radial-gradient(circle, #334155 0%, #64748b 80%, #94a3b8 100%)', boxShadow: 'inset 2px 2px 3px rgba(0,0,0,0.6)' }} />
+              <div style={{ position: 'absolute', bottom: '15%', right: '25%', width: '20%', height: '20%', borderRadius: '50%', background: 'radial-gradient(circle, #475569 0%, #94a3b8 80%, #cbd5e1 100%)', boxShadow: 'inset 1px 1px 2px rgba(0,0,0,0.5)' }} />
+            </div>
           </motion.div>
         ) : (
           <motion.div
@@ -371,13 +378,19 @@ function ThemeToggle() {
             }}
             style={{ zIndex: 1, display: 'flex' }}
           >
-            <Sun 
-              size={26} 
-              fill={isHovered ? "#fff" : "rgba(255,210,40,1)"} 
-              color={isHovered ? "#fff" : "rgba(255,210,40,1)"}
-              strokeWidth={1.5}
-              style={{ filter: isHovered ? 'drop-shadow(0 0 12px rgba(255,200,40,1))' : 'drop-shadow(0 0 4px rgba(255,200,40,0.5))', transition: 'all 0.3s ease' }} 
-            />
+            <div style={{
+              width: 26, height: 26, borderRadius: '50%',
+              background: 'radial-gradient(circle at 40% 40%, #ffffff 0%, #fef08a 20%, #f59e0b 60%, #ea580c 100%)',
+              boxShadow: isHovered 
+                ? '0 0 20px #f59e0b, 0 0 40px rgba(253,230,138,0.8), inset 0 0 8px #c2410c' 
+                : '0 0 10px rgba(245,158,11,0.6), inset 0 0 6px #c2410c',
+              position: 'relative',
+              filter: 'contrast(1.1) brightness(1.1)',
+              transition: 'all 0.3s ease'
+            }}>
+               <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 15, ease: "linear" }} style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: '2px dashed rgba(245,158,11,0.5)', filter: 'blur(3px)' }} />
+               <motion.div animate={{ rotate: -360, scale: [1, 1.1, 1] }} transition={{ rotate: { repeat: Infinity, duration: 20, ease: "linear" }, scale: { repeat: Infinity, duration: 4, ease: "easeInOut" } }} style={{ position: 'absolute', inset: -2, borderRadius: '50%', border: '1px dashed rgba(253,230,138,0.6)', filter: 'blur(1px)' }} />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
