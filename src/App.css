@@ -410,7 +410,7 @@
 }
 
 .nav-link:hover {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 /* BUG-016: Social icon links — CSS hover replaces onMouseOver JS */
