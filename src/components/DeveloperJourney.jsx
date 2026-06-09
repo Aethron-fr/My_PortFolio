@@ -105,7 +105,7 @@ export default function DeveloperJourney() {
                   boxShadow: isActive ? `0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px ${step.color}25` : 'none'
                 }}
                 onMouseOver={(e) => {
-                  if (!isActive) e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                  if (!isActive) e.currentTarget.style.borderColor = 'var(--border-hover)';
                 }}
                 onMouseOut={(e) => {
                   if (!isActive) e.currentTarget.style.borderColor = 'var(--border-glass)';
