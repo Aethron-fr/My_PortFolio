@@ -922,11 +922,31 @@ export default function App() {
         </div>
       </section>
 
+      {/* SLEEK ANIMATED NEON DIVIDER to blend sections */}
+      <div style={{
+        width: '100%', height: '1px',
+        background: 'linear-gradient(90deg, transparent, var(--border-glass), transparent)',
+        position: 'relative', zIndex: 3,
+        opacity: 0.8,
+        overflow: 'hidden'
+      }}>
+        <motion.div 
+          animate={{ x: ['-200%', '500%'] }}
+          transition={{ repeat: Infinity, duration: 5, ease: "linear" }}
+          style={{
+             position: 'absolute', top: '-1px', left: '0', width: '20%', height: '3px',
+             background: 'linear-gradient(90deg, transparent, var(--accent-cyber), var(--accent-violet), transparent)',
+             filter: 'blur(2px)',
+             boxShadow: '0 0 10px var(--accent-cyber)'
+          }}
+        />
+      </div>
+
       {/* ABOUT SECTION */}
       <section id="about" style={{
         position: 'relative', zIndex: 2,
         padding: '80px 0 60px',
-        background: 'var(--bg-section)',
+        background: 'linear-gradient(to bottom, transparent, var(--bg-section) 15%)',
       }}>
         <div className="container" style={{ maxWidth: 720 }}>
           <div style={{
