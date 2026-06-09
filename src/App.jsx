@@ -881,22 +881,6 @@ export default function App() {
               </a>
             ))}
           </motion.div>
-
-          {/* Scroll Indicator */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1.5 }}
-            style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', pointerEvents: 'none' }}
-          >
-            <div style={{ width: '22px', height: '36px', borderRadius: '12px', border: '2px solid var(--border-glass)', display: 'flex', justifyContent: 'center', padding: '4px' }}>
-              <motion.div 
-                animate={{ y: [0, 12, 0], opacity: [1, 0.5, 1] }} 
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ width: '4px', height: '6px', borderRadius: '2px', background: 'var(--text-muted)' }} 
-              />
-            </div>
-          </motion.div>
         </div>
       </section>
 

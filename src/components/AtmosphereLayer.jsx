@@ -27,18 +27,27 @@ const NIGHT_PHRASES = [
 const shownPhrases = new Set();
 let phraseIndex = 0;
 
+const MOON_SECRETS = [
+  "Some people become like the moon.\nBeautiful, constant, and always a little out of reach.",
+  "A symbol of my love, mesmerizing and far.\nI fall for it every time, knowing I can never hold it.",
+  "So intensely beautiful, so impossible to touch.\nI love it so much, yet it remains forever out of reach.",
+  "I fell in love with the moon for my love.\nEvery time I look up, I just fall into it."
+];
+
 export default function AtmosphereLayer() {
   const { isLateNight, isIdle, trustLevel, moonPhase } = useAtmosphere();
 
   const [idlePhrase, setIdlePhrase] = useState('');
   const [showIdlePhrase, setShowIdlePhrase] = useState(false);
   const [showMoonSecret, setShowMoonSecret] = useState(false);
+  const [moonSecretText, setMoonSecretText] = useState(MOON_SECRETS[0]);
 
   const moonTimerRef = useRef(null);
   
   const handleMoonInteractStart = () => {
     if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
     moonTimerRef.current = setTimeout(() => {
+      setMoonSecretText(MOON_SECRETS[Math.floor(Math.random() * MOON_SECRETS.length)]);
       setShowMoonSecret(true);
       audioController.playMoonSecret();
       // Auto-hide after 6 seconds of showing
@@ -187,7 +196,7 @@ export default function AtmosphereLayer() {
                   willChange: 'transform, opacity', // Force GPU acceleration
                 }}
               >
-                {"Some people become like the moon.\nBeautiful, constant, and always a little out of reach."}
+                {moonSecretText}
               </motion.div>
             )}
           </AnimatePresence>
