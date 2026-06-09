@@ -48,12 +48,16 @@
 
 @keyframes pulseBlob {
   0% {
-    transform: translate(-50%, -50%) scale(0.95);
-    opacity: 0.12;
+    transform: translate(-50%, -50%) scale(0.9) rotate(0deg);
+    opacity: 0.1;
+  }
+  50% {
+    transform: translate(-48%, -52%) scale(1.1) rotate(180deg);
+    opacity: 0.2;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1.05);
-    opacity: 0.18;
+    transform: translate(-50%, -50%) scale(0.9) rotate(360deg);
+    opacity: 0.1;
   }
 }
 
@@ -64,9 +68,47 @@
   padding: 0 20px;
 }
 
+/* Premium Dynamic Hero Typography */
+.hero-title {
+  font-size: clamp(3.2rem, 8vw + 1rem, 6.8rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -2.5px;
+  background: var(--text-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: all 0.4s ease;
+}
+
+:root[data-theme='dark'] .hero-title {
+  background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  text-shadow: 0 10px 40px rgba(255, 255, 255, 0.1);
+}
+
+.typewriter-gradient {
+  background: linear-gradient(135deg, var(--accent-cyber) 0%, var(--accent-violet) 50%, var(--accent-primary) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shineGradient 6s linear infinite;
+  display: inline-block;
+  padding-right: 2px;
+}
+
+@keyframes shineGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .glow-text {
   text-shadow: 0 0 30px rgba(225, 48, 108, 0.4);
 }
+
 
 /* Card Interactive Glows */
 .skill-card {

@@ -41,11 +41,11 @@ const NAV_HREF_MAP = {
 };
 
 const EXPLORING_PHRASES = [
-  'currently rebuilding things.',
-  'currently exploring quieter interfaces.',
-  'currently awake at the wrong hours.',
-  'currently thinking too much.',
-  'currently making something slow.',
+  'rebuilding things.',
+  'exploring quieter interfaces.',
+  'awake at the wrong hours.',
+  'thinking too much.',
+  'making something slow.',
 ];
 
 function CurrentlyExploring() {
@@ -65,13 +65,16 @@ function CurrentlyExploring() {
 
   return (
     <div style={{
-      fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
-      color: 'var(--text-dim)', letterSpacing: '1.5px',
-      marginBottom: '28px', minHeight: '18px',
+      display: 'inline-flex', alignItems: 'center', gap: '10px',
+      fontFamily: 'var(--font-mono)', fontSize: '0.68rem',
+      color: 'var(--text-dim)', letterSpacing: '2px',
+      marginBottom: '36px', minHeight: '24px',
       transition: 'opacity 0.4s ease',
       opacity: visible ? 1 : 0,
+      textTransform: 'uppercase'
     }}>
-      Currently exploring: {EXPLORING_PHRASES[idx]}
+      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-primary)', boxShadow: '0 0 12px var(--accent-primary)' }} />
+      currently {EXPLORING_PHRASES[idx]}
     </div>
   );
 }
@@ -809,25 +812,22 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
             style={{
-              fontSize: 'calc(1.1rem + 0.3vw)',
-              fontWeight: '400',
+              fontSize: 'calc(1.2rem + 0.4vw)',
+              fontWeight: '300',
               color: 'var(--text-muted)',
               marginBottom: '36px',
               minHeight: '44px',
-              letterSpacing: '0.5px'
+              letterSpacing: '0px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              flexWrap: 'wrap'
             }}>
-            I engineer <span style={{
-              display: 'inline-block',
-              padding: '6px 20px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid var(--border-glass)',
-              borderRadius: '50px',
-              color: 'var(--text-primary)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              margin: '0 8px',
-              fontWeight: '500'
+            I engineer 
+            <span className="typewriter-gradient" style={{
+              fontWeight: '600',
+              marginLeft: '4px'
             }}>
               <Typewriter
                 words={['High-Performance UIs', 'Scalable Architecture', 'Immersive Experiences', 'Production Ready Apps']}
@@ -880,6 +880,22 @@ export default function App() {
                 {soc.icon}
               </a>
             ))}
+          </motion.div>
+
+          {/* Scroll Indicator */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1.5 }}
+            style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', pointerEvents: 'none' }}
+          >
+            <div style={{ width: '22px', height: '36px', borderRadius: '12px', border: '2px solid var(--border-glass)', display: 'flex', justifyContent: 'center', padding: '4px' }}>
+              <motion.div 
+                animate={{ y: [0, 12, 0], opacity: [1, 0.5, 1] }} 
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ width: '4px', height: '6px', borderRadius: '2px', background: 'var(--text-muted)' }} 
+              />
+            </div>
           </motion.div>
         </div>
       </section>
