@@ -762,67 +762,100 @@ export default function App() {
 
       {/* HERO SECTION */}
       <section id="home" className="hero-section" style={{ background: 'var(--bg-hero)' }}>
-        <div className="hero-glow-blob" />
+        <div className="hero-glow-blob" style={{ background: 'var(--accent-violet)', top: '35%', left: '30%', animationDelay: '0s' }} />
+        <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: '450px', height: '450px', animationDelay: '-5s' }} />
+        <div className="hero-glow-blob" style={{ background: 'var(--accent-primary)', top: '50%', left: '50%', width: '650px', height: '650px', opacity: 0.1, animationDelay: '-10s' }} />
+        
         <div className="hero-content">
           {/* Time greeting */}
           {timeGreeting && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.8 }}
               style={{
-                fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-                color: 'var(--text-dim)', letterSpacing: '2px',
-                marginBottom: '20px',
+                fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
+                color: 'var(--text-dim)', letterSpacing: '4px',
+                marginBottom: '24px',
+                textTransform: 'uppercase'
               }}
             >
               {timeGreeting}
             </motion.div>
           )}
 
-          <h1 style={{
-            fontSize: 'clamp(2rem, 4vw + 1rem, 3.8rem)',
-            fontWeight: 300,
-            lineHeight: 1.3,
-            marginBottom: '16px',
-            letterSpacing: '-0.5px',
-            color: 'var(--text-primary)'
-          }}>
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.1, type: 'spring', stiffness: 100 }}
+            className="hero-title"
+          >
             Swapnadip Ghosh
-          </h1>
+          </motion.h1>
 
-          <div style={{
-            fontSize: 'calc(0.9rem + 0.4vw)',
-            fontWeight: '300',
-            color: 'var(--text-muted)',
-            marginBottom: '24px',
-            minHeight: '36px',
-            letterSpacing: '0px'
-          }}>
-            I am a <Typewriter
-              words={['Full Stack Developer', 'MERN Stack Engineer', 'Python Specialist', 'UI Animator']}
-              speed={80}
-              delay={2200}
-            />
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            style={{
+              fontSize: 'calc(1.1rem + 0.3vw)',
+              fontWeight: '400',
+              color: 'var(--text-muted)',
+              marginBottom: '36px',
+              minHeight: '44px',
+              letterSpacing: '0.5px'
+            }}>
+            I engineer <span style={{
+              display: 'inline-block',
+              padding: '6px 20px',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid var(--border-glass)',
+              borderRadius: '50px',
+              color: 'var(--text-primary)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              margin: '0 8px',
+              fontWeight: '500'
+            }}>
+              <Typewriter
+                words={['High-Performance UIs', 'Scalable Architecture', 'Immersive Experiences', 'Production Ready Apps']}
+                speed={60}
+                delay={2200}
+              />
+            </span>
+          </motion.div>
 
           {/* Currently Exploring */}
-          <CurrentlyExploring />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <CurrentlyExploring />
+          </motion.div>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
-            <a href="#work" className="btn-neon-glow">View Work</a>
-            <a href="#contact" className="btn-neon-outline">Contact</a>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '40px' }}>
+            <a href="#work" className="btn-neon-glow" style={{ padding: '16px 42px', fontSize: '1.05rem', letterSpacing: '1px' }}>View Work</a>
+            <a href="#contact" className="btn-neon-outline" style={{ padding: '16px 42px', fontSize: '1.05rem', letterSpacing: '1px' }}>Contact</a>
+          </motion.div>
 
           {/* Social icons */}
-          {/* BUG-016: Added aria-label to all social icon links for screen reader accessibility */}
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+            style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
             {[
-              { icon: <i className="fa-brands fa-github" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'GitHub', link: 'https://github.com/Aethron-fr' },
-              { icon: <i className="fa-brands fa-linkedin-in" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'LinkedIn', link: 'https://www.linkedin.com/in/swapnadip-ghosh-3669b33a1/' },
-              { icon: <i className="fa-brands fa-instagram" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'Instagram', link: 'https://www.instagram.com/its_swapnadip108/' },
-              { icon: <i className="fa-brands fa-x-twitter" style={{ fontSize: '20px' }} aria-hidden="true"></i>, label: 'X (Twitter)', link: 'https://x.com/swapnadip_108' },
-              { icon: <Mail size={20} aria-hidden="true" />, label: 'Email', link: 'mailto:ghoshswapnadip7@gmail.com' }
+              { icon: <i className="fa-brands fa-github" style={{ fontSize: '22px' }} aria-hidden="true"></i>, label: 'GitHub', link: 'https://github.com/Aethron-fr' },
+              { icon: <i className="fa-brands fa-linkedin-in" style={{ fontSize: '22px' }} aria-hidden="true"></i>, label: 'LinkedIn', link: 'https://www.linkedin.com/in/swapnadip-ghosh-3669b33a1/' },
+              { icon: <i className="fa-brands fa-instagram" style={{ fontSize: '22px' }} aria-hidden="true"></i>, label: 'Instagram', link: 'https://www.instagram.com/its_swapnadip108/' },
+              { icon: <i className="fa-brands fa-x-twitter" style={{ fontSize: '22px' }} aria-hidden="true"></i>, label: 'X (Twitter)', link: 'https://x.com/swapnadip_108' },
+              { icon: <Mail size={22} aria-hidden="true" />, label: 'Email', link: 'mailto:ghoshswapnadip7@gmail.com' }
             ].map((soc) => (
               <a 
                 key={soc.label}
@@ -831,11 +864,12 @@ export default function App() {
                 rel="noopener noreferrer"
                 aria-label={soc.label}
                 className="social-icon-link"
+                style={{ width: '52px', height: '52px' }}
               >
                 {soc.icon}
               </a>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
