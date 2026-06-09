@@ -345,18 +345,29 @@ function ThemeToggle() {
             }}
             style={{ zIndex: 1, display: 'flex' }}
           >
-            {/* Elegant Crescent Moon */}
+            {/* Ultra-Realistic Smooth Glowing Moon */}
             <div style={{
-              width: 24, height: 24, borderRadius: '50%',
-              background: 'transparent',
+              width: 26, height: 26, borderRadius: '50%',
+              background: 'radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 20%, #94a3b8 60%, #334155 100%)',
               boxShadow: isHovered 
-                ? 'inset -7px -4px 0 1px #fff, 0 0 20px rgba(160,200,255,0.6)' 
-                : 'inset -7px -4px 0 1px #e2e8f0, 0 0 10px rgba(160,200,255,0.2)',
+                ? '0 0 25px #bfdbfe, inset -4px -4px 10px rgba(0,0,0,0.6)' 
+                : '0 0 12px rgba(191,219,254,0.5), inset -3px -3px 8px rgba(0,0,0,0.5)',
               position: 'relative',
-              transform: 'rotate(-15deg)',
-              filter: isHovered ? 'drop-shadow(0 0 8px rgba(160,200,255,0.8))' : 'none',
-              transition: 'all 0.3s ease'
-            }} />
+              transition: 'all 0.4s ease',
+              overflow: 'hidden'
+            }}>
+              {/* Soft lunar glow overlay without harsh craters */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'radial-gradient(circle at 70% 70%, rgba(0,0,0,0.4) 0%, transparent 60%)',
+                borderRadius: '50%'
+              }} />
+              <div style={{
+                position: 'absolute', top: '10%', left: '20%', width: '30%', height: '30%',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%)',
+                borderRadius: '50%', filter: 'blur(2px)'
+              }} />
+            </div>
           </motion.div>
         ) : (
           <motion.div
