@@ -44,68 +44,59 @@ class GlobalAudio {
       this.masterGain.connect(this.globalFilter);
       this.globalFilter.connect(this.ctx.destination);
 
-      // 2. Ultra-Realistic Rain Engine
+      // 2. Sweet Calm Rain Engine
       this.droneGain = this.ctx.createGain();
-      this.droneGain.gain.value = 0.6; // Base volume
+      this.droneGain.gain.value = 0.8; // Base volume
       this.droneGain.connect(this.masterGain);
 
       const bufferSize = this.ctx.sampleRate * 5; // 5 seconds loop
       
-      // Layer A: Brown Noise (Deep distant rain/waterfall, NOT airy)
-      const brownBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const brownOut = brownBuffer.getChannelData(0);
-      let lastOut = 0;
+      // Pure White Noise base
+      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
-        let white = Math.random() * 2 - 1;
-        brownOut[i] = (lastOut + (0.02 * white)) / 1.02; // Brown noise integration
-        lastOut = brownOut[i];
-        brownOut[i] *= 3.5; // Compensate gain
+        output[i] = Math.random() * 2 - 1;
       }
-      const brownNoise = this.ctx.createBufferSource();
-      brownNoise.buffer = brownBuffer;
-      brownNoise.loop = true;
+      const whiteNoise = this.ctx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
 
-      const brownFilter = this.ctx.createBiquadFilter();
-      brownFilter.type = 'lowpass';
-      brownFilter.frequency.value = 350; // Very muffled, deep rain
+      // Filter 1: Lowpass to remove harsh hiss
+      const lowpass = this.ctx.createBiquadFilter();
+      lowpass.type = 'lowpass';
+      lowpass.frequency.value = 1200;
+      lowpass.Q.value = 0.1;
+
+      // Filter 2: Highpass to remove thunder/rumble
+      const highpass = this.ctx.createBiquadFilter();
+      highpass.type = 'highpass';
+      highpass.frequency.value = 300;
+      highpass.Q.value = 0.1;
+
+      // LFO: Gentle wind breeze swells
+      const breezeLfo = this.ctx.createOscillator();
+      breezeLfo.type = 'sine';
+      breezeLfo.frequency.value = 0.08; // Very slow breeze
       
-      const brownGain = this.ctx.createGain();
-      brownGain.gain.value = 1.0;
-      brownNoise.connect(brownFilter);
-      brownFilter.connect(brownGain);
-      brownGain.connect(this.droneGain);
-      brownNoise.start();
+      const breezeGain = this.ctx.createGain();
+      breezeGain.gain.value = 0.3; // 30% volume swell
+      
+      const rainVolumeControl = this.ctx.createGain();
+      rainVolumeControl.gain.value = 0.7; // Base 70%
 
-      // Layer B: Patter (Individual close-up raindrops)
-      const patterBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const patterOut = patterBuffer.getChannelData(0);
-      let dropDecay = 0;
-      for (let i = 0; i < bufferSize; i++) {
-        if (Math.random() < 0.001) { // Occasional drop
-          dropDecay = 1.0; // Random intensity
-        }
-        // Add some noise scaled by the decay envelope to make a "splat"
-        patterOut[i] = dropDecay * (Math.random() * 2 - 1);
-        dropDecay *= 0.8; // Extremely fast decay (a few samples)
-      }
-      const patterNoise = this.ctx.createBufferSource();
-      patterNoise.buffer = patterBuffer;
-      patterNoise.loop = true;
+      breezeLfo.connect(breezeGain);
+      breezeGain.connect(rainVolumeControl.gain);
 
-      const patterFilter = this.ctx.createBiquadFilter();
-      patterFilter.type = 'bandpass';
-      patterFilter.frequency.value = 2500; // Crisp raindrop frequency
-      patterFilter.Q.value = 0.5;
+      whiteNoise.connect(lowpass);
+      lowpass.connect(highpass);
+      highpass.connect(rainVolumeControl);
+      rainVolumeControl.connect(this.droneGain);
 
-      const patterGain = this.ctx.createGain();
-      patterGain.gain.value = 0.4; // Gentle droplets
-      patterNoise.connect(patterFilter);
-      patterFilter.connect(patterGain);
-      patterGain.connect(this.droneGain);
-      patterNoise.start();
+      whiteNoise.start();
+      breezeLfo.start();
 
-      this.oscillators.push(brownNoise);
-      this.oscillators.push(patterNoise);
+      this.oscillators.push(whiteNoise);
+      this.lfoNodes.push(breezeLfo);
 
       // 3. Texture Layer (Replaced with higher harmonic sine for scroll depth)
       this.textureGain = this.ctx.createGain();
