@@ -27,12 +27,53 @@ const NIGHT_PHRASES = [
 const shownPhrases = new Set();
 let phraseIndex = 0;
 
-const MOON_SECRETS = [
-  "Some people become like the moon.\nBeautiful, constant, and always a little out of reach.",
-  "A symbol of my love, mesmerizing and far.\nI fall for it every time, knowing I can never hold it.",
-  "So intensely beautiful, so impossible to touch.\nI love it so much, yet it remains forever out of reach.",
-  "I fell in love with the moon for my love.\nEvery time I look up, I just fall into it."
+const MOON_POEM_LINES = [
+  "The moon is a symbol of love to me...",
+  "I fell in love with it for my love.",
+  "But every time I see it, I just fall into it.",
+  "How beautiful it is, yet I cannot touch it.",
+  "I love it so much, but I can never have it."
 ];
+
+function PoemSequence() {
+  const [lineIndex, setLineIndex] = useState(-1);
+
+  useEffect(() => {
+    if (lineIndex < MOON_POEM_LINES.length) {
+      // First line starts after 3.5 seconds to let the moon rise, then 5 seconds per line
+      const delay = lineIndex === -1 ? 3500 : 5000;
+      const timer = setTimeout(() => {
+        setLineIndex(prev => prev + 1);
+      }, delay);
+      return () => clearTimeout(timer);
+    }
+  }, [lineIndex]);
+
+  return (
+    <AnimatePresence mode="wait">
+      {lineIndex >= 0 && lineIndex < MOON_POEM_LINES.length && (
+        <motion.div
+          key={lineIndex}
+          initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+          animate={{ opacity: 0.9, filter: 'blur(0px)', y: 0 }}
+          exit={{ opacity: 0, filter: 'blur(8px)', y: -10, transition: { duration: 1.5 } }}
+          transition={{ duration: 2, ease: 'easeInOut' }}
+          style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.9rem',
+            color: '#ffffff', letterSpacing: '2px',
+            textAlign: 'center', lineHeight: 2.2,
+            textTransform: 'uppercase',
+            textShadow: '0 0 20px rgba(255,255,255,0.4)',
+            maxWidth: '600px', padding: '0 20px',
+            position: 'absolute', bottom: '15%' // Centered below the moon
+          }}
+        >
+          {MOON_POEM_LINES[lineIndex]}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export default function AtmosphereLayer() {
   const { isLateNight, isIdle, trustLevel, moonPhase } = useAtmosphere();
@@ -47,11 +88,10 @@ export default function AtmosphereLayer() {
   const handleMoonInteractStart = () => {
     if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
     moonTimerRef.current = setTimeout(() => {
-      setMoonSecretText(MOON_SECRETS[Math.floor(Math.random() * MOON_SECRETS.length)]);
       setShowMoonSecret(true);
       audioController.playMoonSecret();
-      // Auto-hide after 12 seconds of cinematic showing
-      setTimeout(() => setShowMoonSecret(false), 12000);
+      // Auto-hide after 32 seconds of cinematic showing
+      setTimeout(() => setShowMoonSecret(false), 32000);
     }, 4000); // 4 seconds hold to trigger
   };
   
@@ -222,23 +262,8 @@ export default function AtmosphereLayer() {
                   }} />
                 </motion.div>
 
-                {/* The Poetic Text over the scene */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 0.9, y: 0 }}
-                  exit={{ opacity: 0, transition: { duration: 1.5 } }}
-                  transition={{ duration: 4, delay: 2.5, ease: 'easeOut' }} // Fades in slowly after moon rises
-                  style={{
-                    fontFamily: 'var(--font-mono)', fontSize: '0.85rem',
-                    color: '#ffffff', letterSpacing: '2px',
-                    textAlign: 'center', whiteSpace: 'pre-line', lineHeight: 2.2,
-                    textTransform: 'uppercase',
-                    textShadow: '0 0 20px rgba(255,255,255,0.4)',
-                    maxWidth: '600px', padding: '0 20px'
-                  }}
-                >
-                  {moonSecretText}
-                </motion.div>
+                {/* The Poetic Text Sequence over the scene */}
+                <PoemSequence />
               </motion.div>
             )}
           </AnimatePresence>
