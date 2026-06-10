@@ -50,9 +50,9 @@ export default function AtmosphereLayer() {
       setMoonSecretText(MOON_SECRETS[Math.floor(Math.random() * MOON_SECRETS.length)]);
       setShowMoonSecret(true);
       audioController.playMoonSecret();
-      // Auto-hide after 6 seconds of showing
-      setTimeout(() => setShowMoonSecret(false), 6000);
-    }, 8000); // 8 seconds hold
+      // Auto-hide after 12 seconds of cinematic showing
+      setTimeout(() => setShowMoonSecret(false), 12000);
+    }, 4000); // 4 seconds hold to trigger
   };
   
   const handleMoonInteractEnd = () => {
@@ -183,20 +183,62 @@ export default function AtmosphereLayer() {
           <AnimatePresence>
             {showMoonSecret && (
               <motion.div
-                key="moon-secret"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 0.8, y: 0 }}
-                exit={{ opacity: 0, y: -10, transition: { duration: 3, ease: 'easeInOut' } }}
-                transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }} // Smooth decel
+                key="cinematic-moon"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 3, ease: 'easeInOut' } }}
                 style={{
-                  fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-                  color: 'rgba(255,255,255,0.75)', letterSpacing: '1px',
-                  textAlign: 'left', whiteSpace: 'pre-line', lineHeight: 1.6, // ALIGN LEFT
-                  textTransform: 'none', // Sentence case per request
-                  willChange: 'transform, opacity', // Force GPU acceleration
+                  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                  zIndex: 999999,
+                  background: 'rgba(5, 5, 8, 0.95)',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  pointerEvents: 'none'
                 }}
               >
-                {moonSecretText}
+                {/* The Massive Cinematic Moon */}
+                <motion.div
+                  initial={{ y: 200, scale: 0.8, opacity: 0 }}
+                  animate={{ y: 0, scale: 1, opacity: 1 }}
+                  exit={{ y: 50, opacity: 0, transition: { duration: 2 } }}
+                  transition={{ duration: 5, ease: [0.16, 1, 0.3, 1] }} // Super smooth cinematic rise
+                  style={{
+                    width: 280, height: 280, borderRadius: '50%',
+                    background: 'radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 20%, #94a3b8 60%, #334155 100%)',
+                    boxShadow: '0 0 100px rgba(191,219,254,0.3), inset -10px -10px 30px rgba(0,0,0,0.6)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    marginBottom: '40px'
+                  }}
+                >
+                  <div style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'radial-gradient(circle at 70% 70%, rgba(0,0,0,0.4) 0%, transparent 60%)',
+                    borderRadius: '50%'
+                  }} />
+                  <div style={{
+                    position: 'absolute', top: '10%', left: '20%', width: '30%', height: '30%',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%)',
+                    borderRadius: '50%', filter: 'blur(8px)'
+                  }} />
+                </motion.div>
+
+                {/* The Poetic Text over the scene */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 0.9, y: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 1.5 } }}
+                  transition={{ duration: 4, delay: 2.5, ease: 'easeOut' }} // Fades in slowly after moon rises
+                  style={{
+                    fontFamily: 'var(--font-mono)', fontSize: '0.85rem',
+                    color: '#ffffff', letterSpacing: '2px',
+                    textAlign: 'center', whiteSpace: 'pre-line', lineHeight: 2.2,
+                    textTransform: 'uppercase',
+                    textShadow: '0 0 20px rgba(255,255,255,0.4)',
+                    maxWidth: '600px', padding: '0 20px'
+                  }}
+                >
+                  {moonSecretText}
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
