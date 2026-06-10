@@ -82,7 +82,6 @@ export default function AtmosphereLayer() {
   const [idlePhrase, setIdlePhrase] = useState('');
   const [showIdlePhrase, setShowIdlePhrase] = useState(false);
   const [showMoonSecret, setShowMoonSecret] = useState(false);
-  const [moonSecretText, setMoonSecretText] = useState(MOON_SECRETS[0]);
 
   const moonTimerRef = useRef(null);
   
