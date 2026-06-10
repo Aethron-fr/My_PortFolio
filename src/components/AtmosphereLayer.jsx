@@ -28,11 +28,11 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "The moon is a symbol of love to me...",
-  "I fell in love with it for my love.",
-  "But every time I see it, I just fall into it.",
-  "How beautiful it is, yet I cannot touch it.",
-  "I love it so much, but I can never have it."
+  "Moon is a symbol of love to me",
+  "I fall in love with moon for my love",
+  "But everytime when I see the moon I just fall in it",
+  "How beautiful it is but I cant touch it",
+  "I love it soo much but I cant have it and cant get it"
 ];
 
 function PoemSequence() {
@@ -40,8 +40,9 @@ function PoemSequence() {
 
   useEffect(() => {
     if (lineIndex < MOON_POEM_LINES.length) {
-      // First line starts after 3.5 seconds to let the moon rise, then 5 seconds per line
-      const delay = lineIndex === -1 ? 3500 : 5000;
+      // First line starts after 3.5s (moon rise).
+      // Each cycle is 6s (1s fade out + 1s fade in + 4s stay visible)
+      const delay = lineIndex === -1 ? 3500 : 6000;
       const timer = setTimeout(() => {
         setLineIndex(prev => prev + 1);
       }, delay);
@@ -56,8 +57,8 @@ function PoemSequence() {
           key={lineIndex}
           initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
           animate={{ opacity: 0.9, filter: 'blur(0px)', y: 0 }}
-          exit={{ opacity: 0, filter: 'blur(8px)', y: -10, transition: { duration: 1.5 } }}
-          transition={{ duration: 2, ease: 'easeInOut' }}
+          exit={{ opacity: 0, filter: 'blur(8px)', y: -10, transition: { duration: 1 } }}
+          transition={{ duration: 1, ease: 'easeInOut' }}
           style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.9rem',
             color: '#ffffff', letterSpacing: '2px',
@@ -90,8 +91,8 @@ export default function AtmosphereLayer() {
     moonTimerRef.current = setTimeout(() => {
       setShowMoonSecret(true);
       audioController.playMoonSecret();
-      // Auto-hide after 32 seconds of cinematic showing
-      setTimeout(() => setShowMoonSecret(false), 32000);
+      // Auto-hide after 38 seconds of cinematic showing
+      setTimeout(() => setShowMoonSecret(false), 38000);
     }, 4000); // 4 seconds hold to trigger
   };
   
