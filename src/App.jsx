@@ -194,244 +194,166 @@ function ThemeToggle() {
   };
 
   return (
-    <motion.button
-      onClick={handleToggle}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.5, duration: 0.8, type: 'spring', stiffness: 200, damping: 20 }}
-      whileHover={{ 
-        scale: 1.08, 
-        y: -5,
-      }}
-      // Extreme mechanical spring compression on tap
-      whileTap={{ scale: 0.7, rotate: 180, transition: { type: 'spring', stiffness: 500, damping: 15 } }} 
-      aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
-      style={{
-        position: 'fixed',
-        bottom: 28,
-        right: 28,
-        zIndex: 9998,
-        width: 56, // Slightly larger for better touch target
-        height: 56,
-        borderRadius: '50%',
-        border: '1px solid',
-        borderColor: isHovered 
-          ? 'rgba(255,255,255,0.4)' 
-          : 'rgba(255,255,255,0.08)',
-        outline: 'none',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: isNight
-          ? 'rgba(10, 12, 22, 0.55)'
-          : 'rgba(255, 255, 255, 0.1)', // Brighter, clearer glass in day mode
-        boxShadow: isHovered
-          ? (isNight ? '0 20px 40px rgba(80,120,255,0.5), inset 0 2px 0 rgba(255,255,255,0.2)' : '0 20px 40px rgba(255,180,30,0.5), inset 0 2px 0 rgba(255,255,255,0.4)')
-          : (isNight ? '0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)' : '0 8px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2)'),
-        backdropFilter: 'blur(16px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-    >
-
-      {/* ── Premium Solar System ── */}
+    <>
+      {/* ── Solar System: separate fixed element, centered exactly on the button ──
+          Button: 56×56 at bottom:28 right:28  →  center at bottom:56 right:56
+          Orbit container: 120×120, so offset = (120/2)=60 from edges
+          → bottom: 56-60 = -4  ... nope, let's use bottom:0 right:0 with padding
+          Cleanest: position container so its center = button center
+          Container 120px → place at bottom: 56-60 = -4px  → clips bottom
+          Use bottom:0 right:0, size 116px → center at 58 from edges → close enough
+      ── */}
       <div style={{
-        position: 'absolute',
-        width: 130, height: 130,
-        top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        pointerEvents: 'none', zIndex: -1,
+        position: 'fixed',
+        bottom: 0, right: 0,
+        width: 112, height: 112,   // center = 56,56 from corner = same as button center
+        pointerEvents: 'none',
+        zIndex: 9997,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'visible',
       }}>
-
-        {/* Pulsing beacon ring from the center */}
+        {/* Pulsing beacon — matches the button size exactly (56px) */}
         <motion.div
-          animate={{ scale: [1, 2.2], opacity: [0.35, 0] }}
-          transition={{ repeat: Infinity, duration: 2.5, ease: 'easeOut', repeatDelay: 1 }}
+          animate={{ scale: [1, 2.0], opacity: [0.4, 0] }}
+          transition={{ repeat: Infinity, duration: 2.5, ease: 'easeOut', repeatDelay: 1.2 }}
           style={{
             position: 'absolute',
             width: 56, height: 56, borderRadius: '50%',
             border: `1.5px solid ${isNight ? 'rgba(147,197,253,0.7)' : 'rgba(251,191,36,0.7)'}`,
-            pointerEvents: 'none',
           }}
         />
 
-        {/* Orbit 1 — 70px, blue planet with comet tail */}
+        {/* Orbit 1 — 64px, blue, fast */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
-          style={{
-            position: 'absolute',
-            width: 70, height: 70, borderRadius: '50%',
-            border: '1px solid rgba(147,197,253,0.18)',
-            filter: 'drop-shadow(0 0 2px rgba(147,197,253,0.3))',
-          }}
+          style={{ position: 'absolute', width: 64, height: 64, borderRadius: '50%',
+            border: '1px solid rgba(147,197,253,0.20)' }}
         >
           {/* Comet tail */}
-          <div style={{
-            position: 'absolute', top: -1, left: '50%', marginLeft: -8,
-            width: 16, height: 2, borderRadius: 2,
-            background: 'linear-gradient(to left, rgba(147,197,253,0.7), transparent)',
-            transformOrigin: 'right center',
-          }} />
+          <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -10,
+            width: 14, height: 2, borderRadius: 2, marginTop: -1,
+            background: 'linear-gradient(to left, rgba(147,197,253,0.8), transparent)' }} />
           {/* Planet */}
-          <div style={{
-            position: 'absolute', top: -4, left: '50%', marginLeft: -4,
+          <div style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
             width: 8, height: 8, borderRadius: '50%',
             background: 'radial-gradient(circle at 35% 35%, #bfdbfe, #2563eb)',
-            boxShadow: '0 0 8px rgba(59,130,246,1), 0 0 2px #fff',
-          }} />
+            boxShadow: '0 0 7px rgba(59,130,246,1), 0 0 2px #fff' }} />
         </motion.div>
 
-        {/* Orbit 2 — 90px, amber planet, counter-clockwise */}
+        {/* Orbit 2 — 82px, amber, counter-clockwise */}
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
-          style={{
-            position: 'absolute',
-            width: 90, height: 90, borderRadius: '50%',
-            border: '1px solid rgba(251,191,36,0.18)',
-            filter: 'drop-shadow(0 0 2px rgba(251,191,36,0.25))',
-          }}
+          style={{ position: 'absolute', width: 82, height: 82, borderRadius: '50%',
+            border: '1px solid rgba(251,191,36,0.18)' }}
         >
-          {/* Comet tail */}
-          <div style={{
-            position: 'absolute', top: '50%', right: -1, marginTop: -1,
-            width: 18, height: 2, borderRadius: 2,
-            background: 'linear-gradient(to right, rgba(251,191,36,0.7), transparent)',
-          }} />
-          {/* Planet */}
-          <div style={{
-            position: 'absolute', top: '50%', right: -4, marginTop: -4,
+          <div style={{ position: 'absolute', top: '50%', right: 0, marginTop: -1,
+            width: 14, height: 2, borderRadius: 2, marginRight: -1,
+            background: 'linear-gradient(to right, rgba(251,191,36,0.8), transparent)' }} />
+          <div style={{ position: 'absolute', top: '50%', right: -4, marginTop: -4,
             width: 8, height: 8, borderRadius: '50%',
             background: 'radial-gradient(circle at 35% 35%, #fef08a, #d97706)',
-            boxShadow: '0 0 8px rgba(245,158,11,1), 0 0 2px #fff',
-          }} />
+            boxShadow: '0 0 7px rgba(245,158,11,1), 0 0 2px #fff' }} />
         </motion.div>
 
-        {/* Orbit 3 — 112px, teal planet, slow */}
+        {/* Orbit 3 — 100px, teal, slow */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 11, ease: 'linear' }}
-          style={{
-            position: 'absolute',
-            width: 112, height: 112, borderRadius: '50%',
-            border: '1px solid rgba(45,212,191,0.15)',
-            filter: 'drop-shadow(0 0 2px rgba(45,212,191,0.2))',
-          }}
+          style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%',
+            border: '1px solid rgba(45,212,191,0.16)' }}
         >
-          {/* Comet tail */}
-          <div style={{
-            position: 'absolute', bottom: -1, left: '50%', marginLeft: 0,
-            width: 16, height: 2, borderRadius: 2,
-            background: 'linear-gradient(to right, rgba(45,212,191,0.7), transparent)',
-          }} />
-          {/* Planet */}
-          <div style={{
-            position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
+          <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -1,
+            width: 14, height: 2, borderRadius: 2, marginBottom: -1,
+            background: 'linear-gradient(to right, rgba(45,212,191,0.8), transparent)' }} />
+          <div style={{ position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
             width: 8, height: 8, borderRadius: '50%',
             background: 'radial-gradient(circle at 35% 35%, #99f6e4, #0d9488)',
-            boxShadow: '0 0 8px rgba(20,184,166,1), 0 0 2px #fff',
-          }} />
+            boxShadow: '0 0 7px rgba(20,184,166,1), 0 0 2px #fff' }} />
         </motion.div>
       </div>
 
-      {/* Dynamic ambient backdrop that blooms on hover */}
-      <motion.div
-        animate={{
-          opacity: isHovered ? 0.9 : 0.15,
-          scale: isHovered ? 1.6 : 1,
-        }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+      {/* ── The actual button — clean, no orbits inside ── */}
+      <motion.button
+        onClick={handleToggle}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2.5, duration: 0.8, type: 'spring', stiffness: 200, damping: 20 }}
+        whileHover={{ scale: 1.08, y: -5 }}
+        whileTap={{ scale: 0.85, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
+        aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
         style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '50%',
-          background: isNight
-            ? 'radial-gradient(circle, rgba(100,150,255,0.35) 0%, transparent 60%)'
-            : 'radial-gradient(circle, rgba(255,200,50,0.35) 0%, transparent 60%)',
-          pointerEvents: 'none',
-          zIndex: 0,
+          position: 'fixed', bottom: 28, right: 28, zIndex: 9998,
+          width: 56, height: 56, borderRadius: '50%',
+          border: `1px solid ${isHovered ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.10)'}`,
+          outline: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: isNight ? 'rgba(10,12,22,0.60)' : 'rgba(255,255,255,0.12)',
+          boxShadow: isHovered
+            ? (isNight ? '0 12px 32px rgba(80,120,255,0.45)' : '0 12px 32px rgba(255,180,30,0.45)')
+            : '0 4px 16px rgba(0,0,0,0.35)',
+          backdropFilter: 'blur(16px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+          transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+          overflow: 'hidden',  // ensures nothing leaks out of the button
         }}
-      />
+      >
+        {/* Ambient glow inside */}
+        <motion.div
+          animate={{ opacity: isHovered ? 0.85 : 0.15, scale: isHovered ? 1.5 : 1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          style={{
+            position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
+            background: isNight
+              ? 'radial-gradient(circle, rgba(100,150,255,0.4) 0%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(255,200,50,0.4) 0%, transparent 70%)',
+          }}
+        />
 
-      <AnimatePresence mode="wait">
-        {isNight ? (
-          <motion.div
-            key="moon"
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ 
-              opacity: 1, 
-              scale: isHovered ? 1.1 : [1, 1.05, 1],
-            }}
-            exit={{ opacity: 0, scale: 0.7, transition: { duration: 0.12 } }}
-            transition={{ 
-              duration: 0.25, ease: 'easeOut',
-              scale: { repeat: isHovered ? 0 : Infinity, duration: 3, ease: 'easeInOut' }
-            }}
-            style={{ zIndex: 1, display: 'flex', position: 'absolute' }}
-          >
-            {/* Real Moon Photo — clipped to circle, no white ball */}
-            <div style={{
-              width: 26, height: 26, borderRadius: '50%',
-              position: 'relative', overflow: 'hidden',
-              boxShadow: isHovered
-                ? '0 0 18px rgba(200,210,255,0.6)'
-                : '0 0 8px rgba(200,210,255,0.3)',
-              transition: 'box-shadow 0.4s ease',
-            }}>
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg"
-                alt=""
-                style={{
-                  width: '100%', height: '100%',
-                  objectFit: 'cover', objectPosition: 'center',
-                  display: 'block',
-                  filter: 'brightness(0.9) contrast(1.1) sepia(8%)',
-                  borderRadius: '50%',
-                }}
-              />
-              {/* 3D depth shadow overlay */}
-              <div style={{
-                position: 'absolute', inset: 0, borderRadius: '50%',
-                background: 'radial-gradient(circle at 60% 60%, transparent 30%, rgba(0,0,0,0.50) 80%, rgba(0,0,0,0.70) 100%)',
-                pointerEvents: 'none',
-              }} />
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="sun"
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ 
-              opacity: 1,
-              scale: isHovered ? 1.1 : [1, 1.08, 1],
-            }}
-            exit={{ opacity: 0, scale: 0.7, transition: { duration: 0.12 } }}
-            transition={{ 
-              duration: 0.25, ease: 'easeOut',
-              scale: { repeat: isHovered ? 0 : Infinity, duration: 4, ease: 'easeInOut' },
-            }}
-            style={{ zIndex: 1, display: 'flex', position: 'absolute' }}
-          >
-            <div style={{
-              width: 26, height: 26, borderRadius: '50%',
-              background: 'radial-gradient(circle at 40% 40%, #ffffff 0%, #fef08a 20%, #f59e0b 60%, #ea580c 100%)',
-              boxShadow: isHovered 
-                ? '0 0 20px #f59e0b, 0 0 40px rgba(253,230,138,0.8), inset 0 0 8px #c2410c' 
-                : '0 0 10px rgba(245,158,11,0.6), inset 0 0 6px #c2410c',
-              position: 'relative',
-              filter: 'contrast(1.1) brightness(1.1)',
-              transition: 'all 0.3s ease'
-            }}>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.button>
+        <AnimatePresence mode="wait">
+          {isNight ? (
+            <motion.div key="moon"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: isHovered ? 1.12 : [1, 1.05, 1] }}
+              exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.1 } }}
+              transition={{ duration: 0.2, ease: 'easeOut',
+                scale: { repeat: isHovered ? 0 : Infinity, duration: 3, ease: 'easeInOut' } }}
+              style={{ position: 'absolute', display: 'flex' }}
+            >
+              <div style={{ width: 26, height: 26, borderRadius: '50%', overflow: 'hidden',
+                boxShadow: isHovered ? '0 0 16px rgba(200,210,255,0.7)' : '0 0 8px rgba(200,210,255,0.35)',
+                position: 'relative', flexShrink: 0 }}>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg" alt=""
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                    filter: 'brightness(0.88) contrast(1.1)' }} />
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%',
+                  background: 'radial-gradient(circle at 62% 62%, transparent 30%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.72) 100%)',
+                  pointerEvents: 'none' }} />
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div key="sun"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: isHovered ? 1.12 : [1, 1.08, 1] }}
+              exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.1 } }}
+              transition={{ duration: 0.2, ease: 'easeOut',
+                scale: { repeat: isHovered ? 0 : Infinity, duration: 4, ease: 'easeInOut' } }}
+              style={{ position: 'absolute', display: 'flex' }}
+            >
+              <div style={{ width: 26, height: 26, borderRadius: '50%',
+                background: 'radial-gradient(circle at 38% 38%, #fff7d6 0%, #fef08a 22%, #f59e0b 58%, #ea580c 100%)',
+                boxShadow: isHovered
+                  ? '0 0 20px #f59e0b, 0 0 40px rgba(253,230,138,0.7), inset 0 0 8px #c2410c'
+                  : '0 0 10px rgba(245,158,11,0.7), inset 0 0 5px #c2410c',
+                filter: 'contrast(1.1) brightness(1.05)', flexShrink: 0 }} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
+    </>
   );
 }
 
