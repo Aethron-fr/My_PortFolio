@@ -237,23 +237,24 @@ function ThemeToggle() {
       }}
     >
 
-      {/* ── Mini Solar System Orbits ──
-          Button: 56px wide, at right:28 bottom:28
-          → Button center is 56px from screen edges
-          → Max safe orbit radius = 48px → max diameter = 96px         */}
+      {/* ── Mini Solar System Orbits — contained within button bounds ── */}
       <div style={{
-        position: 'absolute', inset: -24,      // container = 56+48 = 104px
+        position: 'absolute',
+        width: 130, height: 130,       // fixed size, centered on button
+        top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
         pointerEvents: 'none', zIndex: -1,
+        overflow: 'visible',           // planets can glow outside, rings stay proportional
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {/* Orbit 1 — 68px diameter (34px radius), fast, blue planet */}
+        {/* Orbit 1 — 70px, fast, blue planet */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
           style={{
             position: 'absolute',
-            width: 68, height: 68, borderRadius: '50%',
-            border: '1px solid rgba(140,180,255,0.20)',
+            width: 70, height: 70, borderRadius: '50%',
+            border: '1px solid rgba(140,180,255,0.22)',
           }}
         >
           <div style={{
@@ -264,14 +265,14 @@ function ThemeToggle() {
           }} />
         </motion.div>
 
-        {/* Orbit 2 — 84px diameter (42px radius), medium, amber planet */}
+        {/* Orbit 2 — 90px, counter-clockwise, amber planet */}
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
           style={{
             position: 'absolute',
-            width: 84, height: 84, borderRadius: '50%',
-            border: '1px solid rgba(251,191,36,0.16)',
+            width: 90, height: 90, borderRadius: '50%',
+            border: '1px solid rgba(251,191,36,0.18)',
           }}
         >
           <div style={{
@@ -282,14 +283,14 @@ function ThemeToggle() {
           }} />
         </motion.div>
 
-        {/* Orbit 3 — 96px diameter (48px radius), slowest, teal planet */}
+        {/* Orbit 3 — 112px, slow, teal planet */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 11, ease: 'linear' }}
           style={{
             position: 'absolute',
-            width: 96, height: 96, borderRadius: '50%',
-            border: '1px solid rgba(45,212,191,0.14)',
+            width: 112, height: 112, borderRadius: '50%',
+            border: '1px solid rgba(45,212,191,0.15)',
           }}
         >
           <div style={{
@@ -320,23 +321,21 @@ function ThemeToggle() {
         }}
       />
 
-      <AnimatePresence mode="sync">
+      <AnimatePresence mode="wait">
         {isNight ? (
           <motion.div
             key="moon"
-            initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
+            initial={{ opacity: 0, scale: 0.7 }}
             animate={{ 
               opacity: 1, 
-              rotate: isHovered ? -15 : 0, 
-              scale: isHovered ? 1.1 : [1, 1.05, 1], // Continuous gentle breathing
-              filter: 'blur(0px)' 
+              scale: isHovered ? 1.1 : [1, 1.05, 1],
             }}
-            exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
+            exit={{ opacity: 0, scale: 0.7, transition: { duration: 0.12 } }}
             transition={{ 
-              duration: 0.4, type: 'spring', stiffness: 400, damping: 25,
+              duration: 0.25, ease: 'easeOut',
               scale: { repeat: isHovered ? 0 : Infinity, duration: 3, ease: 'easeInOut' }
             }}
-            style={{ zIndex: 1, display: 'flex' }}
+            style={{ zIndex: 1, display: 'flex', position: 'absolute' }}
           >
             {/* Real Moon Photo — clipped to circle, no white ball */}
             <div style={{
@@ -369,20 +368,17 @@ function ThemeToggle() {
         ) : (
           <motion.div
             key="sun"
-            initial={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
+            initial={{ opacity: 0, scale: 0.7 }}
             animate={{ 
-              opacity: 1, 
-              rotate: isHovered ? 45 : [0, 10, 0], // Gentle sun wobble
-              scale: isHovered ? 1.1 : [1, 1.08, 1], 
-              filter: 'blur(0px)' 
+              opacity: 1,
+              scale: isHovered ? 1.1 : [1, 1.08, 1],
             }}
-            exit={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
+            exit={{ opacity: 0, scale: 0.7, transition: { duration: 0.12 } }}
             transition={{ 
-              duration: 0.4, type: 'spring', stiffness: 400, damping: 25,
+              duration: 0.25, ease: 'easeOut',
               scale: { repeat: isHovered ? 0 : Infinity, duration: 4, ease: 'easeInOut' },
-              rotate: { repeat: isHovered ? 0 : Infinity, duration: 8, ease: 'linear' }
             }}
-            style={{ zIndex: 1, display: 'flex' }}
+            style={{ zIndex: 1, display: 'flex', position: 'absolute' }}
           >
             <div style={{
               width: 26, height: 26, borderRadius: '50%',
