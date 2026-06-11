@@ -301,59 +301,161 @@ function ThemeToggle() {
               background: 'radial-gradient(circle at 35% 35%, #cffafe, #0891b2)',
               boxShadow: '0 0 7px rgba(6,182,212,0.8), 0 0 2px #fff' }} />
           </motion.div>
+        {/* ── COSMIC MIRACLE: 3D Astral Rings & Nebula ── */}
+        <div style={{
+          position: 'absolute',
+          width: 140, height: 140,
+          top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%) rotateX(65deg)', // 3D Perspective Astrolabe effect
+          transformStyle: 'preserve-3d',
+          pointerEvents: 'none',
+          zIndex: -1,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {/* Pulsing Stargate Core */}
+          <motion.div
+            animate={{ scale: [1, 2.5], opacity: [0.6, 0] }}
+            transition={{ repeat: Infinity, duration: 3, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              width: 56, height: 56, borderRadius: '50%',
+              border: `2px solid ${isNight ? 'rgba(167,139,250,0.8)' : 'rgba(251,191,36,0.8)'}`,
+              filter: 'blur(2px)',
+            }}
+          />
+
+          {/* Ethereal Stardust Ring 1 */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 15, ease: 'linear' }}
+            style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
+              border: '1px solid rgba(226,232,240,0.2)', borderStyle: 'dashed' }}
+          />
+
+          {/* Orbit 1 — 70px, Lunar Silver, 3D tilted planet */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 4.5, ease: 'linear' }}
+            style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
+              border: '1px solid rgba(226,232,240,0.25)', boxShadow: 'inset 0 0 10px rgba(255,255,255,0.05)' }}
+          >
+            {/* Comet tail */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -12,
+              width: 18, height: 2, borderRadius: 2, marginTop: -1,
+              background: 'linear-gradient(to left, rgba(255,255,255,0.9), transparent)', filter: 'blur(1px)' }} />
+            {/* Celestial Body */}
+            <motion.div
+              animate={{ rotateX: -65 }} // Counter-rotate to stay a perfect sphere
+              style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
+                width: 10, height: 10, borderRadius: '50%',
+                background: '#ffffff',
+                boxShadow: '0 0 12px #fff, 0 0 24px rgba(226,232,240,0.8), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
+          </motion.div>
+
+          {/* Orbit 2 — 96px, Ethereal Lilac, counter-clockwise */}
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
+            style={{ position: 'absolute', width: 96, height: 96, borderRadius: '50%',
+              border: '1px solid rgba(196,181,253,0.25)', boxShadow: '0 0 15px rgba(139,92,246,0.1)' }}
+          >
+            {/* Comet tail pointing right */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -4,
+              width: 20, height: 2, borderRadius: 2, marginTop: -1,
+              background: 'linear-gradient(to right, rgba(196,181,253,0.9), transparent)', filter: 'blur(1px)' }} />
+            {/* Celestial Body */}
+            <motion.div
+              animate={{ rotateX: -65 }}
+              style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
+                width: 10, height: 10, borderRadius: '50%',
+                background: '#f3e8ff',
+                boxShadow: '0 0 12px #e9d5ff, 0 0 30px rgba(139,92,246,0.9), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
+          </motion.div>
+
+          {/* Orbit 3 — 124px, Cyber Cyan, slow */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 12, ease: 'linear' }}
+            style={{ position: 'absolute', width: 124, height: 124, borderRadius: '50%',
+              border: '1px solid rgba(103,232,249,0.2)', boxShadow: 'inset 0 0 20px rgba(6,182,212,0.1)' }}
+          >
+            {/* Comet tail */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -12,
+              width: 18, height: 2, borderRadius: 2, marginTop: -1,
+              background: 'linear-gradient(to left, rgba(165,243,252,0.9), transparent)', filter: 'blur(1px)' }} />
+            {/* Celestial Body */}
+            <motion.div
+              animate={{ rotateX: -65 }}
+              style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
+                width: 8, height: 8, borderRadius: '50%',
+                background: '#cffafe',
+                boxShadow: '0 0 10px #67e8f9, 0 0 20px rgba(6,182,212,0.9), inset 0 -1px 3px rgba(0,0,0,0.3)' }} />
+          </motion.div>
         </div>
 
-        {/* Ambient glow inside */}
+        {/* ── Nebula Core Aura ── */}
         <motion.div
-          animate={{ opacity: isHovered ? 0.85 : 0.15, scale: isHovered ? 1.5 : 1 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
+          animate={{ opacity: isHovered ? 1 : 0.4, scale: isHovered ? 1.8 : 1.2, rotate: isHovered ? 45 : 0 }}
+          transition={{ duration: 1.5, ease: 'easeOut' }}
           style={{
-            position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
+            position: 'absolute', inset: -20, borderRadius: '50%', pointerEvents: 'none',
             background: isNight
-              ? 'radial-gradient(circle, rgba(100,150,255,0.4) 0%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(255,200,50,0.4) 0%, transparent 70%)',
+              ? 'radial-gradient(circle, rgba(139,92,246,0.4) 0%, rgba(59,130,246,0.2) 40%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(251,191,36,0.4) 0%, rgba(245,158,11,0.2) 40%, transparent 70%)',
+            filter: 'blur(8px)', mixBlendMode: 'screen'
           }}
         />
 
         <AnimatePresence mode="wait">
           {isNight ? (
             <motion.div key="moon"
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: isHovered ? 1.12 : [1, 1.05, 1] }}
-              exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.1 } }}
-              transition={{ duration: 0.2, ease: 'easeOut',
-                scale: { repeat: isHovered ? 0 : Infinity, duration: 3, ease: 'easeInOut' } }}
+              initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
+              animate={{ opacity: 1, scale: isHovered ? 1.15 : [1, 1.05, 1], rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.5, rotate: 45, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.4, ease: 'easeOut',
+                scale: { repeat: isHovered ? 0 : Infinity, duration: 4, ease: 'easeInOut' } }}
               style={{ position: 'absolute', display: 'flex' }}
             >
-              <div style={{ width: 26, height: 26, borderRadius: '50%', overflow: 'hidden',
-                boxShadow: isHovered ? '0 0 16px rgba(200,210,255,0.7)' : '0 0 8px rgba(200,210,255,0.35)',
+              {/* Magical Lunar Halo */}
+              <div style={{ position: 'absolute', inset: -15, borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)',
+                boxShadow: isHovered ? '0 0 30px rgba(167,139,250,0.6)' : '0 0 15px rgba(147,197,253,0.3)' }} />
+              
+              {/* Moon Itself */}
+              <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden',
+                boxShadow: '0 0 20px rgba(255,255,255,0.4), inset 0 0 10px rgba(255,255,255,0.8)',
                 position: 'relative', flexShrink: 0 }}>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg" alt=""
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-                    filter: 'brightness(0.88) contrast(1.1)' }} />
+                    filter: 'brightness(1.1) contrast(1.2)' }} />
                 <div style={{ position: 'absolute', inset: 0, borderRadius: '50%',
-                  background: 'radial-gradient(circle at 62% 62%, transparent 30%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.72) 100%)',
+                  background: 'radial-gradient(circle at 65% 65%, transparent 20%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.9) 100%)',
                   pointerEvents: 'none' }} />
               </div>
             </motion.div>
           ) : (
             <motion.div key="sun"
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: isHovered ? 1.12 : [1, 1.08, 1] }}
-              exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.1 } }}
-              transition={{ duration: 0.2, ease: 'easeOut',
-                scale: { repeat: isHovered ? 0 : Infinity, duration: 4, ease: 'easeInOut' } }}
+              initial={{ opacity: 0, scale: 0.5, rotate: 45 }}
+              animate={{ opacity: 1, scale: isHovered ? 1.15 : [1, 1.08, 1], rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.5, rotate: -45, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.4, ease: 'easeOut',
+                scale: { repeat: isHovered ? 0 : Infinity, duration: 5, ease: 'easeInOut' } }}
               style={{ position: 'absolute', display: 'flex' }}
             >
-              <div style={{ width: 26, height: 26, borderRadius: '50%',
-                background: 'radial-gradient(circle at 38% 38%, #fff7d6 0%, #fef08a 22%, #f59e0b 58%, #ea580c 100%)',
-                boxShadow: isHovered
-                  ? '0 0 20px #f59e0b, 0 0 40px rgba(253,230,138,0.7), inset 0 0 8px #c2410c'
-                  : '0 0 10px rgba(245,158,11,0.7), inset 0 0 5px #c2410c',
-                filter: 'contrast(1.1) brightness(1.05)', flexShrink: 0 }} />
+              {/* Solar Corona Glow */}
+              <div style={{ position: 'absolute', inset: -20, borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)',
+                boxShadow: isHovered ? '0 0 40px rgba(245,158,11,0.7)' : '0 0 20px rgba(251,191,36,0.4)' }} />
+
+              {/* Sun Core */}
+              <div style={{ width: 28, height: 28, borderRadius: '50%',
+                background: 'radial-gradient(circle at 40% 40%, #ffffff 0%, #fef08a 25%, #f59e0b 60%, #ea580c 100%)',
+                boxShadow: '0 0 25px #f59e0b, 0 0 50px rgba(253,230,138,0.9), inset 0 0 12px #ffffff',
+                filter: 'contrast(1.2) brightness(1.2)', flexShrink: 0 }} />
             </motion.div>
           )}
         </AnimatePresence>
+
       </motion.button>
     </>
   );
