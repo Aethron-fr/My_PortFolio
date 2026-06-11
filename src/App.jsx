@@ -237,66 +237,66 @@ function ThemeToggle() {
       }}
     >
 
-      {/* ── Mini Solar System Orbits ── */}
+      {/* ── Mini Solar System Orbits ──
+          Button: 56px wide, at right:28 bottom:28
+          → Button center is 56px from screen edges
+          → Max safe orbit radius = 48px → max diameter = 96px         */}
       <div style={{
-        position: 'absolute', inset: -44,
+        position: 'absolute', inset: -24,      // container = 56+48 = 104px
         pointerEvents: 'none', zIndex: -1,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {/* Orbit 1 — innermost, fast, blue planet */}
+        {/* Orbit 1 — 68px diameter (34px radius), fast, blue planet */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
           style={{
             position: 'absolute',
-            width: 88, height: 88, borderRadius: '50%',
-            border: '1px solid rgba(140,180,255,0.18)',
+            width: 68, height: 68, borderRadius: '50%',
+            border: '1px solid rgba(140,180,255,0.20)',
           }}
         >
-          {/* Planet 1 — blue, top */}
           <div style={{
-            position: 'absolute', top: -4, left: '50%', marginLeft: -4,
-            width: 8, height: 8, borderRadius: '50%',
+            position: 'absolute', top: -3, left: '50%', marginLeft: -3,
+            width: 6, height: 6, borderRadius: '50%',
             background: 'radial-gradient(circle at 35% 35%, #93c5fd, #3b82f6)',
-            boxShadow: '0 0 6px rgba(59,130,246,0.8)',
+            boxShadow: '0 0 5px rgba(59,130,246,0.9)',
           }} />
         </motion.div>
 
-        {/* Orbit 2 — medium, slower, orange/amber planet */}
+        {/* Orbit 2 — 84px diameter (42px radius), medium, amber planet */}
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
           style={{
             position: 'absolute',
-            width: 118, height: 118, borderRadius: '50%',
-            border: '1px solid rgba(251,191,36,0.15)',
+            width: 84, height: 84, borderRadius: '50%',
+            border: '1px solid rgba(251,191,36,0.16)',
           }}
         >
-          {/* Planet 2 — amber, right side */}
           <div style={{
-            position: 'absolute', top: '50%', right: -4, marginTop: -4,
-            width: 8, height: 8, borderRadius: '50%',
+            position: 'absolute', top: '50%', right: -3, marginTop: -3,
+            width: 6, height: 6, borderRadius: '50%',
             background: 'radial-gradient(circle at 35% 35%, #fde68a, #f59e0b)',
-            boxShadow: '0 0 6px rgba(245,158,11,0.8)',
+            boxShadow: '0 0 5px rgba(245,158,11,0.9)',
           }} />
         </motion.div>
 
-        {/* Orbit 3 — outermost, slowest, teal planet */}
+        {/* Orbit 3 — 96px diameter (48px radius), slowest, teal planet */}
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 12, ease: 'linear' }}
+          transition={{ repeat: Infinity, duration: 11, ease: 'linear' }}
           style={{
             position: 'absolute',
-            width: 150, height: 150, borderRadius: '50%',
-            border: '1px solid rgba(45,212,191,0.13)',
+            width: 96, height: 96, borderRadius: '50%',
+            border: '1px solid rgba(45,212,191,0.14)',
           }}
         >
-          {/* Planet 3 — teal, bottom */}
           <div style={{
-            position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
-            width: 7, height: 7, borderRadius: '50%',
+            position: 'absolute', bottom: -3, left: '50%', marginLeft: -3,
+            width: 6, height: 6, borderRadius: '50%',
             background: 'radial-gradient(circle at 35% 35%, #99f6e4, #14b8a6)',
-            boxShadow: '0 0 6px rgba(20,184,166,0.8)',
+            boxShadow: '0 0 5px rgba(20,184,166,0.9)',
           }} />
         </motion.div>
       </div>
