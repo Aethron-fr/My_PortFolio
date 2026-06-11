@@ -28,13 +28,12 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "She is my moon.",
-  "I see her every day... like I see the moon every night.",
-  "So beautiful it hurts. So close it feels real.",
-  "But every time I reach... there is nothing but air.",
-  "Still, every night... I close my eyes and wish.",
-  "I know it will never happen.",
-  "And I still wish anyway."
+  "There is no hope. I know that.",
+  "And yet... every night, I still hope.",
+  "I hope that one day she will understand.",
+  "That she will see what I see every time I look up.",
+  "And maybe... just maybe...",
+  "She will finally let me hold my moon."
 ];
 
 function PoemSequence() {
@@ -228,12 +227,14 @@ export default function AtmosphereLayer() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 3, ease: 'easeInOut' } }}
+                onClick={() => setShowMoonSecret(false)}
                 style={{
                   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
                   zIndex: 999999,
-                  background: 'rgba(5, 5, 8, 0.95)',
+                  background: 'rgba(5, 5, 8, 0.97)',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  pointerEvents: 'none'
+                  pointerEvents: 'auto',
+                  cursor: 'pointer',
                 }}
               >
                 {/* Real Moon Photo — properly clipped to circle with 3D depth overlay */}
@@ -281,6 +282,16 @@ export default function AtmosphereLayer() {
 
                 {/* The Poetic Text Sequence over the scene */}
                 <PoemSequence />
+
+                {/* Subtle tap-to-skip hint */}
+                <div style={{
+                  position: 'absolute', bottom: 28,
+                  fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
+                  color: 'rgba(255,255,255,0.2)', letterSpacing: '3px',
+                  textTransform: 'uppercase', userSelect: 'none',
+                }}>
+                  tap anywhere to close
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
