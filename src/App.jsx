@@ -162,8 +162,6 @@ function AudioToggle() {
       >
         {isEnabled ? (
           <motion.div
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ repeat: Infinity, duration: 0.45, ease: "easeInOut" }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <Volume2 size={20} strokeWidth={1.5} style={{ color: 'rgba(167,139,250,1)', filter: 'drop-shadow(0 0 5px rgba(167,139,250,0.6))' }} />
