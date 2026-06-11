@@ -400,8 +400,6 @@ function ThemeToggle() {
               filter: 'contrast(1.1) brightness(1.1)',
               transition: 'all 0.3s ease'
             }}>
-               <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 15, ease: "linear" }} style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: '2px dashed rgba(245,158,11,0.5)', filter: 'blur(3px)' }} />
-               <motion.div animate={{ rotate: -360, scale: [1, 1.1, 1] }} transition={{ rotate: { repeat: Infinity, duration: 20, ease: "linear" }, scale: { repeat: Infinity, duration: 4, ease: "easeInOut" } }} style={{ position: 'absolute', inset: -2, borderRadius: '50%', border: '1px dashed rgba(253,230,138,0.6)', filter: 'blur(1px)' }} />
             </div>
           </motion.div>
         )}
