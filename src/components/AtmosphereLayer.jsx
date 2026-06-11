@@ -28,11 +28,12 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "To me, the moon has always been a symbol of love.",
-  "I fell in love with it, because of the one I love.",
-  "But every time I look up... I just fall right into it.",
-  "It is so overwhelmingly beautiful, yet impossible to touch.",
-  "I love it so much... but I know I can never have it."
+  "I can see it clearly... every single night.",
+  "So close it feels like I could reach out and hold it.",
+  "But no matter how far I stretch... it stays out of reach.",
+  "Still, I can never look away. I never will.",
+  "I manifest it every night — knowing it will never come.",
+  "And somehow... that makes me love it even more."
 ];
 
 function PoemSequence() {
@@ -235,30 +236,97 @@ export default function AtmosphereLayer() {
                 }}
               >
                 {/* The Massive Cinematic Moon */}
+                {/* Outer atmospheric halo — pure CSS, no images */}
                 <motion.div
-                  initial={{ y: 200, scale: 0.8, opacity: 0 }}
-                  animate={{ y: 0, scale: 1, opacity: 1 }}
-                  exit={{ y: 50, opacity: 0, transition: { duration: 2 } }}
-                  transition={{ duration: 5, ease: [0.16, 1, 0.3, 1] }} // Super smooth cinematic rise
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0, transition: { duration: 2 } }}
+                  transition={{ duration: 6, ease: [0.16, 1, 0.3, 1] }}
                   style={{
-                    width: 320, height: 320, borderRadius: '50%',
-                    backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg")',
-                    backgroundSize: '135%', // Zooms in perfectly to crop out all black bezels from the photo
-                    backgroundPosition: 'center',
-                    boxShadow: '0 0 120px rgba(255, 255, 255, 0.25), 0 0 40px rgba(255, 255, 255, 0.1)', // Gorgeous space glow
-                    filter: 'contrast(1.15) sepia(15%) hue-rotate(-5deg)', // Cinematic warm tint
                     position: 'relative',
-                    overflow: 'hidden',
-                    marginBottom: '50px'
+                    width: 340, height: 340,
+                    marginBottom: '60px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
                 >
-                  {/* Inner shadow to make it a 3D sphere instead of a flat circle */}
+                  {/* Atmospheric glow ring */}
                   <div style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'radial-gradient(circle at 30% 30%, transparent 40%, rgba(0,0,0,0.85) 100%)',
+                    position: 'absolute',
+                    width: 420, height: 420,
                     borderRadius: '50%',
-                    pointerEvents: 'none'
+                    background: 'radial-gradient(circle, rgba(200,210,255,0.07) 40%, transparent 75%)',
+                    filter: 'blur(20px)',
                   }} />
+
+                  {/* The Moon Sphere */}
+                  <div style={{
+                    width: 320, height: 320, borderRadius: '50%',
+                    position: 'relative', overflow: 'hidden',
+                    // Base lunar surface — warm grey tones like real regolith
+                    background: 'radial-gradient(circle at 42% 42%, #e8e4d8 0%, #d4cfc0 18%, #b8b3a4 38%, #969086 55%, #787268 72%, #5a5550 88%, #3c3832 100%)',
+                    boxShadow: [
+                      '0 0 0 1px rgba(220,216,200,0.15)',
+                      '0 0 60px rgba(210,205,185,0.18)',
+                      '0 0 120px rgba(200,196,175,0.10)',
+                      '0 0 200px rgba(190,186,165,0.06)',
+                    ].join(', '),
+                  }}>
+                    {/* Mare Tranquillitatis — large dark sea bottom-left */}
+                    <div style={{
+                      position: 'absolute', bottom: '18%', left: '12%',
+                      width: '38%', height: '32%', borderRadius: '50%',
+                      background: 'radial-gradient(ellipse, rgba(60,58,52,0.75) 0%, rgba(80,76,68,0.4) 60%, transparent 100%)',
+                      filter: 'blur(6px)',
+                    }} />
+                    {/* Mare Serenitatis — dark sea upper right */}
+                    <div style={{
+                      position: 'absolute', top: '14%', right: '16%',
+                      width: '28%', height: '24%', borderRadius: '50%',
+                      background: 'radial-gradient(ellipse, rgba(55,52,46,0.70) 0%, rgba(75,72,64,0.35) 65%, transparent 100%)',
+                      filter: 'blur(5px)',
+                    }} />
+                    {/* Mare Imbrium — large sea upper left */}
+                    <div style={{
+                      position: 'absolute', top: '10%', left: '8%',
+                      width: '34%', height: '30%', borderRadius: '50%',
+                      background: 'radial-gradient(ellipse, rgba(58,55,48,0.65) 0%, rgba(78,74,66,0.30) 65%, transparent 100%)',
+                      filter: 'blur(7px)',
+                    }} />
+                    {/* Oceanus Procellarum — huge western ocean */}
+                    <div style={{
+                      position: 'absolute', top: '25%', left: '2%',
+                      width: '30%', height: '50%', borderRadius: '50%',
+                      background: 'radial-gradient(ellipse, rgba(52,50,44,0.60) 0%, transparent 80%)',
+                      filter: 'blur(8px)',
+                    }} />
+                    {/* Bright highland rim top-right — Tycho-like bright area */}
+                    <div style={{
+                      position: 'absolute', bottom: '12%', right: '18%',
+                      width: '20%', height: '18%', borderRadius: '50%',
+                      background: 'radial-gradient(circle, rgba(240,236,220,0.55) 0%, transparent 70%)',
+                      filter: 'blur(4px)',
+                    }} />
+                    {/* Surface texture grain */}
+                    <div style={{
+                      position: 'absolute', inset: 0, borderRadius: '50%',
+                      background: [
+                        'radial-gradient(ellipse 60% 40% at 30% 70%, rgba(110,105,95,0.25) 0%, transparent 70%)',
+                        'radial-gradient(ellipse 40% 60% at 70% 30%, rgba(200,196,180,0.12) 0%, transparent 70%)',
+                      ].join(', '),
+                    }} />
+                    {/* Terminator edge shadow — 3D depth */}
+                    <div style={{
+                      position: 'absolute', inset: 0, borderRadius: '50%',
+                      background: 'radial-gradient(circle at 65% 65%, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.80) 100%)',
+                    }} />
+                    {/* Specular highlight — the moon's bright lit side */}
+                    <div style={{
+                      position: 'absolute', top: '8%', left: '12%',
+                      width: '35%', height: '30%', borderRadius: '50%',
+                      background: 'radial-gradient(ellipse, rgba(255,252,240,0.30) 0%, transparent 75%)',
+                      filter: 'blur(10px)',
+                    }} />
+                  </div>
                 </motion.div>
 
                 {/* The Poetic Text Sequence over the scene */}
