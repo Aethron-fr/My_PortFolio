@@ -28,11 +28,11 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "Moon is a symbol of love to me",
-  "I fall in love with moon for my love",
-  "But everytime when I see the moon I just fall in it",
-  "How beautiful it is but I cant touch it",
-  "I love it soo much but I cant have it and cant get it"
+  "To me, the moon has always been a symbol of love.",
+  "I fell in love with it, because of the one I love.",
+  "But every time I look up... I just fall right into it.",
+  "It is so overwhelmingly beautiful, yet impossible to touch.",
+  "I love it so much... but I know I can never have it."
 ];
 
 function PoemSequence() {
@@ -62,7 +62,7 @@ function PoemSequence() {
           style={{
             fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.4rem',
             color: 'rgba(255, 255, 255, 0.9)', letterSpacing: '0.05em',
-            textAlign: 'center', lineHeight: 2.2,
+            textAlign: 'center', lineHeight: 2.2, textTransform: 'none',
             textShadow: '0 0 20px rgba(255,255,255,0.3)',
             maxWidth: '600px', padding: '0 20px',
             position: 'absolute', bottom: '15%' // Centered below the moon
@@ -241,12 +241,14 @@ export default function AtmosphereLayer() {
                   exit={{ y: 50, opacity: 0, transition: { duration: 2 } }}
                   transition={{ duration: 5, ease: [0.16, 1, 0.3, 1] }} // Super smooth cinematic rise
                   style={{
-                    width: 280, height: 280, borderRadius: '50%',
-                    background: 'radial-gradient(circle at 35% 35%, #f5f5f0 0%, #e8e8e0 20%, #c8c8b8 45%, #a0a090 65%, #787868 80%, #505045 100%)',
-                    boxShadow: '0 0 60px rgba(255, 255, 255, 0.15), 0 0 120px rgba(200, 200, 180, 0.1), inset -20px -20px 40px rgba(0, 0, 0, 0.4), inset 10px 10px 30px rgba(255, 255, 255, 0.1)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    marginBottom: '40px'
+                    width: 320, height: 320, borderRadius: '50%',
+                    backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    mixBlendMode: 'screen', // Removes the black background of the photo perfectly
+                    boxShadow: '0 0 80px rgba(255, 255, 255, 0.15)',
+                    filter: 'contrast(1.1) sepia(15%) hue-rotate(-5deg)', // Cinematic warm tint
+                    marginBottom: '50px'
                   }}
                 />
 
