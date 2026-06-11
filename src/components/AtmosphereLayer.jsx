@@ -28,12 +28,13 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "I can see it clearly... every single night.",
-  "So close it feels like I could reach out and hold it.",
-  "But no matter how far I stretch... it stays out of reach.",
-  "Still, I can never look away. I never will.",
-  "I manifest it every night — knowing it will never come.",
-  "And somehow... that makes me love it even more."
+  "She is my moon.",
+  "I see her every day... like I see the moon every night.",
+  "So beautiful it hurts. So close it feels real.",
+  "But every time I reach... there is nothing but air.",
+  "Still, every night... I close my eyes and wish.",
+  "I know it will never happen.",
+  "And I still wish anyway."
 ];
 
 function PoemSequence() {
@@ -256,7 +257,7 @@ export default function AtmosphereLayer() {
                     pointerEvents: 'none',
                   }} />
 
-                  {/* The actual moon photo, cleanly clipped */}
+                  {/* The actual moon photo, cleanly clipped, no borders */}
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg"
                     alt=""
@@ -266,12 +267,7 @@ export default function AtmosphereLayer() {
                       objectFit: 'cover',
                       objectPosition: 'center',
                       display: 'block',
-                      filter: 'contrast(1.08) brightness(0.95) sepia(10%)',
-                      boxShadow: [
-                        '0 0 50px rgba(220,215,185,0.20)',
-                        '0 0 110px rgba(200,196,170,0.12)',
-                        '0 0 200px rgba(180,176,150,0.07)',
-                      ].join(', '),
+                      filter: 'contrast(1.08) brightness(0.9) sepia(8%)',
                     }}
                   />
 
