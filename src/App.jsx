@@ -237,35 +237,56 @@ function ThemeToggle() {
       }}
     >
 
-      {/* ── Mini Solar System Orbits — contained within button bounds ── */}
+      {/* ── Premium Solar System ── */}
       <div style={{
         position: 'absolute',
-        width: 130, height: 130,       // fixed size, centered on button
+        width: 130, height: 130,
         top: '50%', left: '50%',
         transform: 'translate(-50%, -50%)',
         pointerEvents: 'none', zIndex: -1,
-        overflow: 'visible',           // planets can glow outside, rings stay proportional
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {/* Orbit 1 — 70px, fast, blue planet */}
+
+        {/* Pulsing beacon ring from the center */}
+        <motion.div
+          animate={{ scale: [1, 2.2], opacity: [0.35, 0] }}
+          transition={{ repeat: Infinity, duration: 2.5, ease: 'easeOut', repeatDelay: 1 }}
+          style={{
+            position: 'absolute',
+            width: 56, height: 56, borderRadius: '50%',
+            border: `1.5px solid ${isNight ? 'rgba(147,197,253,0.7)' : 'rgba(251,191,36,0.7)'}`,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Orbit 1 — 70px, blue planet with comet tail */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
           style={{
             position: 'absolute',
             width: 70, height: 70, borderRadius: '50%',
-            border: '1px solid rgba(140,180,255,0.22)',
+            border: '1px solid rgba(147,197,253,0.18)',
+            filter: 'drop-shadow(0 0 2px rgba(147,197,253,0.3))',
           }}
         >
+          {/* Comet tail */}
           <div style={{
-            position: 'absolute', top: -3, left: '50%', marginLeft: -3,
-            width: 6, height: 6, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #93c5fd, #3b82f6)',
-            boxShadow: '0 0 5px rgba(59,130,246,0.9)',
+            position: 'absolute', top: -1, left: '50%', marginLeft: -8,
+            width: 16, height: 2, borderRadius: 2,
+            background: 'linear-gradient(to left, rgba(147,197,253,0.7), transparent)',
+            transformOrigin: 'right center',
+          }} />
+          {/* Planet */}
+          <div style={{
+            position: 'absolute', top: -4, left: '50%', marginLeft: -4,
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 35%, #bfdbfe, #2563eb)',
+            boxShadow: '0 0 8px rgba(59,130,246,1), 0 0 2px #fff',
           }} />
         </motion.div>
 
-        {/* Orbit 2 — 90px, counter-clockwise, amber planet */}
+        {/* Orbit 2 — 90px, amber planet, counter-clockwise */}
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
@@ -273,17 +294,25 @@ function ThemeToggle() {
             position: 'absolute',
             width: 90, height: 90, borderRadius: '50%',
             border: '1px solid rgba(251,191,36,0.18)',
+            filter: 'drop-shadow(0 0 2px rgba(251,191,36,0.25))',
           }}
         >
+          {/* Comet tail */}
           <div style={{
-            position: 'absolute', top: '50%', right: -3, marginTop: -3,
-            width: 6, height: 6, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #fde68a, #f59e0b)',
-            boxShadow: '0 0 5px rgba(245,158,11,0.9)',
+            position: 'absolute', top: '50%', right: -1, marginTop: -1,
+            width: 18, height: 2, borderRadius: 2,
+            background: 'linear-gradient(to right, rgba(251,191,36,0.7), transparent)',
+          }} />
+          {/* Planet */}
+          <div style={{
+            position: 'absolute', top: '50%', right: -4, marginTop: -4,
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 35%, #fef08a, #d97706)',
+            boxShadow: '0 0 8px rgba(245,158,11,1), 0 0 2px #fff',
           }} />
         </motion.div>
 
-        {/* Orbit 3 — 112px, slow, teal planet */}
+        {/* Orbit 3 — 112px, teal planet, slow */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 11, ease: 'linear' }}
@@ -291,13 +320,21 @@ function ThemeToggle() {
             position: 'absolute',
             width: 112, height: 112, borderRadius: '50%',
             border: '1px solid rgba(45,212,191,0.15)',
+            filter: 'drop-shadow(0 0 2px rgba(45,212,191,0.2))',
           }}
         >
+          {/* Comet tail */}
           <div style={{
-            position: 'absolute', bottom: -3, left: '50%', marginLeft: -3,
-            width: 6, height: 6, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #99f6e4, #14b8a6)',
-            boxShadow: '0 0 5px rgba(20,184,166,0.9)',
+            position: 'absolute', bottom: -1, left: '50%', marginLeft: 0,
+            width: 16, height: 2, borderRadius: 2,
+            background: 'linear-gradient(to right, rgba(45,212,191,0.7), transparent)',
+          }} />
+          {/* Planet */}
+          <div style={{
+            position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 35%, #99f6e4, #0d9488)',
+            boxShadow: '0 0 8px rgba(20,184,166,1), 0 0 2px #fff',
           }} />
         </motion.div>
       </div>
