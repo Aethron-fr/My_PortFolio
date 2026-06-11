@@ -60,11 +60,10 @@ function PoemSequence() {
           exit={{ opacity: 0, filter: 'blur(8px)', y: -10, transition: { duration: 1 } }}
           transition={{ duration: 1, ease: 'easeInOut' }}
           style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.9rem',
-            color: '#ffffff', letterSpacing: '2px',
+            fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.4rem',
+            color: 'rgba(255, 255, 255, 0.9)', letterSpacing: '0.05em',
             textAlign: 'center', lineHeight: 2.2,
-            textTransform: 'uppercase',
-            textShadow: '0 0 20px rgba(255,255,255,0.4)',
+            textShadow: '0 0 20px rgba(255,255,255,0.3)',
             maxWidth: '600px', padding: '0 20px',
             position: 'absolute', bottom: '15%' // Centered below the moon
           }}
@@ -243,8 +242,8 @@ export default function AtmosphereLayer() {
                   transition={{ duration: 5, ease: [0.16, 1, 0.3, 1] }} // Super smooth cinematic rise
                   style={{
                     width: 280, height: 280, borderRadius: '50%',
-                    background: 'radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 20%, #94a3b8 60%, #334155 100%)',
-                    boxShadow: '0 0 100px rgba(191,219,254,0.3), inset -10px -10px 30px rgba(0,0,0,0.6)',
+                    background: 'radial-gradient(circle at 35% 35%, #f5f5f0 0%, #e8e8e0 20%, #c8c8b8 45%, #a0a090 65%, #787868 80%, #505045 100%)',
+                    boxShadow: '0 0 60px rgba(255, 255, 255, 0.15), 0 0 120px rgba(200, 200, 180, 0.1), inset -20px -20px 40px rgba(0, 0, 0, 0.4), inset 10px 10px 30px rgba(255, 255, 255, 0.1)',
                     position: 'relative',
                     overflow: 'hidden',
                     marginBottom: '40px'
