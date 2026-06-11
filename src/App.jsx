@@ -223,12 +223,13 @@ function ThemeToggle() {
         }}
       >
 
-        {/* ── COSMIC MIRACLE: Clean Flat Orbits ── */}
+        {/* ── COSMIC MIRACLE: 3D Astral Rings & Nebula (Golden Astrolabe in Day Mode) ── */}
         <div style={{
           position: 'absolute',
           width: 140, height: 140,
           top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)', // Removed rotateX for a clean 2D look
+          transform: 'translate(-50%, -50%) rotateX(65deg)', // Restored 3D Perspective Astrolabe effect
+          transformStyle: 'preserve-3d',
           pointerEvents: 'none',
           zIndex: -1,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -268,6 +269,7 @@ function ThemeToggle() {
               filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
+              animate={{ rotateX: -65 }} // Counter-rotate to stay a perfect sphere in 3D
               style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
                 width: 10, height: 10, borderRadius: '50%',
                 background: isNight ? '#ffffff' : '#fef08a',
@@ -291,6 +293,7 @@ function ThemeToggle() {
               filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
+              animate={{ rotateX: -65 }} // Counter-rotate to stay a perfect sphere
               style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
                 width: 10, height: 10, borderRadius: '50%',
                 background: isNight ? '#f3e8ff' : '#fed7aa',
@@ -314,6 +317,7 @@ function ThemeToggle() {
               filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
+              animate={{ rotateX: -65 }} // Counter-rotate to stay a perfect sphere
               style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
                 width: 8, height: 8, borderRadius: '50%',
                 background: isNight ? '#cffafe' : '#ffedd5',
