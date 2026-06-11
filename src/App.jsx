@@ -195,86 +195,7 @@ function ThemeToggle() {
 
   return (
     <>
-      {/* ── Solar System: separate fixed element, centered exactly on the button ──
-          Button: 56×56 at bottom:28 right:28  →  center at bottom:56 right:56
-          Orbit container: 120×120, so offset = (120/2)=60 from edges
-          → bottom: 56-60 = -4  ... nope, let's use bottom:0 right:0 with padding
-          Cleanest: position container so its center = button center
-          Container 120px → place at bottom: 56-60 = -4px  → clips bottom
-          Use bottom:0 right:0, size 116px → center at 58 from edges → close enough
-      ── */}
-      <div style={{
-        position: 'fixed',
-        bottom: 0, right: 0,
-        width: 112, height: 112,   // center = 56,56 from corner = same as button center
-        pointerEvents: 'none',
-        zIndex: 9997,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        overflow: 'visible',
-      }}>
-        {/* Pulsing beacon — matches the button size exactly (56px) */}
-        <motion.div
-          animate={{ scale: [1, 2.0], opacity: [0.4, 0] }}
-          transition={{ repeat: Infinity, duration: 2.5, ease: 'easeOut', repeatDelay: 1.2 }}
-          style={{
-            position: 'absolute',
-            width: 56, height: 56, borderRadius: '50%',
-            border: `1.5px solid ${isNight ? 'rgba(147,197,253,0.7)' : 'rgba(251,191,36,0.7)'}`,
-          }}
-        />
-
-        {/* Orbit 1 — 64px, blue, fast */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
-          style={{ position: 'absolute', width: 64, height: 64, borderRadius: '50%',
-            border: '1px solid rgba(147,197,253,0.20)' }}
-        >
-          {/* Comet tail */}
-          <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -10,
-            width: 14, height: 2, borderRadius: 2, marginTop: -1,
-            background: 'linear-gradient(to left, rgba(147,197,253,0.8), transparent)' }} />
-          {/* Planet */}
-          <div style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
-            width: 8, height: 8, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #bfdbfe, #2563eb)',
-            boxShadow: '0 0 7px rgba(59,130,246,1), 0 0 2px #fff' }} />
-        </motion.div>
-
-        {/* Orbit 2 — 82px, amber, counter-clockwise */}
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
-          style={{ position: 'absolute', width: 82, height: 82, borderRadius: '50%',
-            border: '1px solid rgba(251,191,36,0.18)' }}
-        >
-          <div style={{ position: 'absolute', top: '50%', right: 0, marginTop: -1,
-            width: 14, height: 2, borderRadius: 2, marginRight: -1,
-            background: 'linear-gradient(to right, rgba(251,191,36,0.8), transparent)' }} />
-          <div style={{ position: 'absolute', top: '50%', right: -4, marginTop: -4,
-            width: 8, height: 8, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #fef08a, #d97706)',
-            boxShadow: '0 0 7px rgba(245,158,11,1), 0 0 2px #fff' }} />
-        </motion.div>
-
-        {/* Orbit 3 — 100px, teal, slow */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 11, ease: 'linear' }}
-          style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%',
-            border: '1px solid rgba(45,212,191,0.16)' }}
-        >
-          <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -1,
-            width: 14, height: 2, borderRadius: 2, marginBottom: -1,
-            background: 'linear-gradient(to right, rgba(45,212,191,0.8), transparent)' }} />
-          <div style={{ position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
-            width: 8, height: 8, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #99f6e4, #0d9488)',
-            boxShadow: '0 0 7px rgba(20,184,166,1), 0 0 2px #fff' }} />
-        </motion.div>
-      </div>
-
-      {/* ── The actual button — clean, no orbits inside ── */}
+      {/* ── The actual button — clean, orbits inside so they track movements perfectly ── */}
       <motion.button
         onClick={handleToggle}
         onHoverStart={() => setIsHovered(true)}
@@ -298,9 +219,81 @@ function ThemeToggle() {
           backdropFilter: 'blur(16px) saturate(180%)',
           WebkitBackdropFilter: 'blur(16px) saturate(180%)',
           transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-          overflow: 'hidden',  // ensures nothing leaks out of the button
+          // REMOVED overflow: 'hidden' so orbits can extend outside the button bounds
         }}
       >
+        {/* ── Solar System: orbits placed INSIDE button so they scale and move with it ── */}
+        <div style={{
+          position: 'absolute',
+          width: 130, height: 130,   // centered mathematically inside the 56x56 button
+          top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          zIndex: -1,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {/* Pulsing beacon */}
+          <motion.div
+            animate={{ scale: [1, 2.0], opacity: [0.4, 0] }}
+            transition={{ repeat: Infinity, duration: 2.5, ease: 'easeOut', repeatDelay: 1.2 }}
+            style={{
+              position: 'absolute',
+              width: 56, height: 56, borderRadius: '50%',
+              border: `1.5px solid ${isNight ? 'rgba(147,197,253,0.7)' : 'rgba(251,191,36,0.7)'}`,
+            }}
+          />
+
+          {/* Orbit 1 — 64px, blue, fast */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
+            style={{ position: 'absolute', width: 64, height: 64, borderRadius: '50%',
+              border: '1px solid rgba(147,197,253,0.20)' }}
+          >
+            {/* Comet tail */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -10,
+              width: 14, height: 2, borderRadius: 2, marginTop: -1,
+              background: 'linear-gradient(to left, rgba(147,197,253,0.8), transparent)' }} />
+            {/* Planet */}
+            <div style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
+              width: 8, height: 8, borderRadius: '50%',
+              background: 'radial-gradient(circle at 35% 35%, #bfdbfe, #2563eb)',
+              boxShadow: '0 0 7px rgba(59,130,246,1), 0 0 2px #fff' }} />
+          </motion.div>
+
+          {/* Orbit 2 — 82px, amber, counter-clockwise */}
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
+            style={{ position: 'absolute', width: 82, height: 82, borderRadius: '50%',
+              border: '1px solid rgba(251,191,36,0.18)' }}
+          >
+            <div style={{ position: 'absolute', top: '50%', right: 0, marginTop: -1,
+              width: 14, height: 2, borderRadius: 2, marginRight: -1,
+              background: 'linear-gradient(to right, rgba(251,191,36,0.8), transparent)' }} />
+            <div style={{ position: 'absolute', top: '50%', right: -4, marginTop: -4,
+              width: 8, height: 8, borderRadius: '50%',
+              background: 'radial-gradient(circle at 35% 35%, #fef08a, #d97706)',
+              boxShadow: '0 0 7px rgba(245,158,11,1), 0 0 2px #fff' }} />
+          </motion.div>
+
+          {/* Orbit 3 — 100px, teal, slow */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 11, ease: 'linear' }}
+            style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%',
+              border: '1px solid rgba(45,212,191,0.16)' }}
+          >
+            <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -1,
+              width: 14, height: 2, borderRadius: 2, marginBottom: -1,
+              background: 'linear-gradient(to right, rgba(45,212,191,0.8), transparent)' }} />
+            <div style={{ position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
+              width: 8, height: 8, borderRadius: '50%',
+              background: 'radial-gradient(circle at 35% 35%, #99f6e4, #0d9488)',
+              boxShadow: '0 0 7px rgba(20,184,166,1), 0 0 2px #fff' }} />
+          </motion.div>
+        </div>
+
         {/* Ambient glow inside */}
         <motion.div
           animate={{ opacity: isHovered ? 0.85 : 0.15, scale: isHovered ? 1.5 : 1 }}
