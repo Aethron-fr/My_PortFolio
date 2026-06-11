@@ -133,17 +133,21 @@ function AudioToggle() {
         style={{
           position: 'relative',
           width: 56, height: 56, borderRadius: '50%',
-          background: isEnabled ? 'var(--bg-card)' : 'var(--bg-surface)',
+          background: isEnabled ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.02)',
           border: '1px solid',
-          borderColor: isHovered ? 'var(--border-glass-strong)' : 'var(--border-glass)',
-          color: isEnabled ? 'var(--text-primary)' : 'var(--text-dim)',
+          borderColor: isHovered 
+            ? (isEnabled ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)') 
+            : 'rgba(255,255,255,0.04)',
+          color: isEnabled ? 'var(--text-primary)' : 'rgba(255,255,255,0.5)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', backdropFilter: 'blur(16px) saturate(180%)',
           WebkitBackdropFilter: 'blur(16px) saturate(180%)',
           boxShadow: isHovered 
-            ? '0 10px 30px var(--shadow-color), inset 0 1px 0 var(--border-glass-strong)' 
-            : '0 4px 20px var(--shadow-color), inset 0 1px 0 var(--border-glass)',
-          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            ? (isEnabled 
+                ? '0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.2)' 
+                : '0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)')
+            : '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
         {isEnabled ? <Volume2 size={20} strokeWidth={1.5} /> : <VolumeX size={20} strokeWidth={1.5} />}
