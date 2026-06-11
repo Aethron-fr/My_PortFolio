@@ -243,14 +243,23 @@ export default function AtmosphereLayer() {
                   style={{
                     width: 320, height: 320, borderRadius: '50%',
                     backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg")',
-                    backgroundSize: 'cover',
+                    backgroundSize: '135%', // Zooms in perfectly to crop out all black bezels from the photo
                     backgroundPosition: 'center',
-                    mixBlendMode: 'screen', // Removes the black background of the photo perfectly
-                    boxShadow: '0 0 80px rgba(255, 255, 255, 0.15)',
-                    filter: 'contrast(1.1) sepia(15%) hue-rotate(-5deg)', // Cinematic warm tint
+                    boxShadow: '0 0 120px rgba(255, 255, 255, 0.25), 0 0 40px rgba(255, 255, 255, 0.1)', // Gorgeous space glow
+                    filter: 'contrast(1.15) sepia(15%) hue-rotate(-5deg)', // Cinematic warm tint
+                    position: 'relative',
+                    overflow: 'hidden',
                     marginBottom: '50px'
                   }}
-                />
+                >
+                  {/* Inner shadow to make it a 3D sphere instead of a flat circle */}
+                  <div style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'radial-gradient(circle at 30% 30%, transparent 40%, rgba(0,0,0,0.85) 100%)',
+                    borderRadius: '50%',
+                    pointerEvents: 'none'
+                  }} />
+                </motion.div>
 
                 {/* The Poetic Text Sequence over the scene */}
                 <PoemSequence />
