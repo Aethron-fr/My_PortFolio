@@ -243,54 +243,63 @@ function ThemeToggle() {
             }}
           />
 
-          {/* Orbit 1 — 64px, blue, fast */}
+          {/* Orbit 1 — 64px, Lunar Silver, fast */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
             style={{ position: 'absolute', width: 64, height: 64, borderRadius: '50%',
-              border: '1px solid rgba(147,197,253,0.20)' }}
+              border: '1px solid rgba(226,232,240,0.15)' }}
           >
             {/* Comet tail */}
             <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -10,
               width: 14, height: 2, borderRadius: 2, marginTop: -1,
-              background: 'linear-gradient(to left, rgba(147,197,253,0.8), transparent)' }} />
+              background: 'linear-gradient(to left, rgba(226,232,240,0.8), transparent)' }} />
             {/* Planet */}
             <div style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
               width: 8, height: 8, borderRadius: '50%',
-              background: 'radial-gradient(circle at 35% 35%, #bfdbfe, #2563eb)',
-              boxShadow: '0 0 7px rgba(59,130,246,1), 0 0 2px #fff' }} />
+              background: 'radial-gradient(circle at 35% 35%, #ffffff, #94a3b8)',
+              boxShadow: '0 0 7px rgba(226,232,240,0.8), 0 0 2px #fff' }} />
           </motion.div>
 
-          {/* Orbit 2 — 82px, amber, counter-clockwise */}
+          {/* Orbit 2 — 82px, Ethereal Lilac, counter-clockwise */}
+          {/* We place it at 12 o'clock just like the others, but it rotates CCW. 
+              At 12 o'clock (top), moving CCW means moving LEFT. 
+              So the tail should point RIGHT. */}
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
             style={{ position: 'absolute', width: 82, height: 82, borderRadius: '50%',
-              border: '1px solid rgba(251,191,36,0.18)' }}
+              border: '1px solid rgba(196,181,253,0.15)' }}
           >
-            <div style={{ position: 'absolute', top: '50%', right: 0, marginTop: -1,
-              width: 14, height: 2, borderRadius: 2, marginRight: -1,
-              background: 'linear-gradient(to right, rgba(251,191,36,0.8), transparent)' }} />
-            <div style={{ position: 'absolute', top: '50%', right: -4, marginTop: -4,
+            {/* Comet tail - pointing RIGHT since planet moves LEFT */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -4,
+              width: 14, height: 2, borderRadius: 2, marginTop: -1,
+              background: 'linear-gradient(to right, rgba(167,139,250,0.8), transparent)' }} />
+            {/* Planet */}
+            <div style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
               width: 8, height: 8, borderRadius: '50%',
-              background: 'radial-gradient(circle at 35% 35%, #fef08a, #d97706)',
-              boxShadow: '0 0 7px rgba(245,158,11,1), 0 0 2px #fff' }} />
+              background: 'radial-gradient(circle at 35% 35%, #ddd6fe, #7c3aed)',
+              boxShadow: '0 0 7px rgba(139,92,246,0.8), 0 0 2px #fff' }} />
           </motion.div>
 
-          {/* Orbit 3 — 100px, teal, slow */}
+          {/* Orbit 3 — 100px, Cyber Cyan, slow */}
+          {/* We also place it at 12 o'clock so all tails use the same horizontal math, 
+              but give it a different rotation speed. Moving CW = moving RIGHT. Tail points LEFT. */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 11, ease: 'linear' }}
             style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%',
-              border: '1px solid rgba(45,212,191,0.16)' }}
+              border: '1px solid rgba(103,232,249,0.12)' }}
           >
-            <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -1,
-              width: 14, height: 2, borderRadius: 2, marginBottom: -1,
-              background: 'linear-gradient(to right, rgba(45,212,191,0.8), transparent)' }} />
-            <div style={{ position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
+            {/* Comet tail */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -10,
+              width: 14, height: 2, borderRadius: 2, marginTop: -1,
+              background: 'linear-gradient(to left, rgba(34,211,238,0.8), transparent)' }} />
+            {/* Planet */}
+            <div style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
               width: 8, height: 8, borderRadius: '50%',
-              background: 'radial-gradient(circle at 35% 35%, #99f6e4, #0d9488)',
-              boxShadow: '0 0 7px rgba(20,184,166,1), 0 0 2px #fff' }} />
+              background: 'radial-gradient(circle at 35% 35%, #cffafe, #0891b2)',
+              boxShadow: '0 0 7px rgba(6,182,212,0.8), 0 0 2px #fff' }} />
           </motion.div>
         </div>
 
