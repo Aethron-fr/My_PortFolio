@@ -348,27 +348,31 @@ function ThemeToggle() {
             }}
             style={{ zIndex: 1, display: 'flex' }}
           >
-            {/* Ultra-Realistic Smooth Glowing Moon */}
+            {/* Real Moon Photo — clipped to circle, no white ball */}
             <div style={{
               width: 26, height: 26, borderRadius: '50%',
-              background: 'radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 20%, #94a3b8 60%, #334155 100%)',
-              boxShadow: isHovered 
-                ? '0 0 25px #bfdbfe, inset -4px -4px 10px rgba(0,0,0,0.6)' 
-                : '0 0 12px rgba(191,219,254,0.5), inset -3px -3px 8px rgba(0,0,0,0.5)',
-              position: 'relative',
-              transition: 'all 0.4s ease',
-              overflow: 'hidden'
+              position: 'relative', overflow: 'hidden',
+              boxShadow: isHovered
+                ? '0 0 18px rgba(200,210,255,0.6)'
+                : '0 0 8px rgba(200,210,255,0.3)',
+              transition: 'box-shadow 0.4s ease',
             }}>
-              {/* Soft lunar glow overlay without harsh craters */}
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg"
+                alt=""
+                style={{
+                  width: '100%', height: '100%',
+                  objectFit: 'cover', objectPosition: 'center',
+                  display: 'block',
+                  filter: 'brightness(0.9) contrast(1.1) sepia(8%)',
+                  borderRadius: '50%',
+                }}
+              />
+              {/* 3D depth shadow overlay */}
               <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                background: 'radial-gradient(circle at 70% 70%, rgba(0,0,0,0.4) 0%, transparent 60%)',
-                borderRadius: '50%'
-              }} />
-              <div style={{
-                position: 'absolute', top: '10%', left: '20%', width: '30%', height: '30%',
-                background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%)',
-                borderRadius: '50%', filter: 'blur(2px)'
+                position: 'absolute', inset: 0, borderRadius: '50%',
+                background: 'radial-gradient(circle at 60% 60%, transparent 30%, rgba(0,0,0,0.50) 80%, rgba(0,0,0,0.70) 100%)',
+                pointerEvents: 'none',
               }} />
             </div>
           </motion.div>
