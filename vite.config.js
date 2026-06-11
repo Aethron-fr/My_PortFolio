@@ -5,4 +5,18 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/', // Configured for root-level Vercel deployment and local preview
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('framer-motion')) return 'framer-motion';
+            if (id.includes('firebase')) return 'firebase';
+            if (id.includes('react')) return 'react-vendor';
+            return 'vendor';
+          }
+        }
+      }
+    }
+  }
 })

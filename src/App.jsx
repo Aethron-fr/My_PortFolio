@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail,
@@ -14,8 +14,6 @@ import {
   ArrowUpRight,
   Volume2,
   VolumeX,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import { audioController } from './audio';
 import MagneticButton from './components/MagneticButton';
@@ -465,43 +463,7 @@ export default function App() {
 
   const progressBarRef = useRef(null);
 
-  // Security: Disable right-click, F12, and inspect element shortcuts
-  useEffect(() => {
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-    };
-
-    const handleKeyDown = (e) => {
-      // Prevent F12
-      if (e.key === 'F12') {
-        e.preventDefault();
-      }
-      // Prevent Ctrl+Shift+I (Inspect)
-      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-        e.preventDefault();
-      }
-      // Prevent Ctrl+Shift+J (Console)
-      if (e.ctrlKey && e.shiftKey && e.key === 'J') {
-        e.preventDefault();
-      }
-      // Prevent Ctrl+Shift+C (Inspect Element)
-      if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-        e.preventDefault();
-      }
-      // Prevent Ctrl+U (View Source)
-      if (e.ctrlKey && e.key === 'u') {
-        e.preventDefault();
-      }
-    };
-
-    window.addEventListener('contextmenu', handleContextMenu);
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('contextmenu', handleContextMenu);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
+  // (Removed hostile UX event listeners that blocked Right-Click and F12 per audit)
 
   // Behavioral Ambient Audio: Idle tracking (20s)
   useEffect(() => {
@@ -581,6 +543,15 @@ export default function App() {
     e.preventDefault();
     // BUG-003: Proper validation including email format check
     if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) return;
+    
+    // AUDIT-FIX: Honeypot check for bots
+    if (contactForm.honey) {
+      setSubmitSuccess(true);
+      setContactForm({ name: '', email: '', message: '', honey: '' });
+      setTimeout(() => setSubmitSuccess(false), 6000);
+      return; // Silently drop bot submission
+    }
+
     if (!/\S+@\S+\.\S+/.test(contactForm.email)) {
       setSubmitError('Please enter a valid email address.');
       setTimeout(() => setSubmitError(false), 4000);
@@ -1324,6 +1295,17 @@ export default function App() {
             {/* BUG-017: Labels linked to inputs via htmlFor/id pairs */}
             <div className="glass-panel" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
               <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* AUDIT-FIX: Hidden honeypot field to trap bots */}
+                <input
+                  type="text"
+                  name="_honey"
+                  style={{ display: 'none' }}
+                  tabIndex="-1"
+                  autoComplete="off"
+                  value={contactForm.honey || ''}
+                  onChange={(e) => setContactForm({ ...contactForm, honey: e.target.value })}
+                />
+                
                 <div>
                   <label htmlFor="contact-name" style={{ display: 'block', fontSize: '0.72rem', fontWeight: '500', color: 'var(--text-dim)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
                     Name
