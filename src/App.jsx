@@ -251,67 +251,79 @@ function ThemeToggle() {
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 15, ease: 'linear' }}
             style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
-              border: '1px solid rgba(226,232,240,0.2)', borderStyle: 'dashed' }}
+              border: `1px solid ${isNight ? 'rgba(226,232,240,0.2)' : 'rgba(15,23,42,0.15)'}`, borderStyle: 'dashed' }}
           />
 
-          {/* Orbit 1 — 70px, Lunar Silver, 3D tilted planet */}
+          {/* Orbit 1 — 70px, Lunar Silver (Night) / Deep Blue (Day) */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 4.5, ease: 'linear' }}
             style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
-              border: '1px solid rgba(226,232,240,0.25)', boxShadow: 'inset 0 0 10px rgba(255,255,255,0.05)' }}
+              border: `1px solid ${isNight ? 'rgba(226,232,240,0.25)' : 'rgba(37,99,235,0.3)'}`, 
+              boxShadow: isNight ? 'inset 0 0 10px rgba(255,255,255,0.05)' : 'inset 0 0 10px rgba(37,99,235,0.1)' }}
           >
             {/* Comet tail */}
             <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -12,
               width: 18, height: 2, borderRadius: 2, marginTop: -1,
-              background: 'linear-gradient(to left, rgba(255,255,255,0.9), transparent)', filter: 'blur(1px)' }} />
+              background: `linear-gradient(to left, ${isNight ? 'rgba(255,255,255,0.9)' : 'rgba(37,99,235,0.9)'}, transparent)`, 
+              filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
               animate={{ rotateX: -65 }} // Counter-rotate to stay a perfect sphere
               style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
                 width: 10, height: 10, borderRadius: '50%',
-                background: '#ffffff',
-                boxShadow: '0 0 12px #fff, 0 0 24px rgba(226,232,240,0.8), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
+                background: isNight ? '#ffffff' : '#3b82f6',
+                boxShadow: isNight 
+                  ? '0 0 12px #fff, 0 0 24px rgba(226,232,240,0.8), inset 0 -2px 4px rgba(0,0,0,0.3)'
+                  : '0 0 12px rgba(59,130,246,0.8), 0 0 24px rgba(37,99,235,0.5), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
           </motion.div>
 
-          {/* Orbit 2 — 96px, Ethereal Lilac, counter-clockwise */}
+          {/* Orbit 2 — 96px, Ethereal Lilac (Night) / Violet (Day) */}
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
             style={{ position: 'absolute', width: 96, height: 96, borderRadius: '50%',
-              border: '1px solid rgba(196,181,253,0.25)', boxShadow: '0 0 15px rgba(139,92,246,0.1)' }}
+              border: `1px solid ${isNight ? 'rgba(196,181,253,0.25)' : 'rgba(124,58,237,0.3)'}`, 
+              boxShadow: isNight ? '0 0 15px rgba(139,92,246,0.1)' : '0 0 15px rgba(124,58,237,0.1)' }}
           >
             {/* Comet tail pointing right */}
             <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -4,
               width: 20, height: 2, borderRadius: 2, marginTop: -1,
-              background: 'linear-gradient(to right, rgba(196,181,253,0.9), transparent)', filter: 'blur(1px)' }} />
+              background: `linear-gradient(to right, ${isNight ? 'rgba(196,181,253,0.9)' : 'rgba(124,58,237,0.9)'}, transparent)`, 
+              filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
               animate={{ rotateX: -65 }}
               style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
                 width: 10, height: 10, borderRadius: '50%',
-                background: '#f3e8ff',
-                boxShadow: '0 0 12px #e9d5ff, 0 0 30px rgba(139,92,246,0.9), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
+                background: isNight ? '#f3e8ff' : '#8b5cf6',
+                boxShadow: isNight
+                  ? '0 0 12px #e9d5ff, 0 0 30px rgba(139,92,246,0.9), inset 0 -2px 4px rgba(0,0,0,0.3)'
+                  : '0 0 12px rgba(139,92,246,0.8), 0 0 30px rgba(124,58,237,0.5), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
           </motion.div>
 
-          {/* Orbit 3 — 124px, Cyber Cyan, slow */}
+          {/* Orbit 3 — 124px, Cyber Cyan (Night) / Deep Teal (Day) */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 12, ease: 'linear' }}
             style={{ position: 'absolute', width: 124, height: 124, borderRadius: '50%',
-              border: '1px solid rgba(103,232,249,0.2)', boxShadow: 'inset 0 0 20px rgba(6,182,212,0.1)' }}
+              border: `1px solid ${isNight ? 'rgba(103,232,249,0.2)' : 'rgba(13,148,136,0.3)'}`, 
+              boxShadow: isNight ? 'inset 0 0 20px rgba(6,182,212,0.1)' : 'inset 0 0 20px rgba(13,148,136,0.1)' }}
           >
             {/* Comet tail */}
             <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -12,
               width: 18, height: 2, borderRadius: 2, marginTop: -1,
-              background: 'linear-gradient(to left, rgba(165,243,252,0.9), transparent)', filter: 'blur(1px)' }} />
+              background: `linear-gradient(to left, ${isNight ? 'rgba(165,243,252,0.9)' : 'rgba(13,148,136,0.9)'}, transparent)`, 
+              filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
               animate={{ rotateX: -65 }}
               style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
                 width: 8, height: 8, borderRadius: '50%',
-                background: '#cffafe',
-                boxShadow: '0 0 10px #67e8f9, 0 0 20px rgba(6,182,212,0.9), inset 0 -1px 3px rgba(0,0,0,0.3)' }} />
+                background: isNight ? '#cffafe' : '#14b8a6',
+                boxShadow: isNight
+                  ? '0 0 10px #67e8f9, 0 0 20px rgba(6,182,212,0.9), inset 0 -1px 3px rgba(0,0,0,0.3)'
+                  : '0 0 10px rgba(20,184,166,0.8), 0 0 20px rgba(13,148,136,0.5), inset 0 -1px 3px rgba(0,0,0,0.3)' }} />
           </motion.div>
         </div>
 
