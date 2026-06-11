@@ -248,17 +248,6 @@ export default function AtmosphereLayer() {
                     overflow: 'hidden',
                     marginBottom: '40px'
                   }}
-                >
-                  <div style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'radial-gradient(circle at 70% 70%, rgba(0,0,0,0.4) 0%, transparent 60%)',
-                    borderRadius: '50%'
-                  }} />
-                  <div style={{
-                    position: 'absolute', top: '10%', left: '20%', width: '30%', height: '30%',
-                    background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%)',
-                    borderRadius: '50%', filter: 'blur(8px)'
-                  }} />
                 </motion.div>
 
                 {/* The Poetic Text Sequence over the scene */}

@@ -55,6 +55,7 @@
   --font-heading: 'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif;
   --font-body:    'Plus Jakarta Sans', -apple-system, sans-serif;
   --font-mono:    'Fira Code', ui-monospace, monospace;
+  --font-serif:   'Playfair Display', 'Merriweather', 'Georgia', serif;
 
   /* ── Easing ── */
   --transition-smooth:  cubic-bezier(0.16, 1, 0.3, 1);
