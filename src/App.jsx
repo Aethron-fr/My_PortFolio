@@ -237,6 +237,70 @@ function ThemeToggle() {
       }}
     >
 
+      {/* ── Mini Solar System Orbits ── */}
+      <div style={{
+        position: 'absolute', inset: -44,
+        pointerEvents: 'none', zIndex: -1,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {/* Orbit 1 — innermost, fast, blue planet */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
+          style={{
+            position: 'absolute',
+            width: 88, height: 88, borderRadius: '50%',
+            border: '1px solid rgba(140,180,255,0.18)',
+          }}
+        >
+          {/* Planet 1 — blue, top */}
+          <div style={{
+            position: 'absolute', top: -4, left: '50%', marginLeft: -4,
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 35%, #93c5fd, #3b82f6)',
+            boxShadow: '0 0 6px rgba(59,130,246,0.8)',
+          }} />
+        </motion.div>
+
+        {/* Orbit 2 — medium, slower, orange/amber planet */}
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
+          style={{
+            position: 'absolute',
+            width: 118, height: 118, borderRadius: '50%',
+            border: '1px solid rgba(251,191,36,0.15)',
+          }}
+        >
+          {/* Planet 2 — amber, right side */}
+          <div style={{
+            position: 'absolute', top: '50%', right: -4, marginTop: -4,
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 35%, #fde68a, #f59e0b)',
+            boxShadow: '0 0 6px rgba(245,158,11,0.8)',
+          }} />
+        </motion.div>
+
+        {/* Orbit 3 — outermost, slowest, teal planet */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 12, ease: 'linear' }}
+          style={{
+            position: 'absolute',
+            width: 150, height: 150, borderRadius: '50%',
+            border: '1px solid rgba(45,212,191,0.13)',
+          }}
+        >
+          {/* Planet 3 — teal, bottom */}
+          <div style={{
+            position: 'absolute', bottom: -4, left: '50%', marginLeft: -4,
+            width: 7, height: 7, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 35%, #99f6e4, #14b8a6)',
+            boxShadow: '0 0 6px rgba(20,184,166,0.8)',
+          }} />
+        </motion.div>
+      </div>
+
       {/* Dynamic ambient backdrop that blooms on hover */}
       <motion.div
         animate={{
