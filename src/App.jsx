@@ -223,13 +223,12 @@ function ThemeToggle() {
         }}
       >
 
-        {/* ── COSMIC MIRACLE: 3D Astral Rings & Nebula ── */}
+        {/* ── COSMIC MIRACLE: Clean Flat Orbits ── */}
         <div style={{
           position: 'absolute',
           width: 140, height: 140,
           top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%) rotateX(65deg)', // 3D Perspective Astrolabe effect
-          transformStyle: 'preserve-3d',
+          transform: 'translate(-50%, -50%)', // Removed rotateX for a clean 2D look
           pointerEvents: 'none',
           zIndex: -1,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -251,79 +250,76 @@ function ThemeToggle() {
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 15, ease: 'linear' }}
             style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(226,232,240,0.2)' : 'rgba(15,23,42,0.15)'}`, borderStyle: 'dashed' }}
+              border: `1px solid ${isNight ? 'rgba(226,232,240,0.2)' : 'rgba(251,191,36,0.25)'}`, borderStyle: 'dashed' }}
           />
 
-          {/* Orbit 1 — 70px, Lunar Silver (Night) / Deep Blue (Day) */}
+          {/* Orbit 1 — 70px, Lunar Silver (Night) / Solar Gold (Day) */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 4.5, ease: 'linear' }}
             style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(226,232,240,0.25)' : 'rgba(37,99,235,0.3)'}`, 
-              boxShadow: isNight ? 'inset 0 0 10px rgba(255,255,255,0.05)' : 'inset 0 0 10px rgba(37,99,235,0.1)' }}
+              border: `1px solid ${isNight ? 'rgba(226,232,240,0.25)' : 'rgba(250,204,21,0.3)'}`, 
+              boxShadow: isNight ? 'inset 0 0 10px rgba(255,255,255,0.05)' : 'inset 0 0 10px rgba(250,204,21,0.1)' }}
           >
             {/* Comet tail */}
             <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -12,
               width: 18, height: 2, borderRadius: 2, marginTop: -1,
-              background: `linear-gradient(to left, ${isNight ? 'rgba(255,255,255,0.9)' : 'rgba(37,99,235,0.9)'}, transparent)`, 
+              background: `linear-gradient(to left, ${isNight ? 'rgba(255,255,255,0.9)' : 'rgba(250,204,21,0.9)'}, transparent)`, 
               filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
-              animate={{ rotateX: -65 }} // Counter-rotate to stay a perfect sphere
               style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
                 width: 10, height: 10, borderRadius: '50%',
-                background: isNight ? '#ffffff' : '#3b82f6',
+                background: isNight ? '#ffffff' : '#fef08a',
                 boxShadow: isNight 
                   ? '0 0 12px #fff, 0 0 24px rgba(226,232,240,0.8), inset 0 -2px 4px rgba(0,0,0,0.3)'
-                  : '0 0 12px rgba(59,130,246,0.8), 0 0 24px rgba(37,99,235,0.5), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
+                  : '0 0 10px #facc15, 0 0 20px rgba(250,204,21,0.6), inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
           </motion.div>
 
-          {/* Orbit 2 — 96px, Ethereal Lilac (Night) / Violet (Day) */}
+          {/* Orbit 2 — 96px, Ethereal Lilac (Night) / Coral Pink (Day) */}
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
             style={{ position: 'absolute', width: 96, height: 96, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(196,181,253,0.25)' : 'rgba(124,58,237,0.3)'}`, 
-              boxShadow: isNight ? '0 0 15px rgba(139,92,246,0.1)' : '0 0 15px rgba(124,58,237,0.1)' }}
+              border: `1px solid ${isNight ? 'rgba(196,181,253,0.25)' : 'rgba(251,146,60,0.3)'}`, 
+              boxShadow: isNight ? '0 0 15px rgba(139,92,246,0.1)' : '0 0 15px rgba(251,146,60,0.1)' }}
           >
             {/* Comet tail pointing right */}
             <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -4,
               width: 20, height: 2, borderRadius: 2, marginTop: -1,
-              background: `linear-gradient(to right, ${isNight ? 'rgba(196,181,253,0.9)' : 'rgba(124,58,237,0.9)'}, transparent)`, 
+              background: `linear-gradient(to right, ${isNight ? 'rgba(196,181,253,0.9)' : 'rgba(251,146,60,0.9)'}, transparent)`, 
               filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
-              animate={{ rotateX: -65 }}
               style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
                 width: 10, height: 10, borderRadius: '50%',
-                background: isNight ? '#f3e8ff' : '#8b5cf6',
+                background: isNight ? '#f3e8ff' : '#fed7aa',
                 boxShadow: isNight
                   ? '0 0 12px #e9d5ff, 0 0 30px rgba(139,92,246,0.9), inset 0 -2px 4px rgba(0,0,0,0.3)'
-                  : '0 0 12px rgba(139,92,246,0.8), 0 0 30px rgba(124,58,237,0.5), inset 0 -2px 4px rgba(0,0,0,0.3)' }} />
+                  : '0 0 10px #fb923c, 0 0 24px rgba(251,146,60,0.6), inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
           </motion.div>
 
-          {/* Orbit 3 — 124px, Cyber Cyan (Night) / Deep Teal (Day) */}
+          {/* Orbit 3 — 124px, Cyber Cyan (Night) / Sunset Orange (Day) */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 12, ease: 'linear' }}
             style={{ position: 'absolute', width: 124, height: 124, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(103,232,249,0.2)' : 'rgba(13,148,136,0.3)'}`, 
-              boxShadow: isNight ? 'inset 0 0 20px rgba(6,182,212,0.1)' : 'inset 0 0 20px rgba(13,148,136,0.1)' }}
+              border: `1px solid ${isNight ? 'rgba(103,232,249,0.2)' : 'rgba(249,115,22,0.25)'}`, 
+              boxShadow: isNight ? 'inset 0 0 20px rgba(6,182,212,0.1)' : 'inset 0 0 20px rgba(249,115,22,0.1)' }}
           >
             {/* Comet tail */}
             <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -12,
               width: 18, height: 2, borderRadius: 2, marginTop: -1,
-              background: `linear-gradient(to left, ${isNight ? 'rgba(165,243,252,0.9)' : 'rgba(13,148,136,0.9)'}, transparent)`, 
+              background: `linear-gradient(to left, ${isNight ? 'rgba(165,243,252,0.9)' : 'rgba(249,115,22,0.9)'}, transparent)`, 
               filter: 'blur(1px)' }} />
             {/* Celestial Body */}
             <motion.div
-              animate={{ rotateX: -65 }}
               style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
                 width: 8, height: 8, borderRadius: '50%',
-                background: isNight ? '#cffafe' : '#14b8a6',
+                background: isNight ? '#cffafe' : '#ffedd5',
                 boxShadow: isNight
                   ? '0 0 10px #67e8f9, 0 0 20px rgba(6,182,212,0.9), inset 0 -1px 3px rgba(0,0,0,0.3)'
-                  : '0 0 10px rgba(20,184,166,0.8), 0 0 20px rgba(13,148,136,0.5), inset 0 -1px 3px rgba(0,0,0,0.3)' }} />
+                  : '0 0 10px #f97316, 0 0 20px rgba(249,115,22,0.6), inset 0 -1px 3px rgba(0,0,0,0.1)' }} />
           </motion.div>
         </div>
 
