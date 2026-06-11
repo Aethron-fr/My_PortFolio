@@ -320,7 +320,7 @@ function ThemeToggle() {
         }}
       />
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="sync">
         {isNight ? (
           <motion.div
             key="moon"
