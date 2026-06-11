@@ -248,7 +248,7 @@ export default function AtmosphereLayer() {
                     overflow: 'hidden',
                     marginBottom: '40px'
                   }}
-                </motion.div>
+                />
 
                 {/* The Poetic Text Sequence over the scene */}
                 <PoemSequence />
