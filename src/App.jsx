@@ -88,32 +88,42 @@ function AudioToggle() {
 
   return (
     <div style={{ position: 'fixed', bottom: 150, right: 28, zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {/* Animated Sound Waves (Visible only when enabled) */}
+      {/* Animated Sonic Waves (Visible only when enabled) */}
       <AnimatePresence>
         {isEnabled && (
           <>
+            {/* Sonic Wave 1 (Violet) */}
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 2.5, opacity: 0 }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+              animate={{ scale: 2.2, opacity: 0 }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeOut" }}
               style={{
-                position: 'absolute',
-                width: 56, height: 56,
-                borderRadius: '50%',
-                border: '1px solid var(--text-dim)',
+                position: 'absolute', width: 56, height: 56, borderRadius: '50%',
+                border: '2px solid rgba(167,139,250,0.6)', // Violet glow
+                boxShadow: '0 0 20px rgba(167,139,250,0.4)',
                 pointerEvents: 'none'
               }}
             />
+            {/* Sonic Wave 2 (Cyan) */}
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 3.5, opacity: 0 }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: "easeOut", delay: 0.5 }}
+              animate={{ scale: 3.2, opacity: 0 }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeOut", delay: 0.4 }}
               style={{
-                position: 'absolute',
-                width: 56, height: 56,
-                borderRadius: '50%',
-                border: '1px solid var(--border-glass)',
+                position: 'absolute', width: 56, height: 56, borderRadius: '50%',
+                border: '1px solid rgba(147,197,253,0.5)', // Cyan glow
+                boxShadow: '0 0 15px rgba(147,197,253,0.3)',
                 pointerEvents: 'none'
+              }}
+            />
+            {/* Ambient Pulsing Core */}
+            <motion.div
+              animate={{ scale: [1, 1.25, 1], opacity: [0.2, 0.5, 0.2] }}
+              transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+              style={{
+                position: 'absolute', width: 70, height: 70, borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(167,139,250,0.25) 0%, transparent 70%)',
+                pointerEvents: 'none', zIndex: -1
               }}
             />
           </>
@@ -150,7 +160,17 @@ function AudioToggle() {
           transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
-        {isEnabled ? <Volume2 size={20} strokeWidth={1.5} /> : <VolumeX size={20} strokeWidth={1.5} />}
+        {isEnabled ? (
+          <motion.div
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ repeat: Infinity, duration: 0.45, ease: "easeInOut" }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Volume2 size={20} strokeWidth={1.5} style={{ color: 'rgba(167,139,250,1)', filter: 'drop-shadow(0 0 5px rgba(167,139,250,0.6))' }} />
+          </motion.div>
+        ) : (
+          <VolumeX size={20} strokeWidth={1.5} />
+        )}
       </motion.button>
     </div>
   );
