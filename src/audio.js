@@ -38,7 +38,7 @@ class GlobalAudio {
       
       this.globalFilter = this.ctx.createBiquadFilter();
       this.globalFilter.type = 'lowpass';
-      this.globalFilter.frequency.value = 1200; // Drops during idle
+      this.globalFilter.frequency.value = 12000; // Was severely muting all high frequencies
       this.globalFilter.Q.value = 0.5;
 
       this.masterGain.connect(this.globalFilter);
@@ -55,24 +55,11 @@ class GlobalAudio {
       
       const rainSource = this.ctx.createMediaElementSource(rainAudio);
 
-      // Filter 1: Lowpass to remove harsh hiss, keep it deep and calm
-      const lowpass = this.ctx.createBiquadFilter();
-      lowpass.type = 'lowpass';
-      lowpass.frequency.value = 1500;
-      lowpass.Q.value = 0.1;
-
-      // Filter 2: Highpass to remove excessive rumble
-      const highpass = this.ctx.createBiquadFilter();
-      highpass.type = 'highpass';
-      highpass.frequency.value = 200;
-      highpass.Q.value = 0.1;
-
       const rainVolumeControl = this.ctx.createGain();
-      rainVolumeControl.gain.value = 0.9; // Boosted base volume
+      rainVolumeControl.gain.value = 1.0; // Full base volume
 
-      rainSource.connect(lowpass);
-      lowpass.connect(highpass);
-      highpass.connect(rainVolumeControl);
+      // Connect directly without aggressive filtering choking the sound
+      rainSource.connect(rainVolumeControl);
       rainVolumeControl.connect(this.droneGain);
 
       this.rainAudioElement = rainAudio;
@@ -151,11 +138,11 @@ class GlobalAudio {
 
     if (isIdle) {
       // Warm, soft, meditative state
-      this.globalFilter.frequency.linearRampToValueAtTime(400, now + 5.0);
-      this.masterGain.gain.linearRampToValueAtTime(0.6, now + 5.0);
+      this.globalFilter.frequency.linearRampToValueAtTime(1500, now + 5.0);
+      this.masterGain.gain.linearRampToValueAtTime(0.8, now + 5.0);
     } else {
       // Alert, active state
-      this.globalFilter.frequency.linearRampToValueAtTime(1200, now + 2.0);
+      this.globalFilter.frequency.linearRampToValueAtTime(12000, now + 2.0);
       this.masterGain.gain.linearRampToValueAtTime(1.0, now + 2.0);
     }
   }
