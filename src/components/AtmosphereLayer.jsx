@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAtmosphere } from '../context/AtmosphereContext';
-import { audioController } from '../audio';
 
 // Phrases that emerge on idle — rotate through once per visit, never repeat same session
 const IDLE_PHRASES = [
@@ -89,7 +88,6 @@ export default function AtmosphereLayer() {
     if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
     moonTimerRef.current = setTimeout(() => {
       setShowMoonSecret(true);
-      audioController.playMoonSecret();
       // Auto-hide after 38 seconds of cinematic showing
       setTimeout(() => setShowMoonSecret(false), 38000);
     }, 4000); // 4 seconds hold to trigger

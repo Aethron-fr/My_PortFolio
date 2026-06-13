@@ -15,7 +15,6 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
-import { audioController } from './audio';
 import MagneticButton from './components/MagneticButton';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
@@ -77,102 +76,7 @@ function CurrentlyExploring() {
   );
 }
 
-function AudioToggle() {
-  const [isEnabled, setIsEnabled] = useState(() => localStorage.getItem('ols_audio_enabled') === '1');
-  const [isHovered, setIsHovered] = useState(false);
 
-  const handleToggle = () => {
-    audioController.toggleAudio();
-    setIsEnabled(!isEnabled);
-  };
-
-  return (
-    <div style={{ position: 'fixed', bottom: 150, right: 28, zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {/* Animated Sonic Waves (Visible only when enabled) */}
-      <AnimatePresence>
-        {isEnabled && (
-          <>
-            {/* Sonic Wave 1 (Violet) */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 2.2, opacity: 0 }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeOut" }}
-              style={{
-                position: 'absolute', width: 56, height: 56, borderRadius: '50%',
-                border: '2px solid rgba(167,139,250,0.6)', // Violet glow
-                boxShadow: '0 0 20px rgba(167,139,250,0.4)',
-                pointerEvents: 'none'
-              }}
-            />
-            {/* Sonic Wave 2 (Cyan) */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 3.2, opacity: 0 }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeOut", delay: 0.4 }}
-              style={{
-                position: 'absolute', width: 56, height: 56, borderRadius: '50%',
-                border: '1px solid rgba(147,197,253,0.5)', // Cyan glow
-                boxShadow: '0 0 15px rgba(147,197,253,0.3)',
-                pointerEvents: 'none'
-              }}
-            />
-            {/* Ambient Pulsing Core */}
-            <motion.div
-              animate={{ scale: [1, 1.25, 1], opacity: [0.2, 0.5, 0.2] }}
-              transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
-              style={{
-                position: 'absolute', width: 70, height: 70, borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(167,139,250,0.25) 0%, transparent 70%)',
-                pointerEvents: 'none', zIndex: -1
-              }}
-            />
-          </>
-        )}
-      </AnimatePresence>
-
-      <motion.button
-        onClick={handleToggle}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.6, duration: 0.8, type: 'spring' }}
-        whileHover={{ scale: 1.08, y: -5 }}
-        whileTap={{ scale: 0.85 }}
-        aria-label={isEnabled ? 'Disable atmospheric audio' : 'Enable atmospheric audio'}
-        style={{
-          position: 'relative',
-          width: 56, height: 56, borderRadius: '50%',
-          background: isEnabled ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.02)',
-          border: '1px solid',
-          borderColor: isHovered 
-            ? (isEnabled ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)') 
-            : 'rgba(255,255,255,0.04)',
-          color: isEnabled ? 'var(--text-primary)' : 'rgba(255,255,255,0.5)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', backdropFilter: 'blur(16px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-          boxShadow: isHovered 
-            ? (isEnabled 
-                ? '0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.2)' 
-                : '0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)')
-            : '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
-          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
-      >
-        {isEnabled ? (
-          <motion.div
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <Volume2 size={20} strokeWidth={1.5} style={{ color: 'rgba(167,139,250,1)', filter: 'drop-shadow(0 0 5px rgba(167,139,250,0.6))' }} />
-          </motion.div>
-        ) : (
-          <VolumeX size={20} strokeWidth={1.5} />
-        )}
-      </motion.button>
-    </div>
-  );
-}
 
 // BUG-005: Compute time-based greeting at module level (pure function, no side effects)
 function getTimeGreeting() {
@@ -210,7 +114,6 @@ function ThemeToggle() {
 
   const handleToggle = () => {
     setIsNight(!isNight);
-    audioController.setTheme(!isNight);
   };
 
   return (
@@ -487,29 +390,7 @@ export default function App() {
 
   // (Removed hostile UX event listeners that blocked Right-Click and F12 per audit)
 
-  // Behavioral Ambient Audio: Idle tracking (20s)
-  useEffect(() => {
-    let timeout;
-    const resetIdle = () => {
-      if (audioController.isIdle) audioController.setIdle(false);
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        audioController.setIdle(true);
-      }, 20000);
-    };
-    window.addEventListener('mousemove', resetIdle, { passive: true });
-    window.addEventListener('keydown', resetIdle, { passive: true });
-    window.addEventListener('scroll', resetIdle, { passive: true });
-    window.addEventListener('touchstart', resetIdle, { passive: true });
-    resetIdle();
-    return () => {
-      window.removeEventListener('mousemove', resetIdle);
-      window.removeEventListener('keydown', resetIdle);
-      window.removeEventListener('scroll', resetIdle);
-      window.removeEventListener('touchstart', resetIdle);
-      clearTimeout(timeout);
-    };
-  }, []);
+
 
   useEffect(() => {
     // Hint fades in after 3 seconds, stays for 8, then vanishes forever.
@@ -547,7 +428,6 @@ export default function App() {
             const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPercent = totalScroll > 0 ? (window.scrollY / totalScroll) * 100 : 0;
             progressBar.style.width = `${scrollPercent}%`;
-            audioController.setScrollDepth(scrollPercent / 100);
           }
           ticking = false;
         });
@@ -1476,7 +1356,6 @@ export default function App() {
 
       {/* ── Day / Night Mode Toggle ─────────────────────────────────────────── */}
       <ThemeToggle />
-      <AudioToggle />
 
 
       {/* BUG-015: Removed inline <style> block — all styles now live in App.css to avoid

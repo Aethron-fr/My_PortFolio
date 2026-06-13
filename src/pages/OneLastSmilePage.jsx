@@ -17,7 +17,6 @@ import FinalLetter from '../components/FinalLetter';
 import Epilogue from '../components/Epilogue';
 import QuietAftermath from '../components/QuietAftermath';
 import { useAtmosphere } from '../context/AtmosphereContext';
-import { audioController } from '../audio';
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
@@ -168,30 +167,7 @@ export default function OneLastSmilePage() {
     return () => { document.body.style.overflow = ''; };
   }, [showStory, entryStage]);
 
-  // Audio manager
-  useEffect(() => {
-    if (entryStage !== 'MAIN') {
-      // Before main experience, absolute silence except cinematic
-      audioController.setRumble(false);
-      audioController.setRain(false);
-    } else if (showStory) {
-      // In Story Mode: Heavy window rain, no rumble
-      audioController.setRumble(false);
-      audioController.setRain(true);
-    } else {
-      // In Atmosphere (Landing): Distant rumble, no rain
-      audioController.setRain(false);
-      audioController.setRumble(true);
-    }
-  }, [entryStage, showStory]);
 
-  // Clean up all audio if they leave the page entirely
-  useEffect(() => {
-    return () => {
-      audioController.setRumble(false);
-      audioController.setRain(false);
-    };
-  }, []);
 
   if (entryStage === 'EPILOGUE') {
     return <Epilogue onComplete={() => {
@@ -212,7 +188,6 @@ export default function OneLastSmilePage() {
         onAccept={() => {
           sessionStorage.setItem('__ols_threshold_cleared', '1');
           setEntryStage('CINEMATIC');
-          audioController.setRumble(true);
         }} 
         onDecline={() => navigate('/')} 
       />

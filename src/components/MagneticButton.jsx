@@ -1,7 +1,5 @@
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useRef } from 'react';
-import { audioController } from '../audio';
-
 export default function MagneticButton({
   children,
   onClick,
@@ -39,7 +37,6 @@ export default function MagneticButton({
   };
 
   const handleClick = (e) => {
-    if (withAudio) audioController.playClick();
     if (onClick) onClick(e);
   };
 

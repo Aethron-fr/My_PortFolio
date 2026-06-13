@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
-import { audioController } from '../audio';
-
 export default function OneLastReply({ onComplete }) {
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState('idle'); // idle, sending, success, error
@@ -72,7 +70,6 @@ export default function OneLastReply({ onComplete }) {
             <button
               onClick={() => {
                 setShowWarning(false);
-                audioController.setDucking(true);
               }}
               style={{
                 background: 'transparent',

@@ -1,15 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { audioController } from '../audio';
-
 export default function MemoryArchive({ onComplete }) {
   const [phase, setPhase] = useState(0);
-
-  useEffect(() => {
-    // Duck the volume during this heavy reading section
-    audioController.setDucking(true);
-    return () => audioController.setDucking(false);
-  }, []);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 2000);
