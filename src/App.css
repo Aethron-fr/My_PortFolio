@@ -57,6 +57,12 @@
   }
 }
 
+@keyframes statusPulse {
+  0% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 10px rgba(80, 200, 120, 0.8); }
+  100% { opacity: 0.4; transform: scale(0.9); }
+}
+
 .hero-content {
   position: relative;
   z-index: 1;

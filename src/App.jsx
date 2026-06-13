@@ -592,7 +592,7 @@ export default function App() {
                 width: 5, height: 5, borderRadius: '50%',
                 background: 'rgba(80, 200, 120, 0.8)',
                 boxShadow: '0 0 6px rgba(80, 200, 120, 0.6)',
-                animation: 'pulse 2.5s ease-in-out infinite',
+                animation: 'statusPulse 2.5s ease-in-out infinite',
               }} />
               <span style={{
                 fontFamily: 'var(--font-mono)', fontSize: '0.52rem',
