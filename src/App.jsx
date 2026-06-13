@@ -1183,10 +1183,18 @@ export default function App() {
                   <div>
                     <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>resume</div>
                     {/* BUG-014: Fixed Download CV link — now points to actual PDF */}
-                    <a href="/resume.pdf" download="Swapnadip_Ghosh_Resume.pdf" className="interactive" style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <motion.a 
+                      href="/resume.pdf" 
+                      download="Swapnadip_Ghosh_Resume.pdf" 
+                      className="interactive" 
+                      whileHover={{ scale: 1.05, color: 'var(--accent-primary)', x: 4 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                      style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '4px', transformOrigin: 'left center' }}
+                    >
                       <span>Download CV</span>
-                      <ArrowUpRight size={13} style={{ opacity: 0.6 }} />
-                    </a>
+                      <ArrowUpRight size={13} style={{ opacity: 0.8 }} />
+                    </motion.a>
                   </div>
                 </div>
               </div>
