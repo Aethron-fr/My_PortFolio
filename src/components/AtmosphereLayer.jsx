@@ -28,14 +28,14 @@ let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
   "You are looking at the moon right now, just like I do.",
-  "But for me, it's a tragic reminder of someone who is miles away.",
-  "I know I will never get to hold her in my arms again.",
-  "I know there is absolutely no hope left.",
-  "Yet I am still here, forever waiting for a ghost.",
-  "Clinging to these hopeless dreams, because letting go means losing her completely.",
+  "But for me, it's a reminder of someone who feels galaxies away.",
+  "Someone I know I will never get to hold in my arms.",
+  "I know there is absolutely no hope for us.",
+  "Yet I am still here, holding onto a one-sided dream.",
+  "Because the heaviest pain isn't losing someone... it's missing someone who was never yours.",
   "If you are reading this... I still see you in everything.",
-  "I don't know how to unlearn you.",
-  "So I will just keep looking up, and loving you from the dark."
+  "Even from a distance, you became my entire sky.",
+  "So I will just keep looking up, admiring you from the dark."
 ];
 
 function PoemSequence() {
