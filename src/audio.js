@@ -44,59 +44,42 @@ class GlobalAudio {
       this.masterGain.connect(this.globalFilter);
       this.globalFilter.connect(this.ctx.destination);
 
-      // 2. Sweet Calm Rain Engine
+      // 2. Sweet Calm Rain Engine (Streaming actual rain audio)
       this.droneGain = this.ctx.createGain();
       this.droneGain.gain.value = 0.8; // Base volume
       this.droneGain.connect(this.masterGain);
 
-      const bufferSize = this.ctx.sampleRate * 5; // 5 seconds loop
+      // We stream a high-quality, royalty-free calming rain sound directly
+      const rainAudio = new Audio('https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg');
+      rainAudio.loop = true;
+      rainAudio.crossOrigin = 'anonymous';
       
-      // Pure White Noise base
-      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
-      const whiteNoise = this.ctx.createBufferSource();
-      whiteNoise.buffer = noiseBuffer;
-      whiteNoise.loop = true;
+      const rainSource = this.ctx.createMediaElementSource(rainAudio);
 
-      // Filter 1: Lowpass to remove harsh hiss
+      // Filter 1: Lowpass to remove harsh hiss, keep it deep and calm
       const lowpass = this.ctx.createBiquadFilter();
       lowpass.type = 'lowpass';
-      lowpass.frequency.value = 1200;
+      lowpass.frequency.value = 1500;
       lowpass.Q.value = 0.1;
 
-      // Filter 2: Highpass to remove thunder/rumble
+      // Filter 2: Highpass to remove excessive rumble
       const highpass = this.ctx.createBiquadFilter();
       highpass.type = 'highpass';
-      highpass.frequency.value = 300;
+      highpass.frequency.value = 200;
       highpass.Q.value = 0.1;
 
-      // LFO: Gentle wind breeze swells
-      const breezeLfo = this.ctx.createOscillator();
-      breezeLfo.type = 'sine';
-      breezeLfo.frequency.value = 0.08; // Very slow breeze
-      
-      const breezeGain = this.ctx.createGain();
-      breezeGain.gain.value = 0.3; // 30% volume swell
-      
       const rainVolumeControl = this.ctx.createGain();
-      rainVolumeControl.gain.value = 0.7; // Base 70%
+      rainVolumeControl.gain.value = 0.9; // Boosted base volume
 
-      breezeLfo.connect(breezeGain);
-      breezeGain.connect(rainVolumeControl.gain);
-
-      whiteNoise.connect(lowpass);
+      rainSource.connect(lowpass);
       lowpass.connect(highpass);
       highpass.connect(rainVolumeControl);
       rainVolumeControl.connect(this.droneGain);
 
-      whiteNoise.start();
-      breezeLfo.start();
+      rainAudio.play().catch(e => console.warn("Rain audio blocked:", e));
 
-      this.oscillators.push(whiteNoise);
-      this.lfoNodes.push(breezeLfo);
+      this.rainAudioElement = rainAudio;
+      this.oscillators = []; // reset array since we removed synthetic nodes
 
       // 3. Texture Layer (Replaced with higher harmonic sine for scroll depth)
       this.textureGain = this.ctx.createGain();
@@ -272,6 +255,34 @@ class GlobalAudio {
     
     osc.start(now);
     osc.stop(now + 4.5);
+  }
+
+  playClick() {
+    if (!this.initialized) this.init();
+    if (!this.isEnabled || !this.ctx) return;
+    this.resume();
+
+    try {
+      const now = this.ctx.currentTime;
+      // Crisp ui click
+      const osc = this.ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(100, now + 0.05);
+      
+      const env = this.ctx.createGain();
+      env.gain.setValueAtTime(0, now);
+      env.gain.linearRampToValueAtTime(0.3, now + 0.01);
+      env.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      
+      osc.connect(env);
+      env.connect(this.masterGain);
+      
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } catch (e) {
+      console.warn('Audio click failed', e);
+    }
   }
 
   // Backwards compatibility for old methods if they were used
