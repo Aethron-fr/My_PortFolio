@@ -560,7 +560,12 @@ export default function App() {
       >
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <a href="#home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <motion.a 
+              href="#home" 
+              whileHover={{ scale: 1.05, filter: 'brightness(1.2) drop-shadow(0 0 8px rgba(225,48,108,0.4))' }}
+              whileTap={{ scale: 0.95 }}
+              style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', transformOrigin: 'left center' }}
+            >
               <span style={{
                 fontSize: '1.4rem',
                 fontWeight: 400,
@@ -569,11 +574,12 @@ export default function App() {
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                letterSpacing: '0px'
+                letterSpacing: '0px',
+                display: 'inline-block'
               }}>
                 Swapnadip
               </span>
-            </a>
+            </motion.a>
 
             {/* Build Status */}
             <div style={{
