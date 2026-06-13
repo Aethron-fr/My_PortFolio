@@ -27,12 +27,12 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "I built this entire space just to put the quiet somewhere.",
-  "Because the silence you left behind was deafening.",
-  "I keep looking at the moon, hoping it looks the same to you.",
-  "I know I need to let go. I know the story is over.",
-  "But how do you unlearn someone who became your whole sky?",
-  "Maybe one day, you'll find this... and finally understand."
+  "I look at the moon and all I see is you.",
+  "And it breaks me, because I know there is absolutely no hope left.",
+  "I know I will never get to hold you in my arms again.",
+  "But I am still here. Forever waiting for someone who isn't coming back.",
+  "Trapped in these hopeless dreams, because I don't know how to let go.",
+  "So I'll just keep looking up... and loving you from the dark."
 ];
 
 function PoemSequence() {
