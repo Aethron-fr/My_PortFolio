@@ -50,9 +50,8 @@ class GlobalAudio {
       this.droneGain.connect(this.masterGain);
 
       // We stream a high-quality, royalty-free calming rain sound directly
-      const rainAudio = new Audio('https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg');
+      const rainAudio = new Audio('/rain.ogg');
       rainAudio.loop = true;
-      rainAudio.crossOrigin = 'anonymous';
       
       const rainSource = this.ctx.createMediaElementSource(rainAudio);
 
@@ -75,8 +74,6 @@ class GlobalAudio {
       lowpass.connect(highpass);
       highpass.connect(rainVolumeControl);
       rainVolumeControl.connect(this.droneGain);
-
-      rainAudio.play().catch(e => console.warn("Rain audio blocked:", e));
 
       this.rainAudioElement = rainAudio;
       this.oscillators = []; // reset array since we removed synthetic nodes
@@ -119,6 +116,9 @@ class GlobalAudio {
     if (this.ctx && this.ctx.state === 'suspended' && this.isEnabled) {
       this.ctx.resume();
     }
+    if (this.rainAudioElement && this.isEnabled) {
+      this.rainAudioElement.play().catch(e => console.warn('Audio resume blocked', e));
+    }
   }
 
   toggleAudio() {
@@ -126,8 +126,12 @@ class GlobalAudio {
     this.isEnabled = !this.isEnabled;
     localStorage.setItem('ols_audio_enabled', this.isEnabled ? '1' : '0');
     
-    if (this.isEnabled && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    if (this.isEnabled) {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      if (this.rainAudioElement) this.rainAudioElement.play().catch(e => console.warn('Play blocked', e));
+    } else {
+      // Pause the audio element to save resources when disabled
+      if (this.rainAudioElement) this.rainAudioElement.pause();
     }
     
     const now = this.ctx.currentTime;
