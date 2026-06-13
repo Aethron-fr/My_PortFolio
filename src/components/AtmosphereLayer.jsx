@@ -31,11 +31,11 @@ const MOON_POEM_LINES = [
   "But for me, it's a reminder of a girl I see every single day.",
   "Someone who is right in front of me, yet feels galaxies away.",
   "She knows exactly how I feel... but it doesn't change a thing.",
-  "So I finally made the choice to stop trying, to step back.",
-  "Because I realized I just saw her like my moon... beautiful, ever-present, but impossible to reach.",
-  "If you are reading this... you already know why I stopped.",
-  "Even though I had to walk away, you are still my moon.",
-  "So I will just keep looking up, admiring you from where I stand."
+  "So I finally made the choice to step back into the quiet.",
+  "Because I realized she is just like the moon... beautiful, ever-present, but impossible to reach.",
+  "If you are reading this... you already know why I stopped approaching you.",
+  "But even though I had to walk away... I will always wait for you.",
+  "Because you are still my moon, and I will keep admiring you from the dark."
 ];
 
 function PoemSequence() {
