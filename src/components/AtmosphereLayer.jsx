@@ -27,12 +27,15 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "I look at the moon and all I see is you.",
-  "And it breaks me, because I know there is absolutely no hope left.",
-  "I know I will never get to hold you in my arms again.",
-  "But I am still here. Forever waiting for someone who isn't coming back.",
-  "Trapped in these hopeless dreams, because I don't know how to let go.",
-  "So I'll just keep looking up... and loving you from the dark."
+  "You are looking at the moon right now, just like I do.",
+  "But for me, it's a tragic reminder of someone who is miles away.",
+  "I know I will never get to hold her in my arms again.",
+  "I know there is absolutely no hope left.",
+  "Yet I am still here, forever waiting for a ghost.",
+  "Clinging to these hopeless dreams, because letting go means losing her completely.",
+  "If you are reading this... I still see you in everything.",
+  "I don't know how to unlearn you.",
+  "So I will just keep looking up, and loving you from the dark."
 ];
 
 function PoemSequence() {
@@ -88,8 +91,8 @@ export default function AtmosphereLayer() {
     if (moonTimerRef.current) clearTimeout(moonTimerRef.current);
     moonTimerRef.current = setTimeout(() => {
       setShowMoonSecret(true);
-      // Auto-hide after 38 seconds of cinematic showing
-      setTimeout(() => setShowMoonSecret(false), 38000);
+      // Auto-hide after 62 seconds of cinematic showing to fit the longer poem
+      setTimeout(() => setShowMoonSecret(false), 62000);
     }, 4000); // 4 seconds hold to trigger
   };
   
