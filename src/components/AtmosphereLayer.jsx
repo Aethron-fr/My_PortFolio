@@ -30,11 +30,11 @@ const MOON_POEM_LINES = [
   "You are looking at the moon right now, just like I do.",
   "But for me, it's a reminder of a girl I see every single day.",
   "Someone who is right in front of me, yet feels galaxies away.",
-  "She knows exactly how I feel about her... but it doesn't change a thing.",
-  "So I finally made the choice to stop trying, to just stop approaching her.",
-  "Because the heaviest pain isn't distance... it's forcing yourself to walk away while your heart stays behind.",
+  "She knows exactly how I feel... but it doesn't change a thing.",
+  "So I finally made the choice to stop trying, to step back.",
+  "Because I realized I just saw her like my moon... beautiful, ever-present, but impossible to reach.",
   "If you are reading this... you already know why I stopped.",
-  "Even though I had to step back, you still became my entire sky.",
+  "Even though I had to walk away, you are still my moon.",
   "So I will just keep looking up, admiring you from where I stand."
 ];
 
