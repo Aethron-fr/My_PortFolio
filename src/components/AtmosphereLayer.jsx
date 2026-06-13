@@ -27,12 +27,12 @@ const shownPhrases = new Set();
 let phraseIndex = 0;
 
 const MOON_POEM_LINES = [
-  "There is no hope. I know that.",
-  "And yet... every night, I still hope.",
-  "I hope that one day she will understand.",
-  "That she will see what I see every time I look up.",
-  "And maybe... just maybe...",
-  "She will finally let me hold my moon."
+  "I built this entire space just to put the quiet somewhere.",
+  "Because the silence you left behind was deafening.",
+  "I keep looking at the moon, hoping it looks the same to you.",
+  "I know I need to let go. I know the story is over.",
+  "But how do you unlearn someone who became your whole sky?",
+  "Maybe one day, you'll find this... and finally understand."
 ];
 
 function PoemSequence() {
