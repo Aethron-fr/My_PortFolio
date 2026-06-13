@@ -30,12 +30,12 @@ const MOON_POEM_LINES = [
   "You are looking at the moon right now, just like I do.",
   "But for me, it's a reminder of a girl I see every single day.",
   "Someone who is right in front of me, yet feels galaxies away.",
-  "Because I can never find the courage to tell her how I really feel.",
-  "So I stay quiet, trapped in a one-sided dream.",
-  "Because the heaviest pain isn't distance... it's being right beside someone who will never be yours.",
-  "If you are reading this... I look for you in everything.",
-  "Even though I smile and say nothing, you became my entire sky.",
-  "So I will just keep looking up, admiring you in silence."
+  "She knows exactly how I feel about her... but it doesn't change a thing.",
+  "Because knowing someone loves you and actually valuing it are two very different things.",
+  "The heaviest pain isn't distance... it's offering your entire heart to someone who doesn't want it.",
+  "If you are reading this... you already know everything.",
+  "Even though my feelings mean nothing to you, you still became my entire sky.",
+  "So I will just keep looking up, admiring you from where I stand."
 ];
 
 function PoemSequence() {
