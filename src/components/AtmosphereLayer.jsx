@@ -31,10 +31,10 @@ const MOON_POEM_LINES = [
   "But for me, it's a reminder of a girl I see every single day.",
   "Someone who is right in front of me, yet feels galaxies away.",
   "She knows exactly how I feel about her... but it doesn't change a thing.",
-  "Because knowing someone loves you and actually valuing it are two very different things.",
-  "The heaviest pain isn't distance... it's offering your entire heart to someone who doesn't want it.",
-  "If you are reading this... you already know everything.",
-  "Even though my feelings mean nothing to you, you still became my entire sky.",
+  "So I finally made the choice to stop trying, to just stop approaching her.",
+  "Because the heaviest pain isn't distance... it's forcing yourself to walk away while your heart stays behind.",
+  "If you are reading this... you already know why I stopped.",
+  "Even though I had to step back, you still became my entire sky.",
   "So I will just keep looking up, admiring you from where I stand."
 ];
 
