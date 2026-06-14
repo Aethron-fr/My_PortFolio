@@ -145,6 +145,16 @@ function ThemeToggle() {
         transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease',
       }}
     >
+      {/* Pulsing Aura Effect */}
+      <motion.div
+        animate={{ scale: isHovered ? 1.5 : [1, 1.2, 1], opacity: isHovered ? 0.6 : [0.2, 0.4, 0.2] }}
+        transition={{ duration: isHovered ? 0.3 : 3, repeat: isHovered ? 0 : Infinity, ease: 'easeInOut' }}
+        style={{
+          position: 'absolute', inset: 0, borderRadius: '50%', zIndex: -1, pointerEvents: 'none',
+          background: isNight ? 'radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%)',
+          filter: 'blur(4px)'
+        }}
+      />
       <AnimatePresence mode="wait">
         {isNight ? (
           <motion.div
@@ -152,7 +162,7 @@ function ThemeToggle() {
             initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
             animate={{ opacity: 1, rotate: 0, scale: 1 }}
             exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3, type: 'spring' }}
           >
             <Moon size={22} strokeWidth={1.5} />
           </motion.div>
@@ -162,7 +172,7 @@ function ThemeToggle() {
             initial={{ opacity: 0, rotate: 90, scale: 0.5 }}
             animate={{ opacity: 1, rotate: 0, scale: 1 }}
             exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3, type: 'spring' }}
           >
             <Sun size={22} strokeWidth={1.5} />
           </motion.div>
