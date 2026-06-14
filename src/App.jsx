@@ -14,6 +14,8 @@ import {
   ArrowUpRight,
   Volume2,
   VolumeX,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import MagneticButton from './components/MagneticButton';
 import CanvasBackground from './components/CanvasBackground';
@@ -117,249 +119,56 @@ function ThemeToggle() {
   };
 
   return (
-    <>
-      {/* ── The actual button — clean, orbits inside so they track movements perfectly ── */}
-      <motion.button
-        onClick={handleToggle}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.5, duration: 0.8, type: 'spring', stiffness: 200, damping: 20 }}
-        whileHover={{ scale: 1.08, y: -5 }}
-        whileTap={{ scale: 0.85, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
-        aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
-        style={{
-          position: 'fixed', bottom: 28, right: 28, zIndex: 9998,
-          width: 56, height: 56, borderRadius: '50%',
-          border: `1px solid ${isHovered ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.10)'}`,
-          outline: 'none', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: isNight ? 'rgba(10,12,22,0.60)' : 'rgba(255,255,255,0.12)',
-          boxShadow: isHovered
-            ? (isNight ? '0 12px 32px rgba(80,120,255,0.45)' : '0 12px 32px rgba(255,180,30,0.45)')
-            : '0 4px 16px rgba(0,0,0,0.35)',
-          backdropFilter: 'blur(16px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-          transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-          // REMOVED overflow: 'hidden' so orbits can extend outside the button bounds
-        }}
-      >
-
-        {/* ── ULTRA COSMIC MIRACLE: Deep Space Astrolabe ── */}
-        <div style={{
-          position: 'absolute',
-          width: 140, height: 140,
-          top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%) rotateX(65deg)',
-          transformStyle: 'preserve-3d',
-          pointerEvents: 'none',
-          zIndex: -1,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          {/* Deep Space Nebula Background (Counter-rotating) */}
+    <motion.button
+      onClick={handleToggle}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ scale: 1.1, rotate: 5 }}
+      whileTap={{ scale: 0.9 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
+      style={{
+        position: 'fixed', bottom: 28, right: 28, zIndex: 9998,
+        width: 52, height: 52, borderRadius: '50%',
+        border: `1px solid ${isHovered ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)'}`,
+        outline: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: isNight ? 'rgba(10,12,22,0.60)' : 'rgba(255,255,255,0.8)',
+        boxShadow: isHovered
+          ? (isNight ? '0 8px 24px rgba(80,120,255,0.3)' : '0 8px 24px rgba(255,180,30,0.3)')
+          : '0 4px 12px rgba(0,0,0,0.2)',
+        backdropFilter: 'blur(12px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+        color: isNight ? '#E2E8F0' : '#475569',
+        transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease',
+      }}
+    >
+      <AnimatePresence mode="wait">
+        {isNight ? (
           <motion.div
-            animate={{ rotate: -360, opacity: isHovered ? 0.9 : 0.3, scale: isHovered ? 1.5 : 1 }}
-            transition={{ rotate: { repeat: Infinity, duration: 30, ease: 'linear' }, scale: { duration: 1.5, ease: 'easeOut' } }}
-            style={{
-              position: 'absolute', width: 200, height: 200, borderRadius: '50%',
-              background: isNight
-                ? 'conic-gradient(from 0deg, transparent 0deg, rgba(167,139,250,0.15) 90deg, transparent 180deg, rgba(59,130,246,0.15) 270deg, transparent 360deg)'
-                : 'conic-gradient(from 0deg, transparent 0deg, rgba(251,146,60,0.15) 90deg, transparent 180deg, rgba(250,204,21,0.15) 270deg, transparent 360deg)',
-              filter: 'blur(16px)', mixBlendMode: 'screen'
-            }}
-          />
-
-          {/* Scattered Twinkling Stardust */}
-          {[
-            { top: '15%', left: '20%', size: 3, delay: 0 },
-            { top: '80%', left: '15%', size: 2, delay: 0.5 },
-            { top: '25%', left: '85%', size: 4, delay: 1.2 },
-            { top: '85%', left: '75%', size: 2, delay: 0.8 },
-            { top: '50%', left: '5%', size: 3, delay: 1.5 },
-            { top: '45%', left: '90%', size: 2, delay: 0.2 }
-          ].map((star, i) => (
-            <motion.div key={`star-${i}`}
-              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
-              transition={{ repeat: Infinity, duration: 2 + (i % 3), delay: star.delay, ease: 'easeInOut' }}
-              style={{
-                position: 'absolute',
-                top: star.top, left: star.left,
-                width: star.size, height: star.size, borderRadius: '50%',
-                background: isNight ? '#fff' : '#fcd34d',
-                boxShadow: isNight ? '0 0 6px #fff' : '0 0 6px #f59e0b',
-                transform: 'rotateX(-65deg)' // Stand upright in 3D space
-              }}
-            />
-          ))}
-
-          {/* Pulsing Stargate Core */}
-          <motion.div
-            animate={{ scale: [1, 2.5], opacity: [0.6, 0] }}
-            transition={{ repeat: Infinity, duration: 3, ease: 'easeOut' }}
-            style={{
-              position: 'absolute',
-              width: 56, height: 56, borderRadius: '50%',
-              border: `2px solid ${isNight ? 'rgba(167,139,250,0.8)' : 'rgba(251,191,36,0.8)'}`,
-              filter: 'blur(2px)',
-            }}
-          />
-
-          {/* Ethereal Stardust Ring 1 */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 15, ease: 'linear' }}
-            style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(226,232,240,0.2)' : 'rgba(251,191,36,0.25)'}`, borderStyle: 'dashed' }}
-          />
-
-          {/* Orbit 1 — 70px, Lunar Silver / Solar Gold */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 4.5, ease: 'linear' }}
-            style={{ position: 'absolute', width: 70, height: 70, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(226,232,240,0.25)' : 'rgba(250,204,21,0.3)'}`, 
-              boxShadow: isNight ? 'inset 0 0 10px rgba(255,255,255,0.05)' : 'inset 0 0 10px rgba(250,204,21,0.1)' }}
+            key="moon"
+            initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+            transition={{ duration: 0.2 }}
           >
-            {/* Extended Comet Trail */}
-            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -18,
-              width: 26, height: 2, borderRadius: 2, marginTop: -1,
-              background: `linear-gradient(to left, ${isNight ? 'rgba(255,255,255,1)' : 'rgba(250,204,21,1)'}, transparent)`, filter: 'blur(1px)' }} />
-            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -30,
-              width: 30, height: 1, borderRadius: 2, marginTop: -0.5,
-              background: `linear-gradient(to left, ${isNight ? 'rgba(147,197,253,0.5)' : 'rgba(251,146,60,0.5)'}, transparent)`, filter: 'blur(2px)' }} />
-            
-            {/* Celestial Body */}
-            <motion.div
-              animate={{ rotateX: -65 }}
-              style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
-                width: 10, height: 10, borderRadius: '50%',
-                background: isNight ? '#ffffff' : '#fef08a',
-                boxShadow: isNight 
-                  ? '0 0 12px #fff, 0 0 24px rgba(226,232,240,0.8), inset 0 -2px 4px rgba(0,0,0,0.3)'
-                  : '0 0 10px #facc15, 0 0 20px rgba(250,204,21,0.6), inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
+            <Moon size={22} strokeWidth={1.5} />
           </motion.div>
-
-          {/* Orbit 2 — 96px, Ethereal Lilac / Coral Pink */}
+        ) : (
           <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-            style={{ position: 'absolute', width: 96, height: 96, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(196,181,253,0.25)' : 'rgba(251,146,60,0.3)'}`, 
-              boxShadow: isNight ? '0 0 15px rgba(139,92,246,0.1)' : '0 0 15px rgba(251,146,60,0.1)' }}
+            key="sun"
+            initial={{ opacity: 0, rotate: 90, scale: 0.5 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
+            transition={{ duration: 0.2 }}
           >
-            {/* Extended Comet Trail (Right) */}
-            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -4,
-              width: 28, height: 2, borderRadius: 2, marginTop: -1,
-              background: `linear-gradient(to right, ${isNight ? 'rgba(196,181,253,1)' : 'rgba(251,146,60,1)'}, transparent)`, filter: 'blur(1px)' }} />
-            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -4,
-              width: 40, height: 1, borderRadius: 2, marginTop: -0.5,
-              background: `linear-gradient(to right, ${isNight ? 'rgba(139,92,246,0.5)' : 'rgba(249,115,22,0.5)'}, transparent)`, filter: 'blur(2px)' }} />
-            
-            {/* Celestial Body */}
-            <motion.div
-              animate={{ rotateX: -65 }}
-              style={{ position: 'absolute', top: -5, left: '50%', marginLeft: -5,
-                width: 10, height: 10, borderRadius: '50%',
-                background: isNight ? '#f3e8ff' : '#fed7aa',
-                boxShadow: isNight
-                  ? '0 0 12px #e9d5ff, 0 0 30px rgba(139,92,246,0.9), inset 0 -2px 4px rgba(0,0,0,0.3)'
-                  : '0 0 10px #fb923c, 0 0 24px rgba(251,146,60,0.6), inset 0 -2px 4px rgba(0,0,0,0.1)' }} />
+            <Sun size={22} strokeWidth={1.5} />
           </motion.div>
-
-          {/* Orbit 3 — 124px, Cyber Cyan / Sunset Orange */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 12, ease: 'linear' }}
-            style={{ position: 'absolute', width: 124, height: 124, borderRadius: '50%',
-              border: `1px solid ${isNight ? 'rgba(103,232,249,0.2)' : 'rgba(249,115,22,0.25)'}`, 
-              boxShadow: isNight ? 'inset 0 0 20px rgba(6,182,212,0.1)' : 'inset 0 0 20px rgba(249,115,22,0.1)' }}
-          >
-            {/* Extended Comet Trail */}
-            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -20,
-              width: 32, height: 2, borderRadius: 2, marginTop: -1,
-              background: `linear-gradient(to left, ${isNight ? 'rgba(165,243,252,1)' : 'rgba(249,115,22,1)'}, transparent)`, filter: 'blur(1px)' }} />
-            <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -35,
-              width: 50, height: 1, borderRadius: 2, marginTop: -0.5,
-              background: `linear-gradient(to left, ${isNight ? 'rgba(6,182,212,0.5)' : 'rgba(234,88,12,0.5)'}, transparent)`, filter: 'blur(2px)' }} />
-              
-            {/* Celestial Body */}
-            <motion.div
-              animate={{ rotateX: -65 }}
-              style={{ position: 'absolute', top: -4, left: '50%', marginLeft: -4,
-                width: 8, height: 8, borderRadius: '50%',
-                background: isNight ? '#cffafe' : '#ffedd5',
-                boxShadow: isNight
-                  ? '0 0 10px #67e8f9, 0 0 20px rgba(6,182,212,0.9), inset 0 -1px 3px rgba(0,0,0,0.3)'
-                  : '0 0 10px #f97316, 0 0 20px rgba(249,115,22,0.6), inset 0 -1px 3px rgba(0,0,0,0.1)' }} />
-          </motion.div>
-        </div>
-
-        {/* ── Intense Nebula Core Aura ── */}
-        <motion.div
-          animate={{ opacity: isHovered ? 1 : 0.4, scale: isHovered ? 1.8 : 1.2, rotate: isHovered ? 45 : 0 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
-          style={{
-            position: 'absolute', inset: -20, borderRadius: '50%', pointerEvents: 'none',
-            background: isNight
-              ? 'radial-gradient(circle, rgba(139,92,246,0.5) 0%, rgba(59,130,246,0.3) 40%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(251,191,36,0.5) 0%, rgba(245,158,11,0.3) 40%, transparent 70%)',
-            filter: 'blur(8px)', mixBlendMode: 'screen'
-          }}
-        />
-
-        <AnimatePresence mode="wait">
-          {isNight ? (
-            <motion.div key="moon"
-              initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
-              animate={{ opacity: 1, scale: isHovered ? 1.15 : [1, 1.05, 1], rotate: 0 }}
-              exit={{ opacity: 0, scale: 0.5, rotate: 45, transition: { duration: 0.15 } }}
-              transition={{ duration: 0.4, ease: 'easeOut',
-                scale: { repeat: isHovered ? 0 : Infinity, duration: 4, ease: 'easeInOut' } }}
-              style={{ position: 'absolute', display: 'flex' }}
-            >
-              {/* Massive Magical Lunar Halo */}
-              <div style={{ position: 'absolute', inset: -25, borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)',
-                boxShadow: isHovered ? '0 0 40px rgba(167,139,250,0.8), inset 0 0 20px rgba(147,197,253,0.5)' : '0 0 20px rgba(147,197,253,0.4)' }} />
-              
-              {/* Moon Itself */}
-              <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden',
-                boxShadow: '0 0 25px rgba(255,255,255,0.6), inset 0 0 12px rgba(255,255,255,1)',
-                position: 'relative', flexShrink: 0 }}>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg" alt=""
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-                    filter: 'brightness(1.1) contrast(1.2)' }} />
-                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%',
-                  background: 'radial-gradient(circle at 65% 65%, transparent 20%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.9) 100%)',
-                  pointerEvents: 'none' }} />
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div key="sun"
-              initial={{ opacity: 0, scale: 0.5, rotate: 45 }}
-              animate={{ opacity: 1, scale: isHovered ? 1.15 : [1, 1.08, 1], rotate: 0 }}
-              exit={{ opacity: 0, scale: 0.5, rotate: -45, transition: { duration: 0.15 } }}
-              transition={{ duration: 0.4, ease: 'easeOut',
-                scale: { repeat: isHovered ? 0 : Infinity, duration: 5, ease: 'easeInOut' } }}
-              style={{ position: 'absolute', display: 'flex' }}
-            >
-              {/* Blazing Solar Corona Glow */}
-              <div style={{ position: 'absolute', inset: -30, borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(251,191,36,0.4) 0%, transparent 70%)',
-                boxShadow: isHovered ? '0 0 60px rgba(245,158,11,0.9), inset 0 0 20px rgba(251,191,36,0.6)' : '0 0 30px rgba(251,191,36,0.6)' }} />
-
-              {/* Sun Core */}
-              <div style={{ width: 28, height: 28, borderRadius: '50%',
-                background: 'radial-gradient(circle at 40% 40%, #ffffff 0%, #fef08a 25%, #f59e0b 60%, #ea580c 100%)',
-                boxShadow: '0 0 30px #f59e0b, 0 0 60px rgba(253,230,138,1), inset 0 0 15px #ffffff',
-                filter: 'contrast(1.2) brightness(1.2)', flexShrink: 0 }} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-      </motion.button>
-    </>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 }
 
