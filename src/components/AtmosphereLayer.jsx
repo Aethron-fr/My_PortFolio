@@ -215,9 +215,10 @@ export default function AtmosphereLayer() {
           animate={{ opacity: 1 }}
           transition={{ duration: 3, delay: 2 }}
           style={{
-            position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+            position: 'fixed', top: '15vh', right: '10vw',
             zIndex: 100,
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+
 
             pointerEvents: 'none',
           }}
