@@ -30,6 +30,7 @@ import MagneticWrapper from './components/MagneticWrapper';
 import CodeBackground from './components/CodeBackground';
 import TerminalMode from './components/TerminalMode';
 import AmbientBackground from './components/AmbientBackground';
+import ResumeViewer from './components/ResumeViewer';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -376,12 +377,13 @@ export default function App() {
   const navItems = ['Home', 'About', 'Experience', 'Work', 'Journey'];
 
   return (
-    <>
+    <div className={`app-container ${isDark ? 'dark-theme' : 'light-theme'}`}>
       <AmbientBackground />
+      <ResumeViewer />
+      <CanvasBackground isDark={isDark} />
       <CustomCursor />
       <StardustTrail />
       <KonamiCode />
-      <CanvasBackground />
       <TerminalMode isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
 
       <AnimatePresence>
@@ -1313,6 +1315,6 @@ export default function App() {
 
       {/* BUG-015: Removed inline <style> block — all styles now live in App.css to avoid
            duplication and conflicting breakpoints (was 1024px here vs 768px in App.css) */}
-    </>
+    </div>
   );
 }

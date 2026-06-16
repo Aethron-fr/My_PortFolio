@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useRef } from 'react';
+import { sfx } from '../utils/sfx';
 
 export default function MagneticWrapper({
   children,
@@ -31,11 +32,16 @@ export default function MagneticWrapper({
     y.set(0);
   };
 
+  const handleMouseEnter = () => {
+    sfx.playHoverTick();
+  };
+
   return (
     <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
       className={className}
       style={{
         display: 'inline-flex',

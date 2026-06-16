@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { sfx } from '../utils/sfx';
 
 // The classic Konami Code sequence
 const KONAMI = [
@@ -9,6 +10,60 @@ const KONAMI = [
   'ArrowLeft', 'ArrowRight',
   'b', 'a',
 ];
+
+const MatrixRain = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+{}[]|:;"<>,.?/~\\'.split('');
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for (let x = 0; x < columns; x++) {
+      drops[x] = 1;
+    }
+
+    const draw = () => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#0F0'; 
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+
+    const interval = setInterval(draw, 33);
+    
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} style={{ display: 'block' }} />;
+};
 
 export default function KonamiCode() {
   const [triggered, setTriggered] = useState(false);
@@ -25,13 +80,13 @@ export default function KonamiCode() {
       );
 
       if (!isOnTrack) {
-        // Wrong key — reset, but check if this key starts a new attempt
         setProgress(key === KONAMI[0] ? [key] : []);
         return;
       }
 
       if (next.length === KONAMI.length) {
         setTriggered(true);
+        sfx.playBassHum(); // Dramatic sound on activation
         setProgress([]);
       } else {
         setProgress(next);
@@ -50,87 +105,45 @@ export default function KonamiCode() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 1.5 }}
           onClick={() => setTriggered(false)}
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 9999998,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.92)',
-            backdropFilter: 'blur(12px)',
+            background: 'black',
             cursor: 'pointer',
-            padding: '2rem',
+            overflow: 'hidden'
           }}
         >
-          <motion.div
-            initial={{ scale: 0.85, y: 30 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-            style={{ textAlign: 'center', maxWidth: '520px' }}
-          >
-            {/* Glowing icon */}
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-              style={{ fontSize: '4rem', marginBottom: '28px' }}
-            >
-              🌙
-            </motion.div>
-
-            {/* Secret message */}
-            <p style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
-              letterSpacing: '3px',
-              color: 'rgba(255,255,255,0.25)',
-              textTransform: 'uppercase',
-              marginBottom: '16px',
-            }}>
-              you found it.
-            </p>
-
+          <MatrixRain />
+          
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'rgba(0,0,0,0.85)',
+            padding: '2rem 4rem',
+            border: '1px solid #0F0',
+            textAlign: 'center',
+            boxShadow: '0 0 50px rgba(0, 255, 0, 0.2)',
+            backdropFilter: 'blur(10px)',
+          }}>
             <h2 style={{
-              fontSize: 'clamp(1.4rem, 3vw, 2rem)',
-              fontWeight: 300,
-              color: 'var(--text-primary)',
-              lineHeight: 1.4,
-              marginBottom: '24px',
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '2rem',
+              color: '#0F0',
+              letterSpacing: '5px',
+              textTransform: 'uppercase',
+              margin: '0 0 1rem 0'
             }}>
-              "Still building.
-              <br />
-              Still waiting.
-              <br />
-              Still here."
+              System Override
             </h2>
-
-            <p style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.75rem',
-              color: 'var(--accent-cyber)',
-              letterSpacing: '2px',
-              marginBottom: '32px',
-            }}>
-              — Swapnadip, 2024
+            <p style={{ color: '#0A0', fontFamily: 'monospace', fontSize: '0.9rem' }}>
+              Welcome to the construct. Click to exit.
             </p>
-
-            <motion.div
-              animate={{ opacity: [0.4, 0.8, 0.4] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.62rem',
-                color: 'rgba(255,255,255,0.2)',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-              }}
-            >
-              click anywhere to close
-            </motion.div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

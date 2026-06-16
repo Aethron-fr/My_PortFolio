@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { sfx } from '../utils/sfx';
 
 const BOOT_SEQUENCE = [
   { text: "Initializing Swapnadip OS...", color: "#94a3b8", delay: 100 },
@@ -16,6 +17,7 @@ const COMMANDS = {
     { text: "  projects     - List flagship projects", color: "#e2e8f0" },
     { text: "  resume       - View resume link", color: "#e2e8f0" },
     { text: "  contact      - Get email and social links", color: "#e2e8f0" },
+    { text: "  sendmail     - Send an interactive email", color: "var(--accent-cyber)" },
     { text: "  clear        - Clear terminal output", color: "#e2e8f0" },
     { text: "  exit         - Close the terminal mode", color: "#e2e8f0" }
   ],
@@ -114,6 +116,10 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  // Email State Machine
+  const [terminalState, setTerminalState] = useState('IDLE'); // IDLE, AWAITING_SUBJECT, AWAITING_MESSAGE
+  const [mailDraft, setMailDraft] = useState({ subject: '', message: '' });
+
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -142,6 +148,7 @@ export default function TerminalMode({ isOpen, onClose }) {
       setHistory([]);
       setInput('');
       setHistoryIndex(-1);
+      setTerminalState('IDLE');
     }
   }, [isOpen, bootIndex, isBooted]);
 
@@ -170,36 +177,66 @@ export default function TerminalMode({ isOpen, onClose }) {
     e.preventDefault();
     if (isTyping || !isBooted) return;
     
-    const cmd = input.trim().toLowerCase();
-    if (!cmd) return;
+    const cmd = input.trim();
+    if (!cmd && terminalState === 'IDLE') return;
 
-    setCommandHistory(prev => [...prev, input]);
-    setHistoryIndex(-1);
-    const newHistory = [...history, { type: 'input', text: input }];
+    if (terminalState === 'IDLE') {
+      setCommandHistory(prev => [...prev, input]);
+      setHistoryIndex(-1);
+    }
+    
+    const newHistory = [...history, { type: 'input', text: input, prefix: terminalState === 'IDLE' ? '~ ❯' : '>' }];
     setInput('');
 
-    if (cmd === 'clear') {
+    if (terminalState === 'AWAITING_SUBJECT') {
+      setMailDraft(prev => ({ ...prev, subject: cmd }));
+      newHistory.push({ type: 'output', lines: [{ text: "Enter message body:", color: "#94a3b8" }] });
+      setHistory(newHistory);
+      setTerminalState('AWAITING_MESSAGE');
+      return;
+    }
+
+    if (terminalState === 'AWAITING_MESSAGE') {
+      setMailDraft(prev => ({ ...prev, message: cmd }));
+      setIsTyping(true);
+      newHistory.push({ type: 'output', lines: [{ text: "Encrypting packet and establishing secure SMTP tunnel...", color: "var(--accent-cyber)" }] });
+      newHistory.push({ type: 'progress', task: 'sendmail' });
+      setHistory(newHistory);
+      setTerminalState('IDLE');
+      return;
+    }
+
+    const lowerCmd = cmd.toLowerCase();
+
+    if (lowerCmd === 'clear') {
       setHistory([]);
       return;
     }
 
-    if (cmd === 'exit') {
+    if (lowerCmd === 'exit') {
       onClose();
       return;
     }
 
-    if (cmd === 'resume') {
+    if (lowerCmd === 'sendmail') {
+      newHistory.push({ type: 'output', lines: [{ text: "Interactive Mail Protocol Initiated.", color: "var(--accent-primary)" }, { text: "Enter subject:", color: "#94a3b8" }] });
+      setHistory(newHistory);
+      setTerminalState('AWAITING_SUBJECT');
+      return;
+    }
+
+    if (lowerCmd === 'resume') {
       setIsTyping(true);
-      newHistory.push({ type: 'progress' });
+      newHistory.push({ type: 'progress', task: 'resume' });
       setHistory(newHistory);
       return;
     }
 
-    if (COMMANDS[cmd]) {
+    if (COMMANDS[lowerCmd]) {
       setIsTyping(true);
-      newHistory.push({ type: 'output', lines: COMMANDS[cmd] });
+      newHistory.push({ type: 'output', lines: COMMANDS[lowerCmd] });
     } else {
-      newHistory.push({ type: 'output', lines: [{ text: `zsh: command not found: ${cmd}`, color: '#ff5f56' }] });
+      newHistory.push({ type: 'output', lines: [{ text: `zsh: command not found: ${lowerCmd}`, color: '#ff5f56' }] });
     }
 
     setHistory(newHistory);
@@ -208,10 +245,19 @@ export default function TerminalMode({ isOpen, onClose }) {
   const finishProgress = () => {
     setHistory(prev => {
       const updated = [...prev];
-      updated.push({ type: 'output', lines: [
-        { text: "Fetch Complete. Link:", color: "#94a3b8" },
-        { text: "https://www.linkedin.com/in/swapnadip-ghosh/", color: "var(--accent-cyber)" }
-      ]});
+      const lastProgress = updated.slice().reverse().find(entry => entry.type === 'progress');
+      
+      if (lastProgress?.task === 'sendmail') {
+        updated.push({ type: 'output', lines: [
+          { text: "Message sent successfully.", color: "#27c93f" },
+          { text: "Recipient: ghoshswapnadip7@gmail.com", color: "#94a3b8" }
+        ]});
+      } else {
+        window.dispatchEvent(new Event('open-resume'));
+        updated.push({ type: 'output', lines: [
+          { text: "Interactive Resume Protocol Loaded.", color: "#27c93f" }
+        ]});
+      }
       return updated;
     });
   };
@@ -320,7 +366,7 @@ export default function TerminalMode({ isOpen, onClose }) {
                     <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
                       {entry.type === 'input' && (
                         <div style={{ display: 'flex' }}>
-                          <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>~ ❯</span>
+                          <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>{entry.prefix || '~ ❯'}</span>
                           <span style={{ color: '#fff' }}>{entry.text}</span>
                         </div>
                       )}
@@ -352,12 +398,17 @@ export default function TerminalMode({ isOpen, onClose }) {
               {/* Input Line */}
               {isBooted && (
                 <form onSubmit={handleCommand} style={{ display: 'flex', marginTop: '4px' }}>
-                  <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>~ ❯</span>
+                  <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>
+                    {terminalState === 'IDLE' ? '~ ❯' : '>'}
+                  </span>
                   <input
                     ref={inputRef}
                     type="text"
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      if (!isTyping) sfx.playTerminalKeystroke();
+                    }}
                     onKeyDown={handleKeyDown}
                     disabled={isTyping}
                     style={{
