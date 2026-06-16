@@ -22,6 +22,7 @@ import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
+import CinematicLoader from './components/CinematicLoader';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -192,6 +193,7 @@ export default function App() {
     () => localStorage.getItem('_portfolio_visited') === '1'
   );
   const [scrolled, setScrolled] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -344,7 +346,13 @@ export default function App() {
       <CanvasBackground />
 
       <AnimatePresence>
-        {!hasEntered && (
+        {showLoader && (
+          <CinematicLoader key="loader" onComplete={() => setShowLoader(false)} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {!showLoader && !hasEntered && (
           <WelcomeModal
             key="welcome"
             onEnter={() => {
