@@ -214,19 +214,7 @@ export default function TechSphere() {
           pointerEvents: 'none',
         }} />
 
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          width: '180px',
-          height: '180px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(0,247,255,0.2) 0%, rgba(225,48,108,0.25) 40%, transparent 70%)',
-          filter: 'blur(20px)',
-          animation: 'corePulse 3s ease-in-out infinite',
-          pointerEvents: 'none',
-          mixBlendMode: 'screen',
-        }} />
+
 
         {TAGS.map((tag) => (
           <span
