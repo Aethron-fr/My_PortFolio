@@ -152,6 +152,7 @@ export default function TerminalMode({ isOpen, onClose }) {
                 }}
                 autoComplete="off"
                 spellCheck="false"
+                placeholder="Type 'help' to see commands..."
               />
             </form>
             <div ref={bottomRef} />
