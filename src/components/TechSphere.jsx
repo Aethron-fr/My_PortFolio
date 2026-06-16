@@ -106,10 +106,10 @@ export default function TechSphere() {
       if (!isDragging) return;
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
-      angleY -= dx * 0.006;
-      angleX -= dy * 0.006;
-      velX = -dy * 0.006;
-      velY = -dx * 0.006;
+      angleY += dx * 0.006;
+      angleX += dy * 0.006;
+      velX = dy * 0.006;
+      velY = dx * 0.006;
       lastX = e.clientX;
       lastY = e.clientY;
     };
