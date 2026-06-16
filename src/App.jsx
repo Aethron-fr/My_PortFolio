@@ -22,7 +22,6 @@ import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
-import CinematicLoader from './components/CinematicLoader';
 import StardustTrail from './components/StardustTrail';
 import GitHubGraph from './components/GitHubGraph';
 import KonamiCode from './components/KonamiCode';
@@ -213,9 +212,6 @@ export default function App() {
     () => localStorage.getItem('_portfolio_visited') === '1'
   );
   const [scrolled, setScrolled] = useState(false);
-  const [showLoader, setShowLoader] = useState(() => {
-    return sessionStorage.getItem('_loader_shown') !== '1';
-  });
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -382,19 +378,7 @@ export default function App() {
       <CanvasBackground />
 
       <AnimatePresence>
-        {showLoader && (
-          <CinematicLoader 
-            key="loader" 
-            onComplete={() => {
-              sessionStorage.setItem('_loader_shown', '1');
-              setShowLoader(false);
-            }} 
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {!showLoader && !hasEntered && (
+        {!hasEntered && (
           <WelcomeModal
             key="welcome"
             onEnter={() => {
