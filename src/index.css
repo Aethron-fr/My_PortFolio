@@ -245,6 +245,11 @@ p {
   box-shadow: var(--shadow-lg);
 }
 
+/* Responsive Panel Padding */
+.panel-padding {
+  padding: clamp(20px, 5vw, 36px);
+}
+
 /* Bento Grid */
 .bento-grid {
   display: grid;
