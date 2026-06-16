@@ -2,16 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BOOT_SEQUENCE = [
-  { text: "Initializing Swapnadip OS kernel...", color: "#94a3b8", delay: 150 },
-  { text: "Loading core modules [OK]", color: "#27c93f", delay: 200 },
-  { text: "Mounting file systems [OK]", color: "#27c93f", delay: 150 },
-  { text: "Bypassing mainframe security protocols...", color: "#ffbd2e", delay: 400 },
-  { text: "Connection established. Root access granted.", color: "var(--accent-primary)", delay: 300 },
+  { text: "Initializing Swapnadip OS...", color: "#94a3b8", delay: 100 },
+  { text: "Connection established. Access granted.", color: "var(--accent-primary)", delay: 150 },
 ];
 
 const COMMANDS = {
   help: [
-    { text: "Swapnadip OS CLI - v2.0.0 (God-Tier Edition)", color: "var(--accent-primary)" },
+    { text: "Swapnadip OS CLI - v2.0.0", color: "var(--accent-primary)" },
     { text: "Available commands:", color: "#94a3b8" },
     { text: "  whoami       - View my profile and summary", color: "#e2e8f0" },
     { text: "  skills       - View technical stack and proficiencies", color: "#e2e8f0" },
@@ -63,34 +60,20 @@ const COMMANDS = {
   ]
 };
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
-
-const DecryptLine = ({ line, onComplete }) => {
+const TypewriterLine = ({ line, onComplete }) => {
   const [displayedText, setDisplayedText] = useState('');
   
   useEffect(() => {
-    let iteration = 0;
-    const maxIterations = 15;
+    let i = 0;
+    const speed = line.delay ? line.delay / line.text.length : 15;
     const interval = setInterval(() => {
-      setDisplayedText(prev => {
-        return line.text.split('').map((char, index) => {
-          if (index < iteration) {
-            return line.text[index];
-          }
-          if (char === ' ') return ' ';
-          return CHARS[Math.floor(Math.random() * CHARS.length)];
-        }).join('');
-      });
-
-      iteration += 1 / 2; // Decrypt 1 character every 2 ticks
-      
-      if (iteration >= line.text.length) {
+      setDisplayedText(line.text.slice(0, i + 1));
+      i++;
+      if (i >= line.text.length) {
         clearInterval(interval);
-        setDisplayedText(line.text);
-        if (onComplete) setTimeout(onComplete, 30);
+        if (onComplete) setTimeout(onComplete, 50);
       }
-    }, 20); // Very fast tick rate for the matrix effect
-
+    }, speed);
     return () => clearInterval(interval);
   }, [line, onComplete]);
 
@@ -321,7 +304,7 @@ export default function TerminalMode({ isOpen, onClose }) {
               {!isBooted && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {BOOT_SEQUENCE.slice(0, bootIndex + 1).map((line, i) => (
-                    <DecryptLine 
+                    <TypewriterLine 
                       key={i} 
                       line={line} 
                       onComplete={i === bootIndex ? () => setBootIndex(bootIndex + 1) : undefined}
@@ -350,7 +333,7 @@ export default function TerminalMode({ isOpen, onClose }) {
                         <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '24px', margin: '4px 0 12px 0' }}>
                           {entry.lines.map((line, idx) => (
                             i === history.length - 1 ? (
-                              <DecryptLine 
+                              <TypewriterLine 
                                 key={idx} 
                                 line={line} 
                                 onComplete={idx === entry.lines.length - 1 ? () => setIsTyping(false) : undefined}

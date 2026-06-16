@@ -26,21 +26,6 @@ export default function GitHubGraph() {
   useEffect(() => {
     // Use GitHub's calendar SVG as a simple data source
     // We fetch from a public CORS-friendly proxy that parses the contribution data
-    const CACHE_KEY = '_gh_graph_v1';
-    const cached = sessionStorage.getItem(CACHE_KEY);
-
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        setWeeks(parsed.weeks || []);
-        setTotalContributions(parsed.total || 0);
-        setLoaded(true);
-        return;
-      } catch {
-        sessionStorage.removeItem(CACHE_KEY);
-      }
-    }
-
     // Use github-contributions-api (unofficial but public, no auth needed)
     fetch(`https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`)
       .then(res => {
@@ -57,9 +42,6 @@ export default function GitHubGraph() {
         for (let i = 0; i < contributions.length; i += 7) {
           weekGroups.push(contributions.slice(i, i + 7));
         }
-
-        const cacheData = { weeks: weekGroups, total };
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
 
         setWeeks(weekGroups);
         setTotalContributions(total);

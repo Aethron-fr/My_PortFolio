@@ -85,33 +85,11 @@ export default function TechSphere() {
         velX *= 0.97;
         velY = velY * 0.99 + 0.004 * 0.01; 
       } else if (hoveredTagRef.current && !isDragging) {
-        // Auto-center the hovered tag
-        const i = TAGS.indexOf(hoveredTagRef.current);
-        if (i !== -1) {
-          const phi = Math.acos(1 - (2 * (i + 0.5)) / total);
-          const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-          
-          const x0 = RADIUS * Math.sin(phi) * Math.cos(theta);
-          const y0 = RADIUS * Math.cos(phi);
-          const z0 = RADIUS * Math.sin(phi) * Math.sin(theta);
-          
-          const targetAngleY = Math.atan2(x0, z0);
-          const z1 = Math.sqrt(x0*x0 + z0*z0);
-          const targetAngleX = Math.atan2(y0, z1);
-
-          // Interpolate using shortest path
-          const diffY = targetAngleY - (angleY % (Math.PI*2));
-          let shortestY = Math.atan2(Math.sin(diffY), Math.cos(diffY));
-          angleY += shortestY * 0.08;
-
-          const diffX = targetAngleX - (angleX % (Math.PI*2));
-          let shortestX = Math.atan2(Math.sin(diffX), Math.cos(diffX));
-          angleX += shortestX * 0.08;
-          
-          // Stop velocities so it doesn't shoot off when unhovered
-          velX = 0;
-          velY = 0;
-        }
+        // Just pause gracefully
+        velX *= 0.90;
+        velY *= 0.90;
+        angleY += velY;
+        angleX += velX;
       }
       positionTags();
       rafId = requestAnimationFrame(loop);
