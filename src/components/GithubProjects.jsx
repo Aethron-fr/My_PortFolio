@@ -54,6 +54,13 @@ export default function GithubProjects() {
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
+    const cachedRepos = sessionStorage.getItem('github_repos');
+    if (cachedRepos) {
+      setRepos(JSON.parse(cachedRepos));
+      setLoading(false);
+      return;
+    }
+
     fetch('https://api.github.com/users/Aethron-fr/repos')
       .then((res) => {
         if (!res.ok) throw new Error('API Rate Limit or Error');
@@ -81,7 +88,11 @@ export default function GithubProjects() {
             }
             return repo;
           });
-          setRepos(mergedData.length > 0 ? mergedData : FALLBACK_PROJECTS);
+          const finalRepos = mergedData.length > 0 ? mergedData : FALLBACK_PROJECTS;
+          setRepos(finalRepos);
+          if (mergedData.length > 0) {
+            sessionStorage.setItem('github_repos', JSON.stringify(finalRepos));
+          }
           if (mergedData.length === 0) setIsOffline(true);
         }
         setLoading(false);
