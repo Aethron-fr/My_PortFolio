@@ -1309,6 +1309,57 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* ── Footer ──────────────────────────────────────────────────────── */}
+      <footer style={{
+        padding: '60px 20px 40px',
+        textAlign: 'center',
+        borderTop: '1px solid var(--border-glass)',
+        marginTop: '100px',
+        position: 'relative',
+        zIndex: 10
+      }}>
+        <div style={{ marginBottom: '30px' }}>
+          <a
+            href="https://www.linkedin.com/in/swapnadip-ghosh/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '16px 40px',
+              background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-violet) 100%)',
+              color: '#fff',
+              textDecoration: 'none',
+              fontFamily: 'var(--font-heading)',
+              fontSize: '1rem',
+              fontWeight: 600,
+              borderRadius: '50px',
+              boxShadow: '0 10px 30px rgba(225, 48, 108, 0.3)',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-3px)';
+              e.currentTarget.style.boxShadow = '0 15px 40px rgba(225, 48, 108, 0.5)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(225, 48, 108, 0.3)';
+            }}
+          >
+            Download Resume
+          </a>
+        </div>
+        <p style={{
+          color: 'var(--text-dim)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.8rem',
+          letterSpacing: '1px'
+        }}>
+          &copy; {new Date().getFullYear()} Swapnadip Ghosh. All rights reserved.
+        </p>
+      </footer>
+
       {/* ── Day / Night Mode Toggle ─────────────────────────────────────────── */}
       <ThemeToggle />
 

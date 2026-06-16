@@ -76,27 +76,38 @@ export default function NotFound() {
         `}
       </style>
 
-      {/* Heavy Red Overlay */}
+      {/* Heavy Red Overlay & Scanlines */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(255, 0, 0, 0.05)',
+          background: 'radial-gradient(circle at center, rgba(255, 0, 60, 0.1) 0%, rgba(10, 0, 0, 0.95) 100%)',
           pointerEvents: 'none',
           zIndex: 0
         }}
       />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(transparent 50%, rgba(0, 0, 0, 0.25) 50%)',
+          backgroundSize: '100% 4px',
+          pointerEvents: 'none',
+          zIndex: 1
+        }}
+      />
 
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '600px', width: '100%' }}>
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '600px', width: '100%', padding: '0 20px' }}>
         <h1
           className="glitch-text"
           style={{
-            fontSize: 'clamp(6rem, 15vw, 10rem)',
-            fontWeight: 800,
+            fontSize: 'clamp(6rem, 15vw, 12rem)',
+            fontWeight: 900,
             color: '#fff',
-            margin: '0 0 20px',
+            margin: '0 0 10px',
             lineHeight: 1,
-            letterSpacing: '-5px'
+            letterSpacing: '-8px',
+            textShadow: '0 0 20px rgba(255, 0, 60, 0.5)'
           }}
         >
           404

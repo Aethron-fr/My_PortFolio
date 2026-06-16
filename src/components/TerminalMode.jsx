@@ -254,6 +254,7 @@ export default function TerminalMode({ isOpen, onClose }) {
         ]});
       } else {
         window.dispatchEvent(new Event('open-resume'));
+        setTimeout(onClose, 500); // Auto-close the terminal so they can see the resume!
         updated.push({ type: 'output', lines: [
           { text: "Interactive Resume Protocol Loaded.", color: "#27c93f" }
         ]});
@@ -423,7 +424,12 @@ export default function TerminalMode({ isOpen, onClose }) {
                     }}
                     autoComplete="off"
                     spellCheck="false"
-                    placeholder={isTyping ? "" : "Type 'help' to see commands..."}
+                    placeholder={
+                      isTyping ? "" : 
+                      terminalState === 'AWAITING_SUBJECT' ? "Type subject..." : 
+                      terminalState === 'AWAITING_MESSAGE' ? "Type message..." : 
+                      "Type 'help' to see commands..."
+                    }
                   />
                 </form>
               )}

@@ -140,9 +140,27 @@ export default function KonamiCode() {
             }}>
               System Override
             </h2>
-            <p style={{ color: '#0A0', fontFamily: 'monospace', fontSize: '0.9rem' }}>
-              Welcome to the construct. Click to exit.
+            <p style={{ color: '#0A0', fontFamily: 'monospace', fontSize: '0.9rem', marginBottom: '30px' }}>
+              Welcome to the construct.
             </p>
+            <button
+              onClick={() => setTriggered(false)}
+              style={{
+                background: 'rgba(255, 0, 0, 0.2)',
+                border: '1px solid #F00',
+                color: '#F00',
+                padding: '15px 40px',
+                fontSize: '1.2rem',
+                fontFamily: 'monospace',
+                textTransform: 'uppercase',
+                letterSpacing: '3px',
+                cursor: 'pointer',
+                boxShadow: '0 0 20px rgba(255, 0, 0, 0.4)',
+                borderRadius: '4px'
+              }}
+            >
+              [X] Close System
+            </button>
           </div>
         </motion.div>
       )}

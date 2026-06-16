@@ -60,10 +60,10 @@ export default function TechSphere() {
         const isHovered = hoveredTagRef.current === TAGS[i];
         if (isHovered) {
           scale *= 1.4; 
-          el.style.background = 'linear-gradient(135deg, rgba(225, 48, 108, 0.8) 0%, rgba(0, 247, 255, 0.8) 100%)';
-          el.style.color = '#fff';
+          el.style.background = 'var(--accent-cyber)'; // Vibrant solid cyan
+          el.style.color = '#000'; // Dark text for high contrast readability
           el.style.borderColor = 'transparent';
-          el.style.boxShadow = '0 0 30px rgba(225, 48, 108, 0.4), 0 0 30px rgba(0, 247, 255, 0.4)';
+          el.style.boxShadow = '0 0 30px rgba(0, 247, 255, 0.6)';
           el.style.zIndex = 999;
         } else {
           el.style.background = 'var(--bg-card)';
