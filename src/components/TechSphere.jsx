@@ -183,7 +183,7 @@ export default function TechSphere() {
           width: '320px',
           height: '320px',
           borderRadius: '50%',
-          border: '1px solid rgba(255,255,255,0.03)',
+          border: '1px solid var(--border-glass)',
           pointerEvents: 'none',
         }} />
         <div style={{
@@ -194,7 +194,7 @@ export default function TechSphere() {
           width: '400px',
           height: '400px',
           borderRadius: '50%',
-          border: '1px solid rgba(255,255,255,0.02)',
+          border: '1px solid var(--border-glass)',
           pointerEvents: 'none',
         }} />
 
@@ -228,14 +228,14 @@ export default function TechSphere() {
               whiteSpace: 'nowrap',
               padding: '6px 14px',
               borderRadius: '20px',
-              border: '1px solid rgba(255,255,255,0.06)',
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              border: '1px solid var(--border-glass)',
+              background: 'var(--bg-card)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               backdropFilter: 'blur(8px)',
               willChange: 'transform, opacity',
               transition: 'color 0.3s, background 0.3s',
               pointerEvents: 'none',
-              textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+              color: 'var(--text-primary)',
             }}
           >
             {tag}

@@ -76,7 +76,7 @@ export default function GitHubGraph() {
 
   const getColor = (level) => {
     const colors = {
-      0: 'rgba(255,255,255,0.05)',
+      0: 'var(--border-glass)',
       1: '#0e4429',
       2: '#006d32',
       3: '#26a641',

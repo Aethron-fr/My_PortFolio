@@ -4,59 +4,59 @@ import { motion, AnimatePresence } from 'framer-motion';
 const COMMANDS = {
   help: [
     { text: "Swapnadip OS CLI - v2.0.0 (Professional Edition)", color: "var(--accent-primary)" },
-    { text: "Available commands:", color: "var(--text-dim)" },
-    { text: "  whoami       - View my profile and summary", color: "var(--text-primary)" },
-    { text: "  skills       - View technical stack and proficiencies", color: "var(--text-primary)" },
-    { text: "  experience   - View professional timeline", color: "var(--text-primary)" },
-    { text: "  projects     - List flagship projects", color: "var(--text-primary)" },
-    { text: "  resume       - View resume link", color: "var(--text-primary)" },
-    { text: "  contact      - Get email and social links", color: "var(--text-primary)" },
-    { text: "  clear        - Clear terminal output", color: "var(--text-primary)" },
-    { text: "  exit         - Close the terminal mode", color: "var(--text-primary)" }
+    { text: "Available commands:", color: "#94a3b8" },
+    { text: "  whoami       - View my profile and summary", color: "#e2e8f0" },
+    { text: "  skills       - View technical stack and proficiencies", color: "#e2e8f0" },
+    { text: "  experience   - View professional timeline", color: "#e2e8f0" },
+    { text: "  projects     - List flagship projects", color: "#e2e8f0" },
+    { text: "  resume       - View resume link", color: "#e2e8f0" },
+    { text: "  contact      - Get email and social links", color: "#e2e8f0" },
+    { text: "  clear        - Clear terminal output", color: "#e2e8f0" },
+    { text: "  exit         - Close the terminal mode", color: "#e2e8f0" }
   ],
   whoami: [
-    { text: "{", color: "var(--text-dim)" },
-    { text: '  "name": "Swapnadip Ghosh",', color: "var(--text-primary)" },
-    { text: '  "role": "Full Stack Developer",', color: "var(--text-primary)" },
-    { text: '  "location": "West Bengal, India",', color: "var(--text-primary)" },
+    { text: "{", color: "#94a3b8" },
+    { text: '  "name": "Swapnadip Ghosh",', color: "#e2e8f0" },
+    { text: '  "role": "Full Stack Developer",', color: "#e2e8f0" },
+    { text: '  "location": "West Bengal, India",', color: "#e2e8f0" },
     { text: '  "bio": "Engineering digital masterpieces with React, Node, and modern UI/UX principles."', color: "var(--accent-cyber)" },
-    { text: "}", color: "var(--text-dim)" }
+    { text: "}", color: "#94a3b8" }
   ],
   skills: [
     { text: "[Frontend]", color: "var(--accent-primary)" },
-    { text: "  React.js, Next.js, Framer Motion, HTML5, CSS3/Tailwind", color: "var(--text-primary)" },
+    { text: "  React.js, Next.js, Framer Motion, HTML5, CSS3/Tailwind", color: "#e2e8f0" },
     { text: "[Backend]", color: "var(--accent-violet)" },
-    { text: "  Node.js, Express, Python, Django, REST APIs", color: "var(--text-primary)" },
+    { text: "  Node.js, Express, Python, Django, REST APIs", color: "#e2e8f0" },
     { text: "[Database & Cloud]", color: "var(--accent-cyber)" },
-    { text: "  MongoDB, PostgreSQL, Firebase, Docker", color: "var(--text-primary)" }
+    { text: "  MongoDB, PostgreSQL, Firebase, Docker", color: "#e2e8f0" }
   ],
   experience: [
     { text: "2024 - Present | Open Source Contributor & Freelancer", color: "var(--accent-primary)" },
-    { text: "  - Architecting high-performance web applications", color: "var(--text-dim)" },
-    { text: "  - Maintaining actively used GitHub repositories", color: "var(--text-dim)" },
+    { text: "  - Architecting high-performance web applications", color: "#94a3b8" },
+    { text: "  - Maintaining actively used GitHub repositories", color: "#94a3b8" },
     { text: "2023 - 2024    | Full Stack Learner & Builder", color: "var(--accent-primary)" },
-    { text: "  - Mastered modern React and backend integrations", color: "var(--text-dim)" }
+    { text: "  - Mastered modern React and backend integrations", color: "#94a3b8" }
   ],
   projects: [
     { text: "1. Portfolio v2.0", color: "var(--accent-primary)" },
-    { text: "   Stack: React 19, Framer Motion, Vite", color: "var(--text-dim)" },
+    { text: "   Stack: React 19, Framer Motion, Vite", color: "#94a3b8" },
     { text: "2. Ochi Clone", color: "var(--accent-primary)" },
-    { text: "   Stack: React, GSAP, Tailwind (Awwwards winning clone)", color: "var(--text-dim)" },
+    { text: "   Stack: React, GSAP, Tailwind (Awwwards winning clone)", color: "#94a3b8" },
     { text: "3. FullStack Amazon Clone", color: "var(--accent-primary)" },
-    { text: "   Stack: React, Node.js, Express, MongoDB, Stripe", color: "var(--text-dim)" },
+    { text: "   Stack: React, Node.js, Express, MongoDB, Stripe", color: "#94a3b8" },
     { text: "4. E-learning Hub", color: "var(--accent-primary)" },
-    { text: "   Stack: React, Firebase, Context API", color: "var(--text-dim)" }
+    { text: "   Stack: React, Firebase, Context API", color: "#94a3b8" }
   ],
   resume: [
-    { text: "Accessing Resume...", color: "var(--text-dim)" },
+    { text: "Accessing Resume...", color: "#94a3b8" },
     { text: "Link: https://www.linkedin.com/in/swapnadip-ghosh/", color: "var(--accent-cyber)" },
     { text: "Status: Available for hire.", color: "var(--accent-primary)" }
   ],
   contact: [
-    { text: "Email    -> ghoshswapnadip7@gmail.com", color: "var(--text-primary)" },
-    { text: "LinkedIn -> linkedin.com/in/swapnadip-ghosh", color: "var(--text-primary)" },
-    { text: "GitHub   -> github.com/Aethron-fr", color: "var(--text-primary)" },
-    { text: "X        -> x.com/swapnadip_108", color: "var(--text-primary)" }
+    { text: "Email    -> ghoshswapnadip7@gmail.com", color: "#e2e8f0" },
+    { text: "LinkedIn -> linkedin.com/in/swapnadip-ghosh", color: "#e2e8f0" },
+    { text: "GitHub   -> github.com/Aethron-fr", color: "#e2e8f0" },
+    { text: "X        -> x.com/swapnadip_108", color: "#e2e8f0" }
   ]
 };
 
@@ -167,7 +167,7 @@ export default function TerminalMode({ isOpen, onClose }) {
               <div onClick={onClose} style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f56', cursor: 'pointer' }} />
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e' }} />
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27c93f' }} />
-              <span style={{ marginLeft: '12px', color: 'var(--text-dim)', fontSize: '0.75rem' }}>swapnadip@dev-env:~</span>
+              <span style={{ marginLeft: '12px', color: '#94a3b8', fontSize: '0.75rem' }}>swapnadip@dev-env:~</span>
             </div>
 
             {/* History */}
