@@ -28,6 +28,7 @@ import KonamiCode from './components/KonamiCode';
 import TechSphere from './components/TechSphere';
 import MagneticWrapper from './components/MagneticWrapper';
 import CodeBackground from './components/CodeBackground';
+import TerminalMode from './components/TerminalMode';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -218,6 +219,7 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   // BUG-005: timeGreeting now computed and displayed properly
   const [timeGreeting, setTimeGreeting] = useState(getTimeGreeting);
 
@@ -378,6 +380,7 @@ export default function App() {
       <StardustTrail />
       <KonamiCode />
       <CanvasBackground />
+      <TerminalMode isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
 
       <AnimatePresence>
         {!hasEntered && (
@@ -478,6 +481,22 @@ export default function App() {
                 {item}
               </a>
             ))}
+            <button
+                onClick={() => setIsTerminalOpen(true)}
+                style={{
+                  background: 'rgba(0, 247, 255, 0.05)',
+                  border: '1px solid rgba(0, 247, 255, 0.2)',
+                  color: 'var(--accent-primary)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  marginLeft: '8px'
+                }}
+              >
+                &gt;_ CLI
+              </button>
             <a href="#contact" className="btn-neon-outline" style={{ padding: '7px 18px', fontSize: '0.82rem' }}>
               Contact
             </a>
@@ -577,6 +596,23 @@ export default function App() {
               {item}
             </a>
           ))}
+          <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setIsTerminalOpen(true);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--accent-primary)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '1.2rem',
+                    cursor: 'pointer',
+                    marginTop: '20px'
+                  }}
+                >
+                  &gt;_ CLI MODE
+                </button>
           <a 
             href="#contact" 
             onClick={() => setMobileMenuOpen(false)}
@@ -1005,6 +1041,26 @@ export default function App() {
                 </div>
               </div>
             ))}
+            <li>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsTerminalOpen(true)}
+                style={{
+                  background: 'rgba(0, 247, 255, 0.05)',
+                  border: '1px solid rgba(0, 247, 255, 0.2)',
+                  color: 'var(--accent-primary)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  marginLeft: '8px'
+                }}
+              >
+                &gt;_ CLI
+              </motion.button>
+            </li>
           </div>
         </div>
       </section>
