@@ -26,6 +26,8 @@ import StardustTrail from './components/StardustTrail';
 import GitHubGraph from './components/GitHubGraph';
 import KonamiCode from './components/KonamiCode';
 import TechSphere from './components/TechSphere';
+import MagneticWrapper from './components/MagneticWrapper';
+import CodeBackground from './components/CodeBackground';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -588,6 +590,7 @@ export default function App() {
 
       {/* HERO SECTION */}
       <section id="home" className="hero-section" style={{ background: 'var(--bg-hero)' }}>
+        <CodeBackground />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-violet)', top: '35%', left: '30%', animationDelay: '0s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: 'min(450px, 60vw)', height: 'min(450px, 60vw)', animationDelay: '-5s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-primary)', top: '50%', left: '50%', width: 'min(650px, 80vw)', height: 'min(650px, 80vw)', opacity: 0.1, animationDelay: '-10s' }} />
@@ -680,17 +683,42 @@ export default function App() {
               { icon: <i className="fa-brands fa-x-twitter" style={{ fontSize: '22px' }} aria-hidden="true"></i>, label: 'X (Twitter)', link: 'https://x.com/swapnadip_108' },
               { icon: <Mail size={22} aria-hidden="true" />, label: 'Email', link: 'mailto:ghoshswapnadip7@gmail.com' }
             ].map((soc) => (
-              <a 
-                key={soc.label}
-                href={soc.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={soc.label}
-                className="social-icon-link"
-                style={{ width: '52px', height: '52px' }}
-              >
-                {soc.icon}
-              </a>
+              <MagneticWrapper key={soc.label} intensity={0.3}>
+                <a 
+                  href={soc.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="interactive"
+                  aria-label={soc.label}
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--text-dim)',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(225, 48, 108, 0.1)';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                    e.currentTarget.style.borderColor = 'rgba(225, 48, 108, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(225, 48, 108, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                    e.currentTarget.style.color = 'var(--text-dim)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  {soc.icon}
+                </a>
+              </MagneticWrapper>
             ))}
           </motion.div>
         </div>
