@@ -962,6 +962,7 @@ export default function App() {
                 <img 
                   src="/favicon.jpg" 
                   alt="Swapnadip Ghosh" 
+                  loading="lazy"
                   className="avatar-glow"
                   style={{
                     width: '60px',
