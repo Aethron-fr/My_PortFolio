@@ -91,6 +91,10 @@ export default function TechSphere() {
         angleY += velY;
         angleX += velX;
       }
+
+      if (angleX > Math.PI / 2.5) angleX = Math.PI / 2.5;
+      if (angleX < -Math.PI / 2.5) angleX = -Math.PI / 2.5;
+
       positionTags();
       rafId = requestAnimationFrame(loop);
     }
@@ -106,10 +110,18 @@ export default function TechSphere() {
       if (!isDragging) return;
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
-      angleY += dx * 0.006;
-      angleX += dy * 0.006;
-      velX = dy * 0.006;
-      velY = dx * 0.006;
+      
+      // Natural drag direction
+      angleY -= dx * 0.006;
+      angleX -= dy * 0.006;
+      
+      // Prevent going upside-down which reverses the left/right drag controls (Gimbal lock effect)
+      if (angleX > Math.PI / 2.5) angleX = Math.PI / 2.5;
+      if (angleX < -Math.PI / 2.5) angleX = -Math.PI / 2.5;
+
+      velX = -dy * 0.006;
+      velY = -dx * 0.006;
+      
       lastX = e.clientX;
       lastY = e.clientY;
     };
