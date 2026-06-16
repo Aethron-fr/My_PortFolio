@@ -26,6 +26,7 @@ import CinematicLoader from './components/CinematicLoader';
 import StardustTrail from './components/StardustTrail';
 import GitHubGraph from './components/GitHubGraph';
 import KonamiCode from './components/KonamiCode';
+import TechSphere from './components/TechSphere';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -923,6 +924,9 @@ export default function App() {
               ))}
             </div>
           </div>
+
+          {/* 3D Tech Sphere */}
+          <TechSphere />
 
           {/* Timeline */}
           <div>
