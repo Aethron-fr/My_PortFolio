@@ -23,6 +23,7 @@ import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
 import CinematicLoader from './components/CinematicLoader';
+import StardustTrail from './components/StardustTrail';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -373,6 +374,7 @@ export default function App() {
   return (
     <>
       <CustomCursor />
+      <StardustTrail />
       <CanvasBackground />
 
       <AnimatePresence>
