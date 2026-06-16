@@ -65,9 +65,7 @@ export default function TechSphere() {
         el.style.transform = `translate(-50%, -50%) translate(${x1}px, ${y1}px) scale(${scale.toFixed(3)})`;
         el.style.opacity = opacity.toFixed(3);
         el.style.zIndex = Math.round(z2 + RADIUS);
-        el.style.color = z2 > 0
-          ? `rgba(255,255,255,${(opacity).toFixed(2)})`
-          : `rgba(180,160,220,${(opacity * 0.7).toFixed(2)})`;
+        // color is handled by CSS variables and opacity is handled globally above
       });
     }
 
