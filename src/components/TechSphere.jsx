@@ -54,16 +54,16 @@ export default function TechSphere() {
         let z2 = y0 * sinX + z1 * cosX;
 
         let scale = (RADIUS + z2) / (2 * RADIUS);
-        const opacity = scale * 0.9 + 0.1;
+        const opacity = scale * 0.7 + 0.3; // Increased base opacity so back tags are visible
         const zIndex = Math.round(z2 + RADIUS);
 
         const isHovered = hoveredTagRef.current === TAGS[i];
         if (isHovered) {
           scale *= 1.4; 
-          el.style.background = 'var(--accent-primary)';
+          el.style.background = 'linear-gradient(135deg, rgba(225, 48, 108, 0.8) 0%, rgba(0, 247, 255, 0.8) 100%)';
           el.style.color = '#fff';
           el.style.borderColor = 'transparent';
-          el.style.boxShadow = '0 0 25px var(--accent-primary)';
+          el.style.boxShadow = '0 0 30px rgba(225, 48, 108, 0.4), 0 0 30px rgba(0, 247, 255, 0.4)';
           el.style.zIndex = 999;
         } else {
           el.style.background = 'var(--bg-card)';
@@ -218,10 +218,10 @@ export default function TechSphere() {
           position: 'absolute',
           top: '50%',
           left: '50%',
-          width: '140px',
-          height: '140px',
+          width: '180px',
+          height: '180px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, var(--accent-primary) 0%, transparent 60%)',
+          background: 'radial-gradient(circle, rgba(0,247,255,0.2) 0%, rgba(225,48,108,0.25) 40%, transparent 70%)',
           filter: 'blur(20px)',
           animation: 'corePulse 3s ease-in-out infinite',
           pointerEvents: 'none',
