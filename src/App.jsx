@@ -795,8 +795,8 @@ export default function App() {
           <div className="bento-grid" style={{ marginBottom: '52px' }}>
             {/* Panel 1: Bio */}
             <div
-              className="glass-panel"
-              style={{ gridColumn: 'span 8', padding: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+              className="glass-panel panel-padding"
+              style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-cyber)', marginBottom: '14px' }}>
                 <User size={18} />
@@ -815,8 +815,8 @@ export default function App() {
 
             {/* Panel 2: Philosophy */}
             <div
-              className="glass-panel"
-              style={{ gridColumn: 'span 4', padding: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+              className="glass-panel panel-padding"
+              style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-secondary)', marginBottom: '14px' }}>
                 <Award size={18} />
@@ -952,7 +952,7 @@ export default function App() {
 
           <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'start' }}>
             {/* Direct details */}
-            <div className="glass-panel" style={{ padding: '36px' }}>
+            <div className="glass-panel panel-padding">
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
                 <img 
                   src="/favicon.jpg" 
@@ -1028,7 +1028,7 @@ export default function App() {
             {/* Interactive Form */}
             {/* BUG-004: Removed fake Google auth gate. BUG-006: Email is now editable. */}
             {/* BUG-017: Labels linked to inputs via htmlFor/id pairs */}
-            <div className="glass-panel" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
+            <div className="glass-panel panel-padding" style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
               <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* AUDIT-FIX: Hidden honeypot field to trap bots */}
                 <input
