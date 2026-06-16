@@ -1,0 +1,24 @@
+{
+  "name": "Swapnadip Ghosh — Portfolio",
+  "short_name": "Swapnadip",
+  "description": "Full Stack Developer portfolio — React, Node.js, high-performance UI/UX engineering.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06060a",
+  "theme_color": "#06060a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
