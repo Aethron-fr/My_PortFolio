@@ -22,7 +22,6 @@ import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
-import CinematicLoader from './components/CinematicLoader';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -88,18 +87,6 @@ function getTimeGreeting() {
   if (h >= 12 && h < 17) return `good afternoon. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
   if (h >= 17 && h < 22) return `good evening. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
   return `late night. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
-}
-
-function getSkyboxGradient() {
-  const h = new Date().getHours();
-  // Morning (6 AM - 12 PM)
-  if (h >= 6 && h < 12) return 'linear-gradient(to bottom, #0f172a, #1e293b)';
-  // Afternoon (12 PM - 5 PM)
-  if (h >= 12 && h < 17) return 'linear-gradient(to bottom, #020617, #0f172a)';
-  // Sunset (5 PM - 8 PM)
-  if (h >= 17 && h < 20) return 'linear-gradient(to bottom, #1e1b4b, #312e81)';
-  // Night (8 PM - 6 AM)
-  return 'linear-gradient(to bottom, #020002, #0a0a16)';
 }
 
 // ── Premium Theme Toggle ─────────────────────────────────────────────────────
@@ -205,9 +192,6 @@ export default function App() {
     () => localStorage.getItem('_portfolio_visited') === '1'
   );
   const [scrolled, setScrolled] = useState(false);
-  const [showLoader, setShowLoader] = useState(() => {
-    return sessionStorage.getItem('_loader_shown') !== '1';
-  });
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -217,18 +201,7 @@ export default function App() {
 
   useEffect(() => {
     const timer = setInterval(() => setTimeGreeting(getTimeGreeting()), 10000);
-    
-    // Dynamic Time-of-Day Skybox (Hero Section Only)
-    const updateSkybox = () => {
-      document.documentElement.style.setProperty('--bg-hero', getSkyboxGradient());
-    };
-    updateSkybox();
-    const skyboxTimer = setInterval(updateSkybox, 60000); // Check every minute
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(skyboxTimer);
-    };
+    return () => clearInterval(timer);
   }, []);
   const [showHint, setShowHint] = useState(false);
 
@@ -371,19 +344,7 @@ export default function App() {
       <CanvasBackground />
 
       <AnimatePresence>
-        {showLoader && (
-          <CinematicLoader 
-            key="loader" 
-            onComplete={() => {
-              sessionStorage.setItem('_loader_shown', '1');
-              setShowLoader(false);
-            }} 
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {!showLoader && !hasEntered && (
+        {!hasEntered && (
           <WelcomeModal
             key="welcome"
             onEnter={() => {
