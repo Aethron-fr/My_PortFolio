@@ -25,6 +25,7 @@ import Typewriter from './components/Typewriter';
 import CinematicLoader from './components/CinematicLoader';
 import StardustTrail from './components/StardustTrail';
 import GitHubGraph from './components/GitHubGraph';
+import KonamiCode from './components/KonamiCode';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -376,6 +377,7 @@ export default function App() {
     <>
       <CustomCursor />
       <StardustTrail />
+      <KonamiCode />
       <CanvasBackground />
 
       <AnimatePresence>
