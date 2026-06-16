@@ -90,6 +90,18 @@ function getTimeGreeting() {
   return `late night. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
 }
 
+function getSkyboxGradient() {
+  const h = new Date().getHours();
+  // Morning (6 AM - 12 PM)
+  if (h >= 6 && h < 12) return 'linear-gradient(to bottom, #0f172a, #1e293b)';
+  // Afternoon (12 PM - 5 PM)
+  if (h >= 12 && h < 17) return 'linear-gradient(to bottom, #020617, #0f172a)';
+  // Sunset (5 PM - 8 PM)
+  if (h >= 17 && h < 20) return 'linear-gradient(to bottom, #1e1b4b, #312e81)';
+  // Night (8 PM - 6 AM)
+  return 'linear-gradient(to bottom, #020002, #0a0a16)';
+}
+
 // ── Premium Theme Toggle ─────────────────────────────────────────────────────
 function ThemeToggle() {
   const [isNight, setIsNight] = useState(() => {
@@ -203,7 +215,18 @@ export default function App() {
 
   useEffect(() => {
     const timer = setInterval(() => setTimeGreeting(getTimeGreeting()), 10000);
-    return () => clearInterval(timer);
+    
+    // Dynamic Time-of-Day Skybox
+    const updateSkybox = () => {
+      document.documentElement.style.setProperty('--bg-dark', getSkyboxGradient());
+    };
+    updateSkybox();
+    const skyboxTimer = setInterval(updateSkybox, 60000); // Check every minute
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(skyboxTimer);
+    };
   }, []);
   const [showHint, setShowHint] = useState(false);
 
