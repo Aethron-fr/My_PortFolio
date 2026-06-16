@@ -243,10 +243,12 @@ export default function TerminalMode({ isOpen, onClose }) {
   };
 
   const finishProgress = () => {
+    // Read from the current history state before updating
+    const lastProgress = history.slice().reverse().find(entry => entry.type === 'progress');
+    const isResume = lastProgress?.task === 'resume';
+
     setHistory(prev => {
       const updated = [...prev];
-      const lastProgress = updated.slice().reverse().find(entry => entry.type === 'progress');
-      
       if (lastProgress?.task === 'sendmail') {
         updated.push({ type: 'output', lines: [
           { text: "Message sent successfully.", color: "#27c93f" },
@@ -254,13 +256,17 @@ export default function TerminalMode({ isOpen, onClose }) {
         ]});
       } else {
         window.dispatchEvent(new Event('open-resume'));
-        setTimeout(onClose, 500); // Auto-close the terminal so they can see the resume!
         updated.push({ type: 'output', lines: [
           { text: "Interactive Resume Protocol Loaded.", color: "#27c93f" }
         ]});
       }
       return updated;
     });
+
+    // Run side effects strictly outside of the state updater
+    if (isResume) {
+      setTimeout(onClose, 500);
+    }
   };
 
   return (

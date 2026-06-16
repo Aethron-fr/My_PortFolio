@@ -69,7 +69,7 @@ export default function TechSphere() {
           el.style.background = 'var(--bg-card)';
           el.style.color = 'var(--text-primary)';
           el.style.borderColor = 'var(--border-glass)';
-          el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+          el.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
           el.style.zIndex = zIndex;
         }
 
