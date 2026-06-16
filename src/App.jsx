@@ -283,28 +283,35 @@ export default function App() {
     setSubmitError(false);
 
     try {
-      const res = await fetch("https://formsubmit.co/ajax/ghoshswapnadip7@gmail.com", {
+      // BUG-FIX: Replaced unreliable formsubmit with Web3Forms for guaranteed email delivery
+      // Note: Get your free key from https://web3forms.com
+      const ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY_HERE";
+      
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
         body: JSON.stringify({
+          access_key: ACCESS_KEY,
           name: contactForm.name,
           email: contactForm.email,
           message: contactForm.message,
-          _subject: `New Portfolio Message from ${contactForm.name}`,
-          _captcha: "false"
+          subject: `Portfolio Message from ${contactForm.name}`
         })
       });
 
       const data = await res.json();
 
-      if (data.success === "true" || data.success === true) {
+      if (data.success) {
         setSubmitSuccess(true);
-        setContactForm({ name: '', email: '', message: '' });
+        setContactForm({ name: '', email: '', message: '', honey: '' });
         setTimeout(() => setSubmitSuccess(false), 6000);
       } else {
+        if (ACCESS_KEY === "YOUR_WEB3FORMS_ACCESS_KEY_HERE") {
+          console.warn("Please add your Web3Forms access key.");
+        }
         throw new Error(data.message || "failed");
       }
     } catch {
