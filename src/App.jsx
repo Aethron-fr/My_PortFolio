@@ -548,8 +548,8 @@ export default function App() {
       {/* HERO SECTION */}
       <section id="home" className="hero-section" style={{ background: 'var(--bg-hero)' }}>
         <div className="hero-glow-blob" style={{ background: 'var(--accent-violet)', top: '35%', left: '30%', animationDelay: '0s' }} />
-        <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: '450px', height: '450px', animationDelay: '-5s' }} />
-        <div className="hero-glow-blob" style={{ background: 'var(--accent-primary)', top: '50%', left: '50%', width: '650px', height: '650px', opacity: 0.1, animationDelay: '-10s' }} />
+        <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: 'min(450px, 60vw)', height: 'min(450px, 60vw)', animationDelay: '-5s' }} />
+        <div className="hero-glow-blob" style={{ background: 'var(--accent-primary)', top: '50%', left: '50%', width: 'min(650px, 80vw)', height: 'min(650px, 80vw)', opacity: 0.1, animationDelay: '-10s' }} />
         
         <div className="hero-content">
           {/* Time greeting */}
