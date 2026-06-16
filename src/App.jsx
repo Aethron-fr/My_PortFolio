@@ -1069,11 +1069,11 @@ export default function App() {
                   </div>
                   <div>
                     <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '1px', marginBottom: 3 }}>resume</div>
-                    {/* BUG-014: Fixed Download CV link — now points to actual PDF */}
+                    {/* Resume: link to LinkedIn until a real PDF is placed in /public/resume.pdf */}
                     <motion.a 
-                      href="/resume.pdf" 
-                      download="Swapnadip_Ghosh_Resume.pdf" 
-                      className="interactive" 
+                      href="https://www.linkedin.com/in/swapnadip-ghosh/" 
+                      target="_blank"
+                      rel="noopener noreferrer"
                       whileHover={{ scale: 1.05, color: 'var(--accent-primary)', x: 4 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
