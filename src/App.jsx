@@ -724,32 +724,14 @@ export default function App() {
                   href={soc.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="interactive"
+                  className="social-icon-link interactive"
                   aria-label={soc.label}
                   style={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.05)',
+                    width: '52px',
+                    height: '52px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'var(--text-dim)',
-                    transition: 'all 0.3s ease',
-                    textDecoration: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(225, 48, 108, 0.1)';
-                    e.currentTarget.style.color = 'var(--text-primary)';
-                    e.currentTarget.style.borderColor = 'rgba(225, 48, 108, 0.3)';
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(225, 48, 108, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                    e.currentTarget.style.color = 'var(--text-dim)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
                   {soc.icon}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const TAGS = [
   'React.js', 'Node.js', 'Python', 'TypeScript', 'JavaScript',
@@ -7,13 +7,15 @@ const TAGS = [
   'Figma', 'PostgreSQL', 'Redux', 'Docker', 'Linux',
 ];
 
-/**
- * TechSphere — Pure CSS/JS 3D rotating sphere of tech tags.
- * No external dependencies. Hardware accelerated via CSS transforms.
- * Auto-rotates on all devices. Mouse-draggable on desktop.
- */
 export default function TechSphere() {
   const containerRef = useRef(null);
+  const [hoveredTag, setHoveredTag] = useState(null);
+
+  // Store hovered state in a ref so the requestAnimationFrame loop can access it
+  const hoveredTagRef = useRef(null);
+  useEffect(() => {
+    hoveredTagRef.current = hoveredTag;
+  }, [hoveredTag]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -23,65 +25,74 @@ export default function TechSphere() {
     const items = Array.from(container.querySelectorAll('.tech-tag-3d'));
     const total = items.length;
 
-    let angleX = 0.3;  // current tilt (radians)
+    let angleX = 0.3;  
     let angleY = 0;
     let velX = 0;
-    let velY = 0.004;  // auto-spin speed
+    let velY = 0.004;  
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
     let rafId;
 
-    // Place each tag at a point on the sphere surface using spherical coordinates
     function positionTags() {
       items.forEach((el, i) => {
-        // Fibonacci sphere distribution for even spacing
         const phi = Math.acos(1 - (2 * (i + 0.5)) / total);
         const theta = Math.PI * (1 + Math.sqrt(5)) * i;
 
-        // Rotate by current angles
         const sinX = Math.sin(angleX);
         const cosX = Math.cos(angleX);
         const sinY = Math.sin(angleY);
         const cosY = Math.cos(angleY);
 
-        // Original 3D point on sphere
         let x0 = RADIUS * Math.sin(phi) * Math.cos(theta);
         let y0 = RADIUS * Math.cos(phi);
         let z0 = RADIUS * Math.sin(phi) * Math.sin(theta);
 
-        // Rotate around Y axis (angleY)
         let x1 = x0 * cosY - z0 * sinY;
         let z1 = x0 * sinY + z0 * cosY;
 
-        // Rotate around X axis (angleX)
         let y1 = y0 * cosX - z1 * sinX;
         let z2 = y0 * sinX + z1 * cosX;
 
         // Perspective projection
-        const scale = (RADIUS + z2) / (2 * RADIUS);
+        let scale = (RADIUS + z2) / (2 * RADIUS);
         const opacity = scale * 0.9 + 0.1;
+        const zIndex = Math.round(z2 + RADIUS);
+
+        // Hover effect scaling
+        const isHovered = hoveredTagRef.current === TAGS[i];
+        if (isHovered) {
+          scale *= 1.4; // boost scale on hover
+          el.style.background = 'var(--accent-primary)';
+          el.style.color = '#fff';
+          el.style.borderColor = 'transparent';
+          el.style.boxShadow = '0 0 25px var(--accent-primary)';
+          el.style.zIndex = 999;
+        } else {
+          el.style.background = 'var(--bg-card)';
+          el.style.color = 'var(--text-primary)';
+          el.style.borderColor = 'var(--border-glass)';
+          el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+          el.style.zIndex = zIndex;
+        }
 
         el.style.transform = `translate(-50%, -50%) translate(${x1}px, ${y1}px) scale(${scale.toFixed(3)})`;
-        el.style.opacity = opacity.toFixed(3);
-        el.style.zIndex = Math.round(z2 + RADIUS);
-        // color is handled by CSS variables and opacity is handled globally above
+        el.style.opacity = isHovered ? '1' : opacity.toFixed(3);
       });
     }
 
     function loop() {
-      if (!isDragging) {
-        // Apply inertia
+      if (!isDragging && !hoveredTagRef.current) {
+        // Apply inertia and spin only if not hovered and not dragging
         angleY += velY;
         angleX += velX;
         velX *= 0.97;
-        velY = velY * 0.99 + 0.004 * 0.01; // drift back to auto-spin
+        velY = velY * 0.99 + 0.004 * 0.01; 
       }
       positionTags();
       rafId = requestAnimationFrame(loop);
     }
 
-    // Mouse drag
     const onMouseDown = (e) => {
       isDragging = true;
       lastX = e.clientX;
@@ -93,7 +104,6 @@ export default function TechSphere() {
       if (!isDragging) return;
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
-      // Invert dx and dy so it rotates exactly where the mouse pulls it
       angleY -= dx * 0.006;
       angleX -= dy * 0.006;
       velX = -dy * 0.006;
@@ -126,6 +136,15 @@ export default function TechSphere() {
       marginBottom: '80px',
       position: 'relative',
     }}>
+      <style>
+        {`
+          @keyframes corePulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+          }
+        `}
+      </style>
       {/* Section label */}
       <div style={{
         display: 'flex',
@@ -181,7 +200,7 @@ export default function TechSphere() {
           width: '320px',
           height: '320px',
           borderRadius: '50%',
-          border: '1px solid var(--border-glass)',
+          border: '1px dashed var(--border-glass)',
           pointerEvents: 'none',
         }} />
         <div style={{
@@ -192,21 +211,21 @@ export default function TechSphere() {
           width: '400px',
           height: '400px',
           borderRadius: '50%',
-          border: '1px solid var(--border-glass)',
+          border: '1px dashed var(--border-glass)',
           pointerEvents: 'none',
         }} />
 
-        {/* Glowing Core */}
+        {/* Pulsing Energy Core */}
         <div style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '150px',
-          height: '150px',
+          width: '120px',
+          height: '120px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(0, 247, 255, 0.08) 0%, rgba(225, 48, 108, 0.03) 40%, transparent 70%)',
-          boxShadow: '0 0 50px rgba(0, 247, 255, 0.05)',
+          background: 'radial-gradient(circle, var(--accent-primary) 0%, transparent 60%)',
+          filter: 'blur(20px)',
+          animation: 'corePulse 3s ease-in-out infinite',
           pointerEvents: 'none',
         }} />
 
@@ -215,6 +234,8 @@ export default function TechSphere() {
           <span
             key={tag}
             className="tech-tag-3d"
+            onMouseEnter={() => setHoveredTag(tag)}
+            onMouseLeave={() => setHoveredTag(null)}
             style={{
               position: 'absolute',
               top: '50%',
@@ -228,11 +249,11 @@ export default function TechSphere() {
               borderRadius: '20px',
               border: '1px solid var(--border-glass)',
               background: 'var(--bg-card)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-              backdropFilter: 'blur(8px)',
-              willChange: 'transform, opacity',
-              transition: 'color 0.3s, background 0.3s',
-              pointerEvents: 'none',
+              backdropFilter: 'blur(12px)',
+              willChange: 'transform, opacity, background, color',
+              transition: 'background 0.3s, color 0.3s, box-shadow 0.3s',
+              pointerEvents: 'auto',
+              cursor: 'pointer',
               color: 'var(--text-primary)',
             }}
           >

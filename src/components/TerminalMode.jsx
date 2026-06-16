@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const BOOT_SEQUENCE = [
+  { text: "Initializing Swapnadip OS kernel...", color: "#94a3b8", delay: 300 },
+  { text: "Loading core modules [OK]", color: "#27c93f", delay: 500 },
+  { text: "Mounting file systems [OK]", color: "#27c93f", delay: 200 },
+  { text: "Establishing secure connection to mainframe...", color: "#94a3b8", delay: 800 },
+  { text: "Connection established. Access granted.", color: "var(--accent-primary)", delay: 400 },
+];
+
 const COMMANDS = {
   help: [
     { text: "Swapnadip OS CLI - v2.0.0 (Professional Edition)", color: "var(--accent-primary)" },
@@ -47,11 +55,6 @@ const COMMANDS = {
     { text: "4. E-learning Hub", color: "var(--accent-primary)" },
     { text: "   Stack: React, Firebase, Context API", color: "#94a3b8" }
   ],
-  resume: [
-    { text: "Accessing Resume...", color: "#94a3b8" },
-    { text: "Link: https://www.linkedin.com/in/swapnadip-ghosh/", color: "var(--accent-cyber)" },
-    { text: "Status: Available for hire.", color: "var(--accent-primary)" }
-  ],
   contact: [
     { text: "Email    -> ghoshswapnadip7@gmail.com", color: "#e2e8f0" },
     { text: "LinkedIn -> linkedin.com/in/swapnadip-ghosh", color: "#e2e8f0" },
@@ -65,49 +68,125 @@ const TypewriterLine = ({ line, onComplete }) => {
   
   useEffect(() => {
     let i = 0;
-    const speed = 15; // fast typing speed for professional feel
+    const speed = line.delay ? line.delay / line.text.length : 15;
     const interval = setInterval(() => {
       setDisplayedText(line.text.slice(0, i + 1));
       i++;
       if (i >= line.text.length) {
         clearInterval(interval);
-        if (onComplete) onComplete();
+        if (onComplete) setTimeout(onComplete, 50); // slight pause after line finishes
       }
     }, speed);
     return () => clearInterval(interval);
-  }, [line.text, onComplete]);
+  }, [line, onComplete]);
 
   return <span style={{ color: line.color, whiteSpace: 'pre-wrap' }}>{displayedText}</span>;
 };
 
+// Interactive progress bar for commands like 'resume'
+const ProgressBar = ({ onComplete }) => {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress(p => {
+        if (p >= 100) {
+          clearInterval(interval);
+          if (onComplete) setTimeout(onComplete, 200);
+          return 100;
+        }
+        return p + Math.floor(Math.random() * 15) + 5;
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  }, [onComplete]);
+
+  const filledLength = Math.floor(progress / 5);
+  const emptyLength = 20 - filledLength;
+  const bar = '█'.repeat(filledLength) + '░'.repeat(emptyLength);
+
+  return <span style={{ color: "var(--accent-primary)" }}>[ {bar} ] {Math.min(progress, 100)}%</span>;
+};
+
 export default function TerminalMode({ isOpen, onClose }) {
-  const [history, setHistory] = useState([
-    { type: 'input', text: 'init' },
-    { type: 'output', lines: COMMANDS.help }
-  ]);
+  const [history, setHistory] = useState([]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
+  const [bootIndex, setBootIndex] = useState(0);
+  const [isBooted, setIsBooted] = useState(false);
+  
+  // Command history for up/down arrows
+  const [commandHistory, setCommandHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
-  const [isTyping, setIsTyping] = useState(false);
 
+  // Focus input
   useEffect(() => {
-    if (isOpen && inputRef.current) {
+    if (isOpen && isBooted && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isOpen]);
+  }, [isOpen, isBooted]);
 
+  // Scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [history, isTyping, input]);
+  }, [history, isTyping, input, bootIndex]);
+
+  // Run boot sequence when opened
+  useEffect(() => {
+    if (isOpen && !isBooted) {
+      if (bootIndex < BOOT_SEQUENCE.length) {
+        // Handled by TypewriterLine onComplete
+      } else {
+        setTimeout(() => {
+          setIsBooted(true);
+          setIsTyping(false);
+          setHistory([{ type: 'output', lines: COMMANDS.help }]);
+        }, 500);
+      }
+    } else if (!isOpen) {
+      // Reset when closed
+      setIsBooted(false);
+      setBootIndex(0);
+      setHistory([]);
+      setInput('');
+      setHistoryIndex(-1);
+    }
+  }, [isOpen, bootIndex, isBooted]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        const nextIdx = historyIndex + 1;
+        setHistoryIndex(nextIdx);
+        setInput(commandHistory[commandHistory.length - 1 - nextIdx]);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const prevIdx = historyIndex - 1;
+        setHistoryIndex(prevIdx);
+        setInput(commandHistory[commandHistory.length - 1 - prevIdx]);
+      } else if (historyIndex === 0) {
+        setHistoryIndex(-1);
+        setInput('');
+      }
+    }
+  };
 
   const handleCommand = (e) => {
     e.preventDefault();
-    if (isTyping) return; // Prevent input while terminal is printing
-    const cmd = input.trim().toLowerCase();
+    if (isTyping || !isBooted) return;
     
+    const cmd = input.trim().toLowerCase();
     if (!cmd) return;
 
-    const newHistory = [...history, { type: 'input', text: cmd }];
+    setCommandHistory(prev => [...prev, input]);
+    setHistoryIndex(-1);
+    const newHistory = [...history, { type: 'input', text: input }];
     setInput('');
 
     if (cmd === 'clear') {
@@ -120,6 +199,13 @@ export default function TerminalMode({ isOpen, onClose }) {
       return;
     }
 
+    if (cmd === 'resume') {
+      setIsTyping(true);
+      newHistory.push({ type: 'progress' });
+      setHistory(newHistory);
+      return;
+    }
+
     if (COMMANDS[cmd]) {
       setIsTyping(true);
       newHistory.push({ type: 'output', lines: COMMANDS[cmd] });
@@ -128,6 +214,20 @@ export default function TerminalMode({ isOpen, onClose }) {
     }
 
     setHistory(newHistory);
+  };
+
+  const finishProgress = () => {
+    setHistory(prev => {
+      const updated = [...prev];
+      updated.push({ type: 'output', lines: [
+        { text: "Fetch Complete. Link:", color: "#94a3b8" },
+        { text: "https://www.linkedin.com/in/swapnadip-ghosh/", color: "var(--accent-cyber)" }
+      ]});
+      return updated;
+    });
+    // typing is false now but the new output lines will start typing?
+    // Actually we just set it false because the new lines will type and then set false again.
+    // Wait, setting typing to true, the new lines will handle it.
   };
 
   return (
@@ -155,7 +255,7 @@ export default function TerminalMode({ isOpen, onClose }) {
             maxWidth: '900px', 
             margin: '0 auto', 
             width: '100%',
-            background: 'rgba(0,0,0,0.5)',
+            background: 'rgba(0,0,0,0.6)',
             border: '1px solid rgba(255,255,255,0.05)',
             borderRadius: '12px',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
@@ -170,59 +270,82 @@ export default function TerminalMode({ isOpen, onClose }) {
               <span style={{ marginLeft: '12px', color: '#94a3b8', fontSize: '0.75rem' }}>swapnadip@dev-env:~</span>
             </div>
 
-            {/* History */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {history.map((entry, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-                  {entry.type === 'input' && entry.text !== 'init' && (
-                    <div style={{ display: 'flex' }}>
-                      <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>~ ❯</span>
-                      <span style={{ color: '#fff' }}>{entry.text}</span>
-                    </div>
-                  )}
-                  {entry.type === 'output' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '24px', margin: '4px 0 12px 0' }}>
-                      {entry.lines.map((line, idx) => (
-                        i === history.length - 1 ? (
-                          <TypewriterLine 
-                            key={idx} 
-                            line={line} 
-                            onComplete={idx === entry.lines.length - 1 ? () => setIsTyping(false) : undefined}
-                          />
-                        ) : (
-                          <span key={idx} style={{ color: line.color, whiteSpace: 'pre-wrap' }}>{line.text}</span>
-                        )
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            {/* Boot Sequence */}
+            {!isBooted && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {BOOT_SEQUENCE.slice(0, bootIndex + 1).map((line, i) => (
+                  <TypewriterLine 
+                    key={i} 
+                    line={line} 
+                    onComplete={i === bootIndex ? () => setBootIndex(bootIndex + 1) : undefined}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Terminal History */}
+            {isBooted && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {history.map((entry, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+                    {entry.type === 'input' && (
+                      <div style={{ display: 'flex' }}>
+                        <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>~ ❯</span>
+                        <span style={{ color: '#fff' }}>{entry.text}</span>
+                      </div>
+                    )}
+                    {entry.type === 'progress' && (
+                      <div style={{ paddingLeft: '24px', margin: '4px 0' }}>
+                        <ProgressBar onComplete={finishProgress} />
+                      </div>
+                    )}
+                    {entry.type === 'output' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '24px', margin: '4px 0 12px 0' }}>
+                        {entry.lines.map((line, idx) => (
+                          i === history.length - 1 ? (
+                            <TypewriterLine 
+                              key={idx} 
+                              line={line} 
+                              onComplete={idx === entry.lines.length - 1 ? () => setIsTyping(false) : undefined}
+                            />
+                          ) : (
+                            <span key={idx} style={{ color: line.color, whiteSpace: 'pre-wrap' }}>{line.text}</span>
+                          )
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Input Line */}
-            <form onSubmit={handleCommand} style={{ display: 'flex', marginTop: '4px' }}>
-              <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>~ ❯</span>
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                disabled={isTyping}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#fff',
-                  outline: 'none',
-                  flex: 1,
-                  fontFamily: 'inherit',
-                  fontSize: 'inherit',
-                  caretColor: 'var(--accent-primary)'
-                }}
-                autoComplete="off"
-                spellCheck="false"
-                placeholder={isTyping ? "Processing..." : "Type 'help' to see commands..."}
-              />
-            </form>
+            {isBooted && (
+              <form onSubmit={handleCommand} style={{ display: 'flex', marginTop: '4px' }}>
+                <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>~ ❯</span>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isTyping}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#fff',
+                    outline: 'none',
+                    flex: 1,
+                    fontFamily: 'inherit',
+                    fontSize: 'inherit',
+                    caretColor: 'var(--accent-primary)'
+                  }}
+                  autoComplete="off"
+                  spellCheck="false"
+                  placeholder={isTyping ? "Processing..." : "Type 'help' to see commands..."}
+                />
+              </form>
+            )}
             <div ref={bottomRef} style={{ height: '20px' }} />
           </div>
         </motion.div>
