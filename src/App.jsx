@@ -205,7 +205,9 @@ export default function App() {
     () => localStorage.getItem('_portfolio_visited') === '1'
   );
   const [scrolled, setScrolled] = useState(false);
-  const [showLoader, setShowLoader] = useState(true);
+  const [showLoader, setShowLoader] = useState(() => {
+    return sessionStorage.getItem('_loader_shown') !== '1';
+  });
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -216,9 +218,9 @@ export default function App() {
   useEffect(() => {
     const timer = setInterval(() => setTimeGreeting(getTimeGreeting()), 10000);
     
-    // Dynamic Time-of-Day Skybox
+    // Dynamic Time-of-Day Skybox (Hero Section Only)
     const updateSkybox = () => {
-      document.documentElement.style.setProperty('--bg-dark', getSkyboxGradient());
+      document.documentElement.style.setProperty('--bg-hero', getSkyboxGradient());
     };
     updateSkybox();
     const skyboxTimer = setInterval(updateSkybox, 60000); // Check every minute
@@ -370,7 +372,13 @@ export default function App() {
 
       <AnimatePresence>
         {showLoader && (
-          <CinematicLoader key="loader" onComplete={() => setShowLoader(false)} />
+          <CinematicLoader 
+            key="loader" 
+            onComplete={() => {
+              sessionStorage.setItem('_loader_shown', '1');
+              setShowLoader(false);
+            }} 
+          />
         )}
       </AnimatePresence>
 
