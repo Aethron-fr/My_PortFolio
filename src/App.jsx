@@ -285,7 +285,7 @@ export default function App() {
     try {
       // BUG-FIX: Replaced unreliable formsubmit with Web3Forms for guaranteed email delivery
       // Note: Get your free key from https://web3forms.com
-      const ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY_HERE";
+      const ACCESS_KEY = "04014102-8895-411b-90e3-db279b85eb44";
       
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
