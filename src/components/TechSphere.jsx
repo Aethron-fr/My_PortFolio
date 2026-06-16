@@ -124,30 +124,41 @@ export default function TechSphere() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      marginBottom: '52px',
+      marginBottom: '80px',
+      position: 'relative',
     }}>
       {/* Section label */}
       <div style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.58rem',
-        letterSpacing: '4px',
-        color: 'var(--text-dim)',
-        textTransform: 'uppercase',
-        marginBottom: 8,
-        alignSelf: 'flex-start',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: '20px',
       }}>
-        Tech Stack
-      </div>
-      <div style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.5rem',
-        letterSpacing: '2px',
-        color: 'rgba(255,255,255,0.15)',
-        textTransform: 'uppercase',
-        marginBottom: 36,
-        alignSelf: 'flex-start',
-      }}>
-        drag to rotate
+        <div style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.65rem',
+          letterSpacing: '5px',
+          color: 'var(--accent-primary)',
+          textTransform: 'uppercase',
+          marginBottom: 8,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          <span style={{ width: '30px', height: '1px', background: 'var(--accent-primary)', opacity: 0.5 }}></span>
+          Tech Stack
+          <span style={{ width: '30px', height: '1px', background: 'var(--accent-primary)', opacity: 0.5 }}></span>
+        </div>
+        <div style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.55rem',
+          letterSpacing: '2px',
+          color: 'var(--text-dim)',
+          textTransform: 'uppercase',
+          opacity: 0.7,
+        }}>
+          Interactive 3D Map — Drag to Rotate
+        </div>
       </div>
 
       {/* The sphere container */}
@@ -156,12 +167,51 @@ export default function TechSphere() {
         style={{
           position: 'relative',
           width: '100%',
-          maxWidth: '420px',
-          height: '380px',
+          maxWidth: '500px',
+          height: '450px',
           cursor: 'grab',
           userSelect: 'none',
         }}
       >
+        {/* Orbital Rings Background */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%) rotateX(70deg)',
+          width: '320px',
+          height: '320px',
+          borderRadius: '50%',
+          border: '1px solid rgba(255,255,255,0.03)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%) rotateX(70deg) rotateY(45deg)',
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          border: '1px solid rgba(255,255,255,0.02)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Glowing Core */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '150px',
+          height: '150px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0, 247, 255, 0.08) 0%, rgba(225, 48, 108, 0.03) 40%, transparent 70%)',
+          boxShadow: '0 0 50px rgba(0, 247, 255, 0.05)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Tags */}
         {TAGS.map((tag) => (
           <span
             key={tag}
@@ -171,17 +221,20 @@ export default function TechSphere() {
               top: '50%',
               left: '50%',
               fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(0.6rem, 1.2vw, 0.75rem)',
-              letterSpacing: '1.5px',
+              fontSize: 'clamp(0.65rem, 1.4vw, 0.85rem)',
+              letterSpacing: '1px',
+              fontWeight: 500,
               whiteSpace: 'nowrap',
-              padding: '4px 10px',
+              padding: '6px 14px',
               borderRadius: '20px',
-              border: '1px solid rgba(255,255,255,0.08)',
-              background: 'rgba(255,255,255,0.03)',
-              backdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              backdropFilter: 'blur(8px)',
               willChange: 'transform, opacity',
-              transition: 'color 0.3s',
+              transition: 'color 0.3s, background 0.3s',
               pointerEvents: 'none',
+              textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             }}
           >
             {tag}
