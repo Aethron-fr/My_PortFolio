@@ -29,6 +29,7 @@ import TechSphere from './components/TechSphere';
 import MagneticWrapper from './components/MagneticWrapper';
 import CodeBackground from './components/CodeBackground';
 import TerminalMode from './components/TerminalMode';
+import AmbientBackground from './components/AmbientBackground';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -376,6 +377,7 @@ export default function App() {
 
   return (
     <>
+      <AmbientBackground />
       <CustomCursor />
       <StardustTrail />
       <KonamiCode />

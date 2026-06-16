@@ -11,7 +11,6 @@ export default function TechSphere() {
   const containerRef = useRef(null);
   const [hoveredTag, setHoveredTag] = useState(null);
 
-  // Store hovered state in a ref so the requestAnimationFrame loop can access it
   const hoveredTagRef = useRef(null);
   useEffect(() => {
     hoveredTagRef.current = hoveredTag;
@@ -54,15 +53,13 @@ export default function TechSphere() {
         let y1 = y0 * cosX - z1 * sinX;
         let z2 = y0 * sinX + z1 * cosX;
 
-        // Perspective projection
         let scale = (RADIUS + z2) / (2 * RADIUS);
         const opacity = scale * 0.9 + 0.1;
         const zIndex = Math.round(z2 + RADIUS);
 
-        // Hover effect scaling
         const isHovered = hoveredTagRef.current === TAGS[i];
         if (isHovered) {
-          scale *= 1.4; // boost scale on hover
+          scale *= 1.4; 
           el.style.background = 'var(--accent-primary)';
           el.style.color = '#fff';
           el.style.borderColor = 'transparent';
@@ -83,11 +80,38 @@ export default function TechSphere() {
 
     function loop() {
       if (!isDragging && !hoveredTagRef.current) {
-        // Apply inertia and spin only if not hovered and not dragging
         angleY += velY;
         angleX += velX;
         velX *= 0.97;
         velY = velY * 0.99 + 0.004 * 0.01; 
+      } else if (hoveredTagRef.current && !isDragging) {
+        // Auto-center the hovered tag
+        const i = TAGS.indexOf(hoveredTagRef.current);
+        if (i !== -1) {
+          const phi = Math.acos(1 - (2 * (i + 0.5)) / total);
+          const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+          
+          const x0 = RADIUS * Math.sin(phi) * Math.cos(theta);
+          const y0 = RADIUS * Math.cos(phi);
+          const z0 = RADIUS * Math.sin(phi) * Math.sin(theta);
+          
+          const targetAngleY = Math.atan2(x0, z0);
+          const z1 = Math.sqrt(x0*x0 + z0*z0);
+          const targetAngleX = Math.atan2(y0, z1);
+
+          // Interpolate using shortest path
+          const diffY = targetAngleY - (angleY % (Math.PI*2));
+          let shortestY = Math.atan2(Math.sin(diffY), Math.cos(diffY));
+          angleY += shortestY * 0.08;
+
+          const diffX = targetAngleX - (angleX % (Math.PI*2));
+          let shortestX = Math.atan2(Math.sin(diffX), Math.cos(diffX));
+          angleX += shortestX * 0.08;
+          
+          // Stop velocities so it doesn't shoot off when unhovered
+          velX = 0;
+          velY = 0;
+        }
       }
       positionTags();
       rafId = requestAnimationFrame(loop);
@@ -145,7 +169,6 @@ export default function TechSphere() {
           }
         `}
       </style>
-      {/* Section label */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -179,7 +202,6 @@ export default function TechSphere() {
         </div>
       </div>
 
-      {/* The sphere container */}
       <div
         ref={containerRef}
         style={{
@@ -191,7 +213,6 @@ export default function TechSphere() {
           userSelect: 'none',
         }}
       >
-        {/* Orbital Rings Background */}
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -215,21 +236,20 @@ export default function TechSphere() {
           pointerEvents: 'none',
         }} />
 
-        {/* Pulsing Energy Core */}
         <div style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
-          width: '120px',
-          height: '120px',
+          width: '140px',
+          height: '140px',
           borderRadius: '50%',
           background: 'radial-gradient(circle, var(--accent-primary) 0%, transparent 60%)',
           filter: 'blur(20px)',
           animation: 'corePulse 3s ease-in-out infinite',
           pointerEvents: 'none',
+          mixBlendMode: 'screen',
         }} />
 
-        {/* Tags */}
         {TAGS.map((tag) => (
           <span
             key={tag}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ExternalLink, Star, GitFork, Search, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import SpotlightCard from './SpotlightCard';
 
 // BUG-021: Fallback data uses 0 for stats — avoids showing fake/inflated numbers
 const FALLBACK_PROJECTS = [
@@ -234,14 +235,17 @@ export default function GithubProjects() {
           ))
         ) : filteredRepos.length > 0 ? (
           filteredRepos.map((repo) => (
-            <div
+            <SpotlightCard
               key={repo.id}
               className="glass-panel project-card"
               style={{
                 padding: '28px',
-                background: 'var(--bg-card)',
-                borderRadius: '16px',
-                transition: 'all 0.4s var(--transition-smooth)'
+                transition: 'all 0.4s var(--transition-smooth)',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                borderRadius: '16px'
               }}
             >
               <div>
@@ -291,7 +295,7 @@ export default function GithubProjects() {
                   <ExternalLink size={14} />
                 </motion.a>
               </div>
-            </div>
+            </SpotlightCard>
           ))
         ) : (
           <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
