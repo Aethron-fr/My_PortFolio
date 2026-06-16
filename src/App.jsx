@@ -24,6 +24,7 @@ import WelcomeModal from './components/WelcomeModal';
 import Typewriter from './components/Typewriter';
 import CinematicLoader from './components/CinematicLoader';
 import StardustTrail from './components/StardustTrail';
+import GitHubGraph from './components/GitHubGraph';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -869,6 +870,8 @@ export default function App() {
                 I'm most interested in the intersection of engineering quality and interaction design —
                 where the code is invisible and only the experience remains.
               </p>
+              {/* Feature 4: GitHub Contribution Graph */}
+              <GitHubGraph />
             </div>
 
             {/* Panel 2: Philosophy */}
