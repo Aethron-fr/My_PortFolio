@@ -264,7 +264,7 @@ export default function AtmosphereLayer() {
                   {/* The actual moon photo, cleanly clipped, no borders */}
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg"
-                    alt=""
+                    alt="Cinematic glowing moon in the night sky"
                     style={{
                       width: '100%', height: '100%',
                       borderRadius: '50%',
