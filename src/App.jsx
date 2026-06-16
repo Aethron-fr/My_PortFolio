@@ -377,13 +377,13 @@ export default function App() {
   const navItems = ['Home', 'About', 'Experience', 'Work', 'Journey'];
 
   return (
-    <div className={`app-container ${isDark ? 'dark-theme' : 'light-theme'}`}>
+    <>
       <AmbientBackground />
       <ResumeViewer />
-      <CanvasBackground isDark={isDark} />
       <CustomCursor />
       <StardustTrail />
       <KonamiCode />
+      <CanvasBackground />
       <TerminalMode isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
 
       <AnimatePresence>
@@ -1315,6 +1315,6 @@ export default function App() {
 
       {/* BUG-015: Removed inline <style> block — all styles now live in App.css to avoid
            duplication and conflicting breakpoints (was 1024px here vs 768px in App.css) */}
-    </div>
+    </>
   );
 }
