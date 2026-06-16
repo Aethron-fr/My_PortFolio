@@ -421,6 +421,16 @@
    ========================================================================== */
 
 /* Responsive Grids for FeaturedSpotlight */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+/* Responsive Grids for FeaturedSpotlight */
 .memory-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
