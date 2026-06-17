@@ -13,7 +13,7 @@ class SFXEngine {
       this.masterGain.gain.value = 0.3; // Global volume
       this.masterGain.connect(this.ctx.destination);
       this.initialized = true;
-    } catch (e) {
+    } catch {
       console.warn('Web Audio API not supported');
     }
   }

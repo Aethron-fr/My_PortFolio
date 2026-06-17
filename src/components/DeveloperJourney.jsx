@@ -179,9 +179,11 @@ export default function DeveloperJourney() {
               {JOURNEY_STEPS[activeStep].title}
             </h3>
             
-            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '24px' }}>
-              {JOURNEY_STEPS[activeStep].description}
-            </p>
+            <StaggerText 
+              text={JOURNEY_STEPS[activeStep].description}
+              delay={0.1}
+              style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '24px' }}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-dim)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '4px' }}>

@@ -48,19 +48,17 @@ const FALLBACK_PROJECTS = [
 ];
 
 export default function GithubProjects() {
-  const [repos, setRepos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [repos, setRepos] = useState(() => {
+    const cachedRepos = sessionStorage.getItem('github_repos');
+    return cachedRepos ? JSON.parse(cachedRepos) : [];
+  });
+  const [loading, setLoading] = useState(() => !sessionStorage.getItem('github_repos'));
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('All');
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
-    const cachedRepos = sessionStorage.getItem('github_repos');
-    if (cachedRepos) {
-      setRepos(JSON.parse(cachedRepos));
-      setLoading(false);
-      return;
-    }
+    if (!loading) return;
 
     fetch('https://api.github.com/users/Aethron-fr/repos')
       .then((res) => {
@@ -104,7 +102,7 @@ export default function GithubProjects() {
         setIsOffline(true);
         setLoading(false);
       });
-  }, []);
+  }, [loading]);
 
   // Filter projects by language & search text
   const filteredRepos = repos.filter((repo) => {

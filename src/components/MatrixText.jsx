@@ -4,7 +4,9 @@ import { motion, useInView } from 'framer-motion';
 const CHARS = '!<>-_\\\\/[]{}—=+*^?#_';
 
 export default function MatrixText({ text, style, className, delay = 0, duration = 1.2 }) {
-  const [displayText, setDisplayText] = useState('');
+  const [displayText, setDisplayText] = useState(() => 
+    text.replace(/[a-zA-Z0-9]/g, () => CHARS[Math.floor(Math.random() * CHARS.length)])
+  );
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' });
   const intervalRef = useRef(null);
@@ -18,7 +20,7 @@ export default function MatrixText({ text, style, className, delay = 0, duration
 
     const timeout = setTimeout(() => {
       intervalRef.current = setInterval(() => {
-        setDisplayText((prev) =>
+        setDisplayText(() =>
           text
             .split('')
             .map((letter, index) => {
@@ -45,13 +47,6 @@ export default function MatrixText({ text, style, className, delay = 0, duration
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isInView, text, delay, duration]);
-
-  // Initial state before in-view
-  useEffect(() => {
-    if (!isInView) {
-      setDisplayText(text.replace(/[a-zA-Z0-9]/g, () => CHARS[Math.floor(Math.random() * CHARS.length)]));
-    }
-  }, [isInView, text]);
 
   return (
     <motion.span

@@ -13,12 +13,9 @@ import {
   Award,
   User,
   ArrowUpRight,
-  Volume2,
-  VolumeX,
   Sun,
   Moon,
 } from 'lucide-react';
-import MagneticButton from './components/MagneticButton';
 import CanvasBackground from './components/CanvasBackground';
 import CustomCursor from './components/CustomCursor';
 import WelcomeModal from './components/WelcomeModal';
@@ -210,12 +207,19 @@ export default function App() {
 
   // ── Global Mouse Tracker for Spotlight & Glare Effects ──
   useEffect(() => {
+    let frameId;
     const handleGlobalMouseMove = (e) => {
-      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+        document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+      });
     };
     window.addEventListener('mousemove', handleGlobalMouseMove);
-    return () => window.removeEventListener('mousemove', handleGlobalMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      cancelAnimationFrame(frameId);
+    };
   }, []);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);

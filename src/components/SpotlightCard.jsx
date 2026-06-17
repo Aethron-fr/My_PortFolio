@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 export default function SpotlightCard({ children, className = '', style = {} }) {

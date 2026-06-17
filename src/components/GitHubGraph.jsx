@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * GitHubGraph
@@ -11,12 +11,6 @@ import React, { useState, useEffect } from 'react';
  */
 
 const GITHUB_USERNAME = 'Aethron-fr';
-
-function parseContributions(data) {
-  // Parse contribution data from GitHub's contribution API via cors proxy
-  const weeks = data?.data?.user?.contributionsCollection?.contributionCalendar?.weeks || [];
-  return weeks;
-}
 
 export default function GitHubGraph() {
   const [weeks, setWeeks] = useState([]);

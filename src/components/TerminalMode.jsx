@@ -118,7 +118,7 @@ export default function TerminalMode({ isOpen, onClose }) {
 
   // Email State Machine
   const [terminalState, setTerminalState] = useState('IDLE'); // IDLE, AWAITING_SUBJECT, AWAITING_MESSAGE
-  const [mailDraft, setMailDraft] = useState({ subject: '', message: '' });
+  const [, setMailDraft] = useState({ subject: '', message: '' });
 
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
@@ -143,9 +143,12 @@ export default function TerminalMode({ isOpen, onClose }) {
         }, 300);
       }
     } else if (!isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsBooted(false);
       setBootIndex(0);
+      
       setHistory([]);
+      
       setInput('');
       setHistoryIndex(-1);
       setTerminalState('IDLE');

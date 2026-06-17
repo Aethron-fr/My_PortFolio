@@ -6,7 +6,6 @@ export default function MagneticButton({
   style,
   className,
   intensity = 0.1, // Drastically reduced for a subtle, premium feel
-  withAudio = true,
   glowColor = 'rgba(255,255,255,0.08)',
   ...props
 }) {

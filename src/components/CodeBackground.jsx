@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // A stripped-down version of your actual App.jsx code to scroll in the background
 const SOURCE_CODE = `
@@ -44,14 +44,10 @@ export default function App() {
 `.trim();
 
 export default function CodeBackground() {
-  const [lines, setLines] = useState([]);
-
-  useEffect(() => {
-    // Split code and repeat it to make it long enough to scroll infinitely
+  const [lines] = useState(() => {
     const codeLines = SOURCE_CODE.split('\n');
-    const repeated = [...codeLines, ...codeLines, ...codeLines, ...codeLines, ...codeLines];
-    setLines(repeated);
-  }, []);
+    return [...codeLines, ...codeLines, ...codeLines, ...codeLines, ...codeLines];
+  });
 
   return (
     <div style={{
