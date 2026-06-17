@@ -97,21 +97,6 @@ function getTimeGreeting() {
   return `late night. it's ${h}:${String(new Date().getMinutes()).padStart(2,'0')}.`;
 }
 
-// Dynamic Time-of-Day Skybox — returns gradient for hero background
-function getSkyboxGradient() {
-  const h = new Date().getHours();
-  // Morning (6 AM – 12 PM): soft steel-blue dawn
-  if (h >= 6 && h < 12)
-    return 'linear-gradient(160deg, #0d1b2a 0%, #1b2d45 50%, #0d1b2a 100%)';
-  // Afternoon (12 PM – 5 PM): deep midnight blue, bright sky feeling
-  if (h >= 12 && h < 17)
-    return 'linear-gradient(160deg, #020c18 0%, #04203d 50%, #020c18 100%)';
-  // Sunset (5 PM – 8 PM): warm orange-violet dusk
-  if (h >= 17 && h < 20)
-    return 'linear-gradient(160deg, #0f0722 0%, #2d1040 40%, #5c1a2e 75%, #1a0a1e 100%)';
-  // Night (8 PM – 6 AM): dark void (default dark)
-  return 'transparent';
-}
 
 // ── Premium Theme Toggle ─────────────────────────────────────────────────────
 function ThemeToggle() {
@@ -227,17 +212,8 @@ export default function App() {
   useEffect(() => {
     const timer = setInterval(() => setTimeGreeting(getTimeGreeting()), 10000);
 
-    // Feature 2: Dynamic Time-of-Day Skybox — hero section only
-    const applyskybox = () => {
-      const heroEl = document.getElementById('home');
-      if (heroEl) heroEl.style.background = getSkyboxGradient();
-    };
-    applyskybox(); // Apply immediately on mount
-    const skyboxTimer = setInterval(applyskybox, 60_000); // Re-check every minute
-
     return () => {
       clearInterval(timer);
-      clearInterval(skyboxTimer);
     };
   }, []);
   const [showHint, setShowHint] = useState(false);
