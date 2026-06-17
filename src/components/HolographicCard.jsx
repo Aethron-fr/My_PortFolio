@@ -1,7 +1,6 @@
-import { useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
-export default function SpotlightCard({ children, className = '', style = {} }) {
+export default function HolographicCard({ children, className, style }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -40,19 +39,16 @@ export default function SpotlightCard({ children, className = '', style = {} }) 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        ...style,
         rotateX,
         rotateY,
         transformStyle: 'preserve-3d',
         perspective: '1000px',
         position: 'relative',
         overflow: 'hidden',
-        borderRadius: style.borderRadius || '16px',
-        backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border-glass)',
+        ...style
       }}
     >
-      <div style={{ transform: 'translateZ(40px)', height: '100%' }}>
+      <div style={{ transform: 'translateZ(30px)' }}>
         {children}
       </div>
 
@@ -61,7 +57,7 @@ export default function SpotlightCard({ children, className = '', style = {} }) 
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(circle at center, rgba(255,255,255,0.18) 0%, transparent 60%)',
+          background: 'radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 60%)',
           left: glareX,
           top: glareY,
           transform: 'translate(-50%, -50%)',
@@ -70,7 +66,7 @@ export default function SpotlightCard({ children, className = '', style = {} }) 
           pointerEvents: 'none',
           mixBlendMode: 'overlay',
           zIndex: 10,
-          opacity: useTransform(mouseXSpring, [-0.5, 0, 0.5], [1, 0, 1]), // Glare fades out slightly in center
+          opacity: useTransform(mouseXSpring, [-0.5, 0, 0.5], [1, 0, 1]), // Glare fades out in center
         }}
       />
     </motion.div>

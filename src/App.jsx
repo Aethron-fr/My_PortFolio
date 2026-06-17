@@ -128,27 +128,29 @@ function ThemeToggle() {
   };
 
   return (
-    <motion.button
-      onClick={handleToggle}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.1, rotate: 5 }}
-      whileTap={{ scale: 0.9 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
-      style={{
-        position: 'fixed', bottom: 28, right: 28, zIndex: 9998,
-        width: 52, height: 52, borderRadius: '50%',
-        border: `1px solid ${isHovered ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)'}`,
-        outline: 'none', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: isNight ? 'rgba(10,12,22,0.60)' : 'rgba(255,255,255,0.8)',
-        boxShadow: isHovered
-          ? (isNight ? '0 8px 24px rgba(80,120,255,0.3)' : '0 8px 24px rgba(255,180,30,0.3)')
-          : '0 4px 12px rgba(0,0,0,0.2)',
-        backdropFilter: 'blur(12px) saturate(180%)',
+    <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 9999 }}>
+      <MagneticWrapper intensity={0.3}>
+        <motion.button
+          onClick={handleToggle}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          aria-label={isNight ? 'Switch to day mode' : 'Switch to night mode'}
+          style={{
+            position: 'relative',
+            width: 52, height: 52, borderRadius: '50%',
+            border: `1px solid ${isHovered ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)'}`,
+            outline: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: isNight ? 'rgba(10,12,22,0.60)' : 'rgba(255,255,255,0.8)',
+            boxShadow: isHovered
+              ? (isNight ? '0 8px 24px rgba(80,120,255,0.3)' : '0 8px 24px rgba(255,180,30,0.3)')
+              : '0 4px 12px rgba(0,0,0,0.2)',
+            backdropFilter: 'blur(12px) saturate(180%)',
         WebkitBackdropFilter: 'blur(12px) saturate(180%)',
         color: isNight ? '#E2E8F0' : '#475569',
         transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease',
@@ -187,7 +189,9 @@ function ThemeToggle() {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.button>
+        </motion.button>
+      </MagneticWrapper>
+    </div>
   );
 }
 
@@ -201,6 +205,16 @@ export default function App() {
     () => localStorage.getItem('_portfolio_visited') === '1'
   );
   const [scrolled, setScrolled] = useState(false);
+
+  // ── Global Mouse Tracker for Spotlight & Glare Effects ──
+  useEffect(() => {
+    const handleGlobalMouseMove = (e) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    };
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    return () => window.removeEventListener('mousemove', handleGlobalMouseMove);
+  }, []);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -259,7 +273,7 @@ export default function App() {
           if (progressBar) {
             const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPercent = totalScroll > 0 ? (window.scrollY / totalScroll) * 100 : 0;
-            progressBar.style.width = `${scrollPercent}%`;
+            progressBar.style.height = `${scrollPercent}%`;
           }
           ticking = false;
         });
@@ -379,12 +393,12 @@ export default function App() {
         <div 
           ref={progressBarRef} 
           style={{
-            position: 'fixed', top: 0, left: 0,
-            height: '2px', width: '0%',
-            background: 'linear-gradient(90deg, rgba(180,40,70,0.8), rgba(200,60,90,0.6))',
-            boxShadow: '0 0 8px rgba(180,40,70,0.55), 0 0 2px rgba(180,40,70,0.9)',
+            position: 'fixed', top: 0, right: 0,
+            width: '3px', height: '0%',
+            background: 'linear-gradient(180deg, var(--accent-primary), var(--accent-cyber))',
+            boxShadow: '0 0 10px rgba(0, 247, 255, 0.4), 0 0 4px rgba(225, 48, 108, 0.6)',
             zIndex: 9999,
-            transition: 'width 0.08s linear',
+            transition: 'height 0.08s linear',
           }}
         />
       )}
@@ -452,33 +466,38 @@ export default function App() {
           {/* BUG-018: Using CSS class for hover instead of fragile onMouseOver/onMouseOut */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '28px' }} className="desktop-only-flex">
             {navItems.map((item) => (
-              <a
-                key={item}
-                href={NAV_HREF_MAP[item] || `#${item.toLowerCase()}`}
-                className="nav-link"
-              >
-                {item}
-              </a>
+              <MagneticWrapper key={item} intensity={0.15}>
+                <a
+                  href={NAV_HREF_MAP[item] || `#${item.toLowerCase()}`}
+                  className="nav-link"
+                >
+                  {item}
+                </a>
+              </MagneticWrapper>
             ))}
-            <button
-                onClick={() => setIsTerminalOpen(true)}
-                style={{
-                  background: 'rgba(0, 247, 255, 0.05)',
-                  border: '1px solid rgba(0, 247, 255, 0.2)',
-                  color: 'var(--accent-primary)',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer',
-                  marginLeft: '8px'
-                }}
-              >
-                &gt;_ CLI
-              </button>
-            <a href="#contact" className="btn-neon-outline" style={{ padding: '7px 18px', fontSize: '0.82rem' }}>
-              Contact
-            </a>
+            <MagneticWrapper intensity={0.2}>
+              <button
+                  onClick={() => setIsTerminalOpen(true)}
+                  style={{
+                    background: 'rgba(0, 247, 255, 0.05)',
+                    border: '1px solid rgba(0, 247, 255, 0.2)',
+                    color: 'var(--accent-primary)',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                    marginLeft: '8px'
+                  }}
+                >
+                  &gt;_ CLI
+                </button>
+            </MagneticWrapper>
+            <MagneticWrapper intensity={0.2}>
+              <a href="#contact" className="btn-neon-outline" style={{ padding: '7px 18px', fontSize: '0.82rem' }}>
+                Contact
+              </a>
+            </MagneticWrapper>
           </nav>
 
           {/* Mobile Hamburguer Toggle */}
@@ -1002,24 +1021,24 @@ export default function App() {
               </div>
             ))}
             <li>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsTerminalOpen(true)}
-                style={{
-                  background: 'rgba(0, 247, 255, 0.05)',
-                  border: '1px solid rgba(0, 247, 255, 0.2)',
-                  color: 'var(--accent-primary)',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer',
-                  marginLeft: '8px'
-                }}
-              >
-                &gt;_ CLI
-              </motion.button>
+              <MagneticWrapper intensity={0.2}>
+                <button
+                  onClick={() => setIsTerminalOpen(true)}
+                  style={{
+                    background: 'rgba(0, 247, 255, 0.05)',
+                    border: '1px solid rgba(0, 247, 255, 0.2)',
+                    color: 'var(--accent-primary)',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                    marginLeft: '8px'
+                  }}
+                >
+                  &gt;_ CLI
+                </button>
+              </MagneticWrapper>
             </li>
           </div>
         </div>
@@ -1219,15 +1238,17 @@ export default function App() {
                   />
                 </div>
 
-                <MagneticButton
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-neon-glow"
-                  style={{ width: '100%', gap: '8px', marginTop: '10px' }}
-                >
-                  <Send size={15} style={{ opacity: 0.7 }} />
-                  {isSubmitting ? 'Sending…' : 'Send Message'}
-                </MagneticButton>
+                <MagneticWrapper intensity={0.2}>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="btn-neon-glow"
+                    style={{ width: '100%', gap: '8px', marginTop: '10px' }}
+                  >
+                    <Send size={15} style={{ opacity: 0.7 }} />
+                    {isSubmitting ? 'Sending…' : 'Send Message'}
+                  </button>
+                </MagneticWrapper>
 
                 {submitSuccess && (
                   <div role="status" style={{ padding: '12px 16px', background: 'rgba(80,200,120,0.06)', border: '1px solid rgba(80,200,120,0.18)', color: 'rgba(140,220,160,0.85)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
@@ -1293,36 +1314,38 @@ export default function App() {
         zIndex: 10
       }}>
         <div style={{ marginBottom: '30px' }}>
-          <a
-            href="https://www.linkedin.com/in/swapnadip-ghosh/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              padding: '16px 40px',
-              background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-violet) 100%)',
-              color: '#fff',
-              textDecoration: 'none',
-              fontFamily: 'var(--font-heading)',
-              fontSize: '1rem',
-              fontWeight: 600,
-              borderRadius: '50px',
-              boxShadow: '0 10px 30px rgba(225, 48, 108, 0.3)',
-              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-3px)';
-              e.currentTarget.style.boxShadow = '0 15px 40px rgba(225, 48, 108, 0.5)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(225, 48, 108, 0.3)';
-            }}
-          >
-            Download Resume
-          </a>
+          <MagneticWrapper intensity={0.1}>
+            <a
+              href="https://www.linkedin.com/in/swapnadip-ghosh/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '16px 40px',
+                background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-violet) 100%)',
+                color: '#fff',
+                textDecoration: 'none',
+                fontFamily: 'var(--font-heading)',
+                fontSize: '1rem',
+                fontWeight: 600,
+                borderRadius: '50px',
+                boxShadow: '0 10px 30px rgba(225, 48, 108, 0.3)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.boxShadow = '0 15px 40px rgba(225, 48, 108, 0.5)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(225, 48, 108, 0.3)';
+              }}
+            >
+              Download Resume
+            </a>
+          </MagneticWrapper>
         </div>
         <p style={{
           color: 'var(--text-dim)',

@@ -30,10 +30,14 @@ class ErrorBoundary extends React.Component {
           textAlign: 'center'
         }}>
           <h1 style={{ color: '#E1306C', marginBottom: '1rem' }}>Signal Lost.</h1>
-          <p style={{ color: '#94a3b8', maxWidth: '400px' }}>
-            The application encountered a critical exception and had to gracefully degrade.
-            Please refresh the page to re-establish the connection.
-          </p>
+            <p style={{
+              color: 'rgba(255,255,255,0.6)',
+              marginBottom: '30px',
+              lineHeight: 1.6
+            }}>
+              The application encountered a critical exception:<br/><br/>
+              <strong style={{ color: '#ff003c' }}>{this.state.error && this.state.error.toString()}</strong>
+            </p>
           <button 
             onClick={() => window.location.reload()}
             style={{

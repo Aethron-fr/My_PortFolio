@@ -150,6 +150,10 @@ html {
   max-width: 100%;
 }
 
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--bg-dark);
@@ -238,6 +242,33 @@ p {
   transition: border-color 0.4s var(--transition-smooth), 
               box-shadow 0.4s var(--transition-smooth),
               transform 0.4s var(--transition-smooth);
+  position: relative;
+}
+
+/* Glowing Glass Edge Spotlight */
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    circle 500px at var(--mouse-x, 50vw) var(--mouse-y, 50vh),
+    rgba(255, 255, 255, 0.3),
+    transparent 40%
+  );
+  background-attachment: fixed;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.glass-panel:hover::before {
+  opacity: 1;
 }
 
 .glass-panel:hover {

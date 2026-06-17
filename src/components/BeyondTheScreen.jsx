@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import MatrixText from './MatrixText';
+import LiquidImage from './LiquidImage';
 import { MemoryFragment } from '../context/PuzzleContext';
 
 // ─── Rain Lines Effect ────────────────────────────────────────────────────────
@@ -309,7 +311,7 @@ export default function BeyondTheScreen() {
             color: 'var(--text-secondary)',
             letterSpacing: '-0.5px', margin: '0 0 14px',
           }}>
-            Drawn toward unfamiliar environments.
+            <MatrixText text="Drawn toward unfamiliar environments." />
           </h2>
           <p style={{
             fontSize: '0.88rem', color: 'var(--text-dim)',
@@ -379,14 +381,11 @@ export default function BeyondTheScreen() {
             WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
             maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
           }}>
-            <img
+            <LiquidImage
               src="/workspace.png"
               alt="Cinematic workspace"
-              loading="lazy"
               style={{
-                width: '100%', display: 'block',
-                objectFit: 'cover', maxHeight: 400,
-                filter: 'saturate(0.65) brightness(0.8)',
+                maxHeight: 400,
               }}
             />
             {/* Grain overlay */}

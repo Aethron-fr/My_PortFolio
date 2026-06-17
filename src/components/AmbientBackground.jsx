@@ -1,4 +1,10 @@
+import { motion, useScroll, useTransform } from 'framer-motion';
+
 export default function AmbientBackground() {
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 2000], [0, 400]);
+  const y2 = useTransform(scrollY, [0, 2000], [0, -300]);
+
   return (
     <div style={{
       position: 'fixed',
@@ -25,7 +31,7 @@ export default function AmbientBackground() {
       </style>
       
       {/* Aurora Orbs */}
-      <div style={{
+      <motion.div style={{
         position: 'absolute',
         top: '10%',
         left: '20%',
@@ -37,8 +43,9 @@ export default function AmbientBackground() {
         borderRadius: '50%',
         animation: 'aurora1 20s ease-in-out infinite',
         mixBlendMode: 'screen',
+        y: y1,
       }} />
-      <div style={{
+      <motion.div style={{
         position: 'absolute',
         bottom: '10%',
         right: '20%',
@@ -50,6 +57,7 @@ export default function AmbientBackground() {
         borderRadius: '50%',
         animation: 'aurora2 25s ease-in-out infinite',
         mixBlendMode: 'screen',
+        y: y2,
       }} />
 
       {/* Cinematic Film Grain SVG Overlay */}
