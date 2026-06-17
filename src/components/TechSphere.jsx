@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import MagneticWrapper from './MagneticWrapper';
 
 const TAGS = [
   'React.js', 'Node.js', 'Python', 'TypeScript', 'JavaScript',
@@ -58,18 +59,23 @@ export default function TechSphere() {
         const zIndex = Math.round(z2 + RADIUS);
 
         const isHovered = hoveredTagRef.current === TAGS[i];
+        const span = el.querySelector('span');
         if (isHovered) {
           scale *= 1.4; 
-          el.style.background = 'var(--accent-cyber)'; // Vibrant solid cyan
-          el.style.color = '#000'; // Dark text for high contrast readability
-          el.style.borderColor = 'transparent';
-          el.style.boxShadow = '0 0 30px rgba(0, 247, 255, 0.6)';
+          if (span) {
+            span.style.background = 'var(--accent-cyber)';
+            span.style.color = '#000';
+            span.style.borderColor = 'transparent';
+            span.style.boxShadow = '0 0 30px rgba(0, 247, 255, 0.6)';
+          }
           el.style.zIndex = 999;
         } else {
-          el.style.background = 'var(--bg-card)';
-          el.style.color = 'var(--text-primary)';
-          el.style.borderColor = 'var(--border-glass)';
-          el.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+          if (span) {
+            span.style.background = 'var(--bg-card)';
+            span.style.color = 'var(--text-primary)';
+            span.style.borderColor = 'var(--border-glass)';
+            span.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+          }
           el.style.zIndex = zIndex;
         }
 
@@ -229,34 +235,42 @@ export default function TechSphere() {
 
 
         {TAGS.map((tag) => (
-          <span
+          <div
             key={tag}
             className="tech-tag-3d"
-            onMouseEnter={() => setHoveredTag(tag)}
-            onMouseLeave={() => setHoveredTag(null)}
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(0.65rem, 1.4vw, 0.85rem)',
-              letterSpacing: '1px',
-              fontWeight: 500,
-              whiteSpace: 'nowrap',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              border: '1px solid var(--border-glass)',
-              background: 'var(--bg-card)',
-              backdropFilter: 'blur(12px)',
-              willChange: 'transform, opacity, background, color',
-              transition: 'background 0.3s, color 0.3s, box-shadow 0.3s',
-              pointerEvents: 'auto',
-              cursor: 'pointer',
-              color: 'var(--text-primary)',
+              willChange: 'transform, opacity',
             }}
           >
-            {tag}
-          </span>
+            <MagneticWrapper intensity={0.4}>
+              <span
+                onMouseEnter={() => setHoveredTag(tag)}
+                onMouseLeave={() => setHoveredTag(null)}
+                style={{
+                  display: 'inline-block',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'clamp(0.65rem, 1.4vw, 0.85rem)',
+                  letterSpacing: '1px',
+                  fontWeight: 500,
+                  whiteSpace: 'nowrap',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  border: '1px solid var(--border-glass)',
+                  background: 'var(--bg-card)',
+                  backdropFilter: 'blur(12px)',
+                  transition: 'background 0.3s, color 0.3s, box-shadow 0.3s',
+                  pointerEvents: 'auto',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                {tag}
+              </span>
+            </MagneticWrapper>
+          </div>
         ))}
       </div>
     </div>

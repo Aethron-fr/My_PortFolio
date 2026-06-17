@@ -9,104 +9,161 @@ export default function CanvasBackground() {
     const ctx = canvas.getContext('2d', { alpha: false });
 
     let animId;
+    let resizeTicking = false;
 
-    // ── Particles (restrained — warm grey, very dim) ────────────────────────
-    const particleCount = Math.min(25, Math.floor((window.innerWidth * window.innerHeight) / 50000));
-    const particles = [];
+    // ── Configuration ──
+    const STAR_COUNT = Math.floor((window.innerWidth * window.innerHeight) / 3000);
+    const DUST_COUNT = Math.floor((window.innerWidth * window.innerHeight) / 10000);
+    
+    const stars = [];
+    const dustParticles = [];
+    const shootingStars = [];
 
-    const mouse = { x: null, y: null, radius: 140 };
+    const mouse = { x: null, y: null, radius: 150 };
 
-    class Particle {
-      constructor() { this.reset(true); }
+    // ── 1. Twinkling Background Stars ──
+    class Star {
+      constructor() {
+        this.reset(true);
+      }
       reset(init = false) {
         this.x = Math.random() * canvas.width;
-        this.y = init ? Math.random() * canvas.height : -4;
-        this.vx = (Math.random() - 0.5) * 0.25;
-        this.vy = (Math.random() - 0.5) * 0.25;
-        this.size = Math.random() * 1.5 + 0.5;
-        // Muted warm-grey palette — no neon
-        this.alpha = 0.08 + Math.random() * 0.12;
-        this.color = Math.random() > 0.6
-          ? `hsla(220, 20%, 70%, ${this.alpha})`
-          : `hsla(340, 25%, 55%, ${this.alpha})`;
+        this.y = init ? Math.random() * canvas.height : Math.random() * canvas.height;
+        this.size = Math.random() * 1.2 + 0.1;
+        this.baseAlpha = Math.random() * 0.5 + 0.1;
+        this.alpha = this.baseAlpha;
+        this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+        this.twinkleDir = Math.random() > 0.5 ? 1 : -1;
+      }
+      update() {
+        this.alpha += this.twinkleSpeed * this.twinkleDir;
+        if (this.alpha >= 1) {
+          this.alpha = 1;
+          this.twinkleDir = -1;
+        } else if (this.alpha <= this.baseAlpha) {
+          this.alpha = this.baseAlpha;
+          this.twinkleDir = 1;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    // ── 2. Drifting Cosmic Dust (Reacts to Mouse) ──
+    class CosmicDust {
+      constructor() {
+        this.reset(true);
+      }
+      reset(init = false) {
+        this.x = Math.random() * canvas.width;
+        this.y = init ? Math.random() * canvas.height : Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.vx = (Math.random() - 0.5) * 0.15;
+        this.vy = (Math.random() - 0.5) * 0.15;
+        this.baseAlpha = Math.random() * 0.3 + 0.05;
+        
+        // Slight cyan or purple tint
+        this.color = Math.random() > 0.5 
+          ? `rgba(0, 247, 255, ` // Cyan
+          : `rgba(225, 48, 108, `; // Pink/Purple
       }
       update() {
         this.x += this.vx;
         this.y += this.vy;
-        if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
-        if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+        
+        // Wrap around edges
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+
+        // Subtle mouse repulsion
         if (mouse.x !== null) {
           const dx = mouse.x - this.x;
           const dy = mouse.y - this.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < mouse.radius) {
-            const f = (mouse.radius - d) / mouse.radius;
-            this.x -= dx * f * 0.015;
-            this.y -= dy * f * 0.015;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouse.radius) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            this.x -= dx * force * 0.02;
+            this.y -= dy * force * 0.02;
           }
         }
       }
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.color + `${this.baseAlpha})`;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color + `1)`;
         ctx.fill();
+        ctx.shadowBlur = 0; // Reset
       }
     }
 
-    for (let i = 0; i < particleCount; i++) particles.push(new Particle());
-
-    const connectParticles = () => {
-      if (window.innerWidth < 768) return;
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 90) {
-            // Muted warm-grey threads — no cyan
-            const alpha = (90 - d) / 90 * 0.06;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(180, 160, 180, ${alpha})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
+    // ── 3. Shooting Stars ──
+    class ShootingStar {
+      constructor() {
+        this.reset();
+        this.active = false;
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = 0;
+        this.len = Math.random() * 80 + 30;
+        this.speed = Math.random() * 10 + 6;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.waitTime = Math.random() * 300 + 100; // frames to wait before firing
+        this.timer = 0;
+        this.active = false;
+        // 45 degree angle trajectory
+        this.vx = this.speed;
+        this.vy = this.speed;
+      }
+      update() {
+        if (!this.active) {
+          this.timer++;
+          if (this.timer > this.waitTime) {
+            this.active = true;
+            this.x = Math.random() * canvas.width * 1.5 - canvas.width * 0.5; // Start somewhere off-top-left
+            this.y = -this.len;
           }
+          return;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x > canvas.width + this.len || this.y > canvas.height + this.len) {
+          this.reset();
         }
       }
-    };
+      draw() {
+        if (!this.active) return;
+        
+        const gradient = ctx.createLinearGradient(this.x, this.y, this.x - this.len, this.y - this.len);
+        gradient.addColorStop(0, `rgba(255, 255, 255, 0.8)`);
+        gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
 
-    // ── Rain drops (subtle, always present, very dim) ───────────────────────
-    const rainDrops = window.innerWidth >= 768
-      ? Array.from({ length: 45 }, () => ({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          speed: 0.5 + Math.random() * 0.8,
-          length: 7 + Math.random() * 12,
-          opacity: 0.02 + Math.random() * 0.04, // Very dim — barely there
-        }))
-      : [];
-
-    const drawRain = () => {
-      rainDrops.forEach(drop => {
         ctx.beginPath();
-        ctx.moveTo(drop.x, drop.y);
-        ctx.lineTo(drop.x - drop.length * 0.12, drop.y + drop.length);
-        ctx.strokeStyle = `rgba(160, 190, 220, ${drop.opacity})`;
-        ctx.lineWidth = 0.4;
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.len, this.y - this.len);
+        ctx.lineWidth = this.size;
+        ctx.strokeStyle = gradient;
         ctx.stroke();
+      }
+    }
 
-        drop.y += drop.speed;
-        if (drop.y > canvas.height + 20) {
-          drop.y = -15;
-          drop.x = Math.random() * canvas.width;
-        }
-      });
-    };
+    // Initialize arrays
+    for (let i = 0; i < STAR_COUNT; i++) stars.push(new Star());
+    for (let i = 0; i < DUST_COUNT; i++) dustParticles.push(new CosmicDust());
+    // Only 2 or 3 shooting stars at a time
+    for (let i = 0; i < 3; i++) shootingStars.push(new ShootingStar());
 
-    // ── Resize ──────────────────────────────────────────────────────────────
-    let resizeTicking = false;
+    // ── Event Listeners ──
     const handleResize = () => {
       if (!resizeTicking) {
         window.requestAnimationFrame(() => {
@@ -136,48 +193,15 @@ export default function CanvasBackground() {
     document.addEventListener('mouseleave', handleMouseLeave);
     handleResize();
 
-    // ── 7-click background clue ───────────────────────────────────────────────
-    // "I used to hate the rain. I don't anymore."
-    let bgClickCount = 0;
-    const handleBgClick = (e) => {
-      const isInteractive = e.target.closest('button, a, input, textarea, select, [role="button"], nav, label');
-      if (isInteractive) return;
-      bgClickCount++;
-      if (bgClickCount === 7) {
-        bgClickCount = 0;
-        const el = document.createElement('div');
-        el.textContent = "this wasn't always here.";
-        Object.assign(el.style, {
-          position: 'fixed', bottom: '44px', left: '50%',
-          transform: 'translateX(-50%)',
-          fontFamily: 'monospace', fontSize: '0.61rem',
-          color: 'rgba(255,255,255,0.13)', letterSpacing: '2.5px',
-          pointerEvents: 'none', zIndex: '9998',
-          whiteSpace: 'nowrap', opacity: '1',
-          transition: 'opacity 2.5s ease',
-        });
-        document.body.appendChild(el);
-        setTimeout(() => { el.style.opacity = '0'; }, 4000);
-        setTimeout(() => el.remove(), 7000);
-        try {
-          const stored = JSON.parse(localStorage.getItem('_p_clues') || '{}');
-          if (!stored['puzzle_rain']) {
-            stored['puzzle_rain'] = Date.now();
-            localStorage.setItem('_p_clues', JSON.stringify(stored));
-          }
-        } catch (e) { console.warn("Canvas background puzzle error:", e); }
-      }
-    };
-    window.addEventListener('click', handleBgClick);
-
-    // ── Render loop ──────────────────────────────────────────────────────────
+    // ── Render Loop ──
     const animate = () => {
-      ctx.fillStyle = '#06060a';
+      // Deep space background color
+      ctx.fillStyle = '#020002'; // Match the exact var(--bg-dark) hex
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      drawRain();        // Rain first — behind particles
-      connectParticles();
-      particles.forEach(p => { p.update(); p.draw(); });
+      stars.forEach(s => { s.update(); s.draw(); });
+      dustParticles.forEach(d => { d.update(); d.draw(); });
+      shootingStars.forEach(ss => { ss.update(); ss.draw(); });
 
       animId = requestAnimationFrame(animate);
     };
@@ -188,7 +212,6 @@ export default function CanvasBackground() {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('click', handleBgClick);
     };
   }, []);
 
