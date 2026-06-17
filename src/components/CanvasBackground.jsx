@@ -6,7 +6,11 @@ export default function CanvasBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d'); // Removed { alpha: false } to allow true transparency
+    const ctx = canvas.getContext('2d'); 
+
+    // Set size synchronously so particles spawn correctly across the entire screen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     let animId;
     let resizeTicking = false;
@@ -194,7 +198,6 @@ export default function CanvasBackground() {
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseleave', handleMouseLeave);
-    handleResize();
 
     // ── Render Loop ──
     const animate = () => {
