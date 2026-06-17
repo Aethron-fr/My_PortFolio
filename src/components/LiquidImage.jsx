@@ -8,7 +8,7 @@ export default function LiquidImage({ src, alt, style }) {
   const requestRef = useRef();
 
   useEffect(() => {
-    let target = isHovered ? 25 : 0;
+    let target = isHovered ? 8 : 0; // Extremely subtle, premium ripple (was 25)
     
     const animate = () => {
       setScale(prev => {
@@ -32,7 +32,7 @@ export default function LiquidImage({ src, alt, style }) {
     >
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id={filterId}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="1" result="noise" />
           <feDisplacementMap 
             in="SourceGraphic" 
             in2="noise" 
@@ -48,9 +48,9 @@ export default function LiquidImage({ src, alt, style }) {
         alt={alt}
         loading="lazy"
         animate={{
-          scale: isHovered ? 1.05 : 1,
+          scale: isHovered ? 1.02 : 1,
           filter: isHovered 
-            ? `url(#${filterId}) saturate(1.2) brightness(1.1)` 
+            ? `url(#${filterId}) saturate(1.1) brightness(1.05)` 
             : `url(#${filterId}) saturate(0.65) brightness(0.8)`
         }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
