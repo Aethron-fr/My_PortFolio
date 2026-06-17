@@ -1,44 +1,36 @@
 import { useEffect, useRef } from 'react';
 
 export default function CustomCursor() {
-  const dotRef = useRef(null);
-  const glowRef = useRef(null);
+  const blobRef = useRef(null);
 
   useEffect(() => {
-    const dot = dotRef.current;
-    const glow = glowRef.current;
-    if (!dot || !glow) return;
+    const blob = blobRef.current;
+    if (!blob) return;
 
-    let mouseX = 0;
-    let mouseY = 0;
-    let glowX = 0;
-    let glowY = 0;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let blobX = mouseX;
+    let blobY = mouseY;
     let isHovering = false;
     let frameId;
 
     const handleMouseMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      
-      // Instantly position the center dot
-      dot.style.left = `${mouseX}px`;
-      dot.style.top = `${mouseY}px`;
     };
 
-    // Smoothly interpolate the lagging outer glow position using requestAnimationFrame
-    const updateGlow = () => {
-      // Linear interpolation (lerp) for buttery inertia
-      const speed = isHovering ? 0.2 : 0.15;
-      glowX += (mouseX - glowX) * speed;
-      glowY += (mouseY - glowY) * speed;
+    const updateBlob = () => {
+      // Buttery inertia
+      const speed = isHovering ? 0.2 : 0.1;
+      blobX += (mouseX - blobX) * speed;
+      blobY += (mouseY - blobY) * speed;
 
-      glow.style.left = `${glowX}px`;
-      glow.style.top = `${glowY}px`;
+      blob.style.left = `${blobX}px`;
+      blob.style.top = `${blobY}px`;
 
-      frameId = requestAnimationFrame(updateGlow);
+      frameId = requestAnimationFrame(updateBlob);
     };
 
-    // Listen to hover states on interactive links
     const handleMouseOver = (e) => {
       const target = e.target;
       const isInteractive = 
@@ -52,11 +44,7 @@ export default function CustomCursor() {
 
       if (isInteractive) {
         isHovering = true;
-        glow.style.width = '55px';
-        glow.style.height = '55px';
-        glow.style.borderColor = '#00F7FF'; // cyan on hover
-        glow.style.backgroundColor = 'rgba(0, 247, 255, 0.05)';
-        dot.style.backgroundColor = '#00F7FF';
+        blob.style.transform = 'translate(-50%, -50%) scale(2.5)';
       }
     };
 
@@ -73,29 +61,16 @@ export default function CustomCursor() {
 
       if (isInteractive) {
         isHovering = false;
-        glow.style.width = '36px';
-        glow.style.height = '36px';
-        glow.style.borderColor = '#E1306C'; // standard pink
-        glow.style.backgroundColor = 'transparent';
-        dot.style.backgroundColor = '#E1306C';
+        blob.style.transform = 'translate(-50%, -50%) scale(1)';
       }
     };
 
     const handleMouseDown = () => {
-      glow.style.transform = 'translate(-50%, -50%) scale(0.65)';
-      glow.style.borderColor = '#00F7FF';
-      dot.style.transform = 'translate(-50%, -50%) scale(1.6)';
+      blob.style.transform = 'translate(-50%, -50%) scale(0.5)';
     };
 
     const handleMouseUp = () => {
-      glow.style.transform = 'translate(-50%, -50%) scale(1.45)';
-      glow.style.borderColor = '#FF5E3A'; // Orange Sunset flash
-      dot.style.transform = 'translate(-50%, -50%) scale(1)';
-      
-      setTimeout(() => {
-        glow.style.transform = 'translate(-50%, -50%) scale(1)';
-        glow.style.borderColor = isHovering ? '#00F7FF' : '#E1306C';
-      }, 160);
+      blob.style.transform = `translate(-50%, -50%) scale(${isHovering ? 2.5 : 1})`;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -104,8 +79,7 @@ export default function CustomCursor() {
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     
-    // Start smooth glow rendering loop
-    updateGlow();
+    updateBlob();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -119,8 +93,34 @@ export default function CustomCursor() {
 
   return (
     <>
-      <div ref={dotRef} className="custom-cursor" />
-      <div ref={glowRef} className="custom-cursor-glow" />
+      <style>
+        {`
+          .fluid-cursor-blob {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%) scale(1);
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            /* Soft blur edge */
+            filter: blur(2px);
+          }
+          
+          /* Hide default cursors on desktop to fully sell the fluid effect */
+          @media (pointer: fine) {
+            body, a, button {
+              cursor: none !important;
+            }
+          }
+        `}
+      </style>
+      <div ref={blobRef} className="fluid-cursor-blob" />
     </>
   );
 }

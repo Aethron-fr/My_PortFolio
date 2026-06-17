@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Lenis from 'lenis';
 import {
   Mail,
   FileText,
@@ -30,6 +31,7 @@ import MagneticWrapper from './components/MagneticWrapper';
 import TerminalMode from './components/TerminalMode';
 import AmbientBackground from './components/AmbientBackground';
 import ResumeViewer from './components/ResumeViewer';
+import Preloader from './components/Preloader';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -219,6 +221,9 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+  const [isPreloaderDone, setIsPreloaderDone] = useState(
+    () => !!sessionStorage.getItem('preloader_done')
+  );
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   // BUG-005: timeGreeting now computed and displayed properly
   const [timeGreeting, setTimeGreeting] = useState(getTimeGreeting);
@@ -245,6 +250,30 @@ export default function App() {
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+    };
+  }, []);
+
+  // ── Ultra-Premium Buttery Smooth Scrolling (Lenis) ──
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential easing
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
     };
   }, []);
 
@@ -367,7 +396,11 @@ export default function App() {
 
   return (
     <>
-      <AmbientBackground />
+      {!isPreloaderDone && <Preloader onComplete={() => setIsPreloaderDone(true)} />}
+      
+      {isPreloaderDone && (
+        <>
+          <AmbientBackground />
       <ResumeViewer />
       <CustomCursor />
       <StardustTrail />
@@ -1363,6 +1396,8 @@ export default function App() {
 
       {/* BUG-015: Removed inline <style> block — all styles now live in App.css to avoid
            duplication and conflicting breakpoints (was 1024px here vs 768px in App.css) */}
+        </>
+      )}
     </>
   );
 }

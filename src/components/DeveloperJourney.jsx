@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import StaggerText from './StaggerText';
 import { BookOpen, Terminal, Rocket, Sparkles, Calendar, Award, Code2 } from 'lucide-react';
 
 const JOURNEY_STEPS = [

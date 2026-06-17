@@ -36,12 +36,17 @@ export default function MagneticWrapper({
     sfx.playHoverTick();
   };
 
+  const handleClick = () => {
+    sfx.playTerminalKeystroke();
+  };
+
   return (
     <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
+      onClick={handleClick}
       className={className}
       style={{
         display: 'inline-flex',
