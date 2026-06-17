@@ -1,5 +1,7 @@
 import { motion, useAnimation } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useId } from 'react';
+
+const MotionFeDisplacementMap = motion.create ? motion.create('feDisplacementMap') : motion('feDisplacementMap');
 
 export default function LiquidImage({ src, alt, style }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -21,7 +23,7 @@ export default function LiquidImage({ src, alt, style }) {
     });
   };
 
-  const filterId = `liquid-filter-${Math.random().toString(36).substr(2, 9)}`;
+  const filterId = useId();
 
   return (
     <div
@@ -32,7 +34,7 @@ export default function LiquidImage({ src, alt, style }) {
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id={filterId}>
           <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
-          <motion.feDisplacementMap 
+          <MotionFeDisplacementMap 
             in="SourceGraphic" 
             in2="noise" 
             xChannelSelector="R" 
