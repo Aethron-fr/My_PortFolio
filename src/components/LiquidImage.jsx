@@ -1,46 +1,44 @@
-import { motion, useAnimation } from 'framer-motion';
-import { useState, useId } from 'react';
-
-const MotionFeDisplacementMap = motion.create ? motion.create('feDisplacementMap') : motion('feDisplacementMap');
+import { motion } from 'framer-motion';
+import { useState, useId, useRef, useEffect } from 'react';
 
 export default function LiquidImage({ src, alt, style }) {
   const [isHovered, setIsHovered] = useState(false);
-  const controls = useAnimation();
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    controls.start({
-      scale: [0, 40, 20],
-      transition: { duration: 0.8, times: [0, 0.4, 1], ease: 'easeOut' }
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    controls.start({
-      scale: 0,
-      transition: { duration: 0.8, ease: 'easeOut' }
-    });
-  };
-
+  const [scale, setScale] = useState(0);
   const filterId = useId();
+  const requestRef = useRef();
+
+  useEffect(() => {
+    let target = isHovered ? 25 : 0;
+    
+    const animate = () => {
+      setScale(prev => {
+        // Simple spring easing
+        const next = prev + (target - prev) * 0.1;
+        if (Math.abs(target - next) < 0.1) return target;
+        requestRef.current = requestAnimationFrame(animate);
+        return next;
+      });
+    };
+    
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, [isHovered]);
 
   return (
     <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%' }}
     >
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id={filterId}>
           <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
-          <MotionFeDisplacementMap 
+          <feDisplacementMap 
             in="SourceGraphic" 
             in2="noise" 
             xChannelSelector="R" 
             yChannelSelector="G" 
-            animate={controls}
-            initial={{ scale: 0 }}
+            scale={scale}
           />
         </filter>
       </svg>
