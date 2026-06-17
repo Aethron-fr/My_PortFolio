@@ -195,9 +195,9 @@ export default function CanvasBackground() {
 
     // ── Render Loop ──
     const animate = () => {
-      // Deep space background color
-      ctx.fillStyle = '#020002'; // Match the exact var(--bg-dark) hex
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Clear the canvas instead of filling it with solid black
+      // This allows the CSS body background to show through perfectly on all themes!
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       stars.forEach(s => { s.update(); s.draw(); });
       dustParticles.forEach(d => { d.update(); d.draw(); });

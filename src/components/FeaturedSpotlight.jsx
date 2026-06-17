@@ -189,6 +189,7 @@ export default function FeaturedSpotlight() {
         overflow: 'hidden',
         cursor: 'default',
         boxShadow: 'var(--shadow-lg)',
+        border: '1px solid rgba(255, 255, 255, 0.15)', // Solid visible border
       }}
     >
       <div style={{
@@ -201,17 +202,6 @@ export default function FeaturedSpotlight() {
         position: 'absolute', inset: 0, backgroundImage: GRAIN,
         opacity: 0.05, mixBlendMode: 'overlay', pointerEvents: 'none',
         zIndex: 1, transform: 'translateZ(0)',
-      }} />
-
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'linear-gradient(135deg, rgba(6,182,212,0.4), rgba(139,92,246,0.4))',
-        padding: '1px',
-        borderRadius: 24,
-        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-        WebkitMaskComposite: 'xor',
-        maskComposite: 'exclude',
-        zIndex: 2, pointerEvents: 'none',
       }} />
 
       <motion.div
