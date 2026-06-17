@@ -29,6 +29,7 @@ import TerminalMode from './components/TerminalMode';
 import AmbientBackground from './components/AmbientBackground';
 import ResumeViewer from './components/ResumeViewer';
 import Preloader from './components/Preloader';
+import LiveCursors from './components/LiveCursors';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -404,6 +405,7 @@ export default function App() {
       
       {isPreloaderDone && (
         <>
+          <LiveCursors />
           <AmbientBackground />
       <ResumeViewer />
       <CustomCursor />

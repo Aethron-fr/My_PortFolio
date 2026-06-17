@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import PhysicsSandbox from './PhysicsSandbox';
 import { sfx } from '../utils/sfx';
 
 const BOOT_SEQUENCE = [
@@ -18,6 +19,7 @@ const COMMANDS = {
     { text: "  resume       - View resume link", color: "#e2e8f0" },
     { text: "  contact      - Get email and social links", color: "#e2e8f0" },
     { text: "  sendmail     - Send an interactive email", color: "var(--accent-cyber)" },
+    { text: "  gravity      - Enable physics engine", color: "#fbbf24" },
     { text: "  clear        - Clear terminal output", color: "#e2e8f0" },
     { text: "  exit         - Close the terminal mode", color: "#e2e8f0" }
   ],
@@ -41,7 +43,10 @@ const COMMANDS = {
     { text: "2024 - Present | Open Source Contributor & Freelancer", color: "var(--accent-primary)" },
     { text: "  - Architecting high-performance web applications", color: "#94a3b8" },
     { text: "  - Maintaining actively used GitHub repositories", color: "#94a3b8" },
-    { text: "2023 - 2024    | Full Stack Learner & Builder", color: "var(--accent-primary)" },
+    { 
+      text: "2023 - 2024    | Full Stack Learner & Builder", 
+      color: "var(--accent-primary)" 
+    },
     { text: "  - Mastered modern React and backend integrations", color: "#94a3b8" }
   ],
   projects: [
@@ -112,6 +117,7 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [isTyping, setIsTyping] = useState(true);
   const [bootIndex, setBootIndex] = useState(0);
   const [isBooted, setIsBooted] = useState(false);
+  const [isGravityActive, setIsGravityActive] = useState(false);
   
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -146,12 +152,11 @@ export default function TerminalMode({ isOpen, onClose }) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsBooted(false);
       setBootIndex(0);
-      
       setHistory([]);
-      
       setInput('');
       setHistoryIndex(-1);
       setTerminalState('IDLE');
+      setIsGravityActive(false);
     }
   }, [isOpen, bootIndex, isBooted]);
 
@@ -235,6 +240,17 @@ export default function TerminalMode({ isOpen, onClose }) {
       return;
     }
 
+    if (lowerCmd === 'gravity') {
+      newHistory.push({ type: 'output', lines: [
+        { text: "> WARNING: DOM STABILITY COMPROMISED", color: "#fbbf24" },
+        { text: "> INITIATING MATTER.JS PHYSICS ENGINE...", color: "#fbbf24" },
+        { text: "> GRAVITY ENABLED", color: "#39d353" }
+      ]});
+      setHistory(newHistory);
+      setTimeout(() => setIsGravityActive(true), 800);
+      return;
+    }
+
     if (COMMANDS[lowerCmd]) {
       setIsTyping(true);
       newHistory.push({ type: 'output', lines: COMMANDS[lowerCmd] });
@@ -273,8 +289,10 @@ export default function TerminalMode({ isOpen, onClose }) {
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+      <PhysicsSandbox active={isGravityActive} onClose={() => setIsGravityActive(false)} />
+      <AnimatePresence>
+        {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -446,7 +464,8 @@ export default function TerminalMode({ isOpen, onClose }) {
             </div>
           </motion.div>
         </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

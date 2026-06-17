@@ -1,4 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
+import WebGLBackground from './WebGLBackground';
 
 export default function AmbientBackground() {
   const { scrollY } = useScroll();
@@ -13,6 +14,7 @@ export default function AmbientBackground() {
       pointerEvents: 'none',
       overflow: 'hidden',
     }}>
+      <WebGLBackground />
       <style>
         {`
           @keyframes aurora1 {
