@@ -30,6 +30,7 @@ import AmbientBackground from './components/AmbientBackground';
 import ResumeViewer from './components/ResumeViewer';
 import Preloader from './components/Preloader';
 import LiveCursors from './components/LiveCursors';
+import ScrollSkewWrapper from './components/ScrollSkewWrapper';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -243,6 +244,20 @@ export default function App() {
   const [showHint, setShowHint] = useState(false);
 
   const progressBarRef = useRef(null);
+
+  // Tab visibility title changer
+  useEffect(() => {
+    let originalTitle = document.title;
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        document.title = "Don't leave yet! 🚀";
+      } else {
+        document.title = originalTitle;
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
   // (Removed hostile UX event listeners that blocked Right-Click and F12 per audit)
 
@@ -662,6 +677,7 @@ export default function App() {
       )}
 
       {/* HERO SECTION */}
+      <ScrollSkewWrapper>
       <section id="home" className="hero-section" style={{ background: 'var(--bg-hero)' }}>
         <div className="hero-glow-blob" style={{ background: 'var(--accent-violet)', top: '35%', left: '30%', animationDelay: '0s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: 'min(450px, 60vw)', height: 'min(450px, 60vw)', animationDelay: '-5s' }} />
@@ -689,7 +705,7 @@ export default function App() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.1, type: 'spring', stiffness: 100 }}
-            className="hero-title"
+            className="hero-title tracking-spotlight"
           >
             Swapnadip Ghosh
           </motion.h1>
@@ -1455,6 +1471,7 @@ export default function App() {
           &copy; {new Date().getFullYear()} Swapnadip Ghosh. All rights reserved.
         </p>
       </footer>
+      </ScrollSkewWrapper>
 
       {/* ── Day / Night Mode Toggle ─────────────────────────────────────────── */}
       <ThemeToggle />

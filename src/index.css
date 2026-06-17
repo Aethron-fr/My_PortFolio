@@ -186,9 +186,31 @@ body {
 
 /* Text Selection */
 ::selection {
-  background: rgba(225, 48, 108, 0.35);
+  background: var(--accent-primary);
   color: #fff;
-  text-shadow: 0 0 8px rgba(225, 48, 108, 0.5);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Mouse-tracking Spotlight for Typography */
+.tracking-spotlight {
+  background: radial-gradient(
+    circle 150px at var(--mouse-x) var(--mouse-y),
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.2) 100%
+  ) !important;
+  background-attachment: fixed !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+[data-theme="light"] .tracking-spotlight {
+  background: radial-gradient(
+    circle 150px at var(--mouse-x) var(--mouse-y),
+    #000000 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  ) !important;
+  background-attachment: fixed !important;
 }
 
 /* Typography Utility */
