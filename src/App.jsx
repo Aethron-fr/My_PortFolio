@@ -27,7 +27,6 @@ import GitHubGraph from './components/GitHubGraph';
 import KonamiCode from './components/KonamiCode';
 import TechSphere from './components/TechSphere';
 import MagneticWrapper from './components/MagneticWrapper';
-import CodeBackground from './components/CodeBackground';
 import TerminalMode from './components/TerminalMode';
 import AmbientBackground from './components/AmbientBackground';
 import ResumeViewer from './components/ResumeViewer';
@@ -630,7 +629,6 @@ export default function App() {
 
       {/* HERO SECTION */}
       <section id="home" className="hero-section" style={{ background: 'var(--bg-hero)' }}>
-        <CodeBackground />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-violet)', top: '35%', left: '30%', animationDelay: '0s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: 'min(450px, 60vw)', height: 'min(450px, 60vw)', animationDelay: '-5s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-primary)', top: '50%', left: '50%', width: 'min(650px, 80vw)', height: 'min(650px, 80vw)', opacity: 0.1, animationDelay: '-10s' }} />
