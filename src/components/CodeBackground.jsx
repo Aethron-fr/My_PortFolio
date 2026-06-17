@@ -48,7 +48,7 @@ export default function CodeBackground() {
     const codeLines = SOURCE_CODE.split('\n');
     return [...codeLines, ...codeLines, ...codeLines, ...codeLines, ...codeLines];
   });
-
+  
   return (
     <div style={{
       position: 'absolute',
@@ -62,12 +62,14 @@ export default function CodeBackground() {
       opacity: 0.04, // Extremely subtle
       maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%)',
       WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%)',
+      willChange: 'transform',
+      transform: 'translateZ(0)'
     }}>
       <style>
         {`
           @keyframes scrollCode {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-33.33%); }
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(0, -33.33%, 0); }
           }
         `}
       </style>
@@ -79,6 +81,8 @@ export default function CodeBackground() {
         padding: '2rem',
         animation: 'scrollCode 60s linear infinite',
         whiteSpace: 'pre',
+        willChange: 'transform',
+        transform: 'translateZ(0)',
       }}>
         {lines.map((line, i) => (
           <div key={i}>{line || ' '}</div>

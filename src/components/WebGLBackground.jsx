@@ -35,17 +35,16 @@ function Scene() {
   return (
     <Float speed={1.5} rotationIntensity={0.5} floatIntensity={2}>
       <mesh ref={meshRef} scale={viewport.width / 6}>
-        <torusKnotGeometry args={[1, 0.35, 128, 32]} />
+        <torusKnotGeometry args={[1, 0.35, 64, 16]} />
         <MeshTransmissionMaterial 
-          backside
-          backsideThickness={1}
+          backside={false}
           thickness={0.5}
           chromaticAberration={0.05}
           anisotropy={0.5}
           clearcoat={1}
           clearcoatRoughness={0.1}
           envMapIntensity={2}
-          resolution={1024}
+          resolution={256}
           color="#00f7ff"
         />
       </mesh>
@@ -66,7 +65,7 @@ export default function WebGLBackground() {
       opacity: 0.6,
       mixBlendMode: 'screen'
     }}>
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 10]} intensity={1} color="#00f7ff" />
         <directionalLight position={[-10, -10, -10]} intensity={1} color="#e1306c" />

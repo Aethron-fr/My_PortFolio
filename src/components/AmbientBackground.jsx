@@ -13,6 +13,8 @@ export default function AmbientBackground() {
       zIndex: -2, // Behind everything
       pointerEvents: 'none',
       overflow: 'hidden',
+      willChange: 'transform',
+      transform: 'translateZ(0)'
     }}>
       <WebGLBackground />
       <style>
