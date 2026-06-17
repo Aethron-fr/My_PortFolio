@@ -775,6 +775,66 @@ export default function App() {
               </MagneticWrapper>
             ))}
           </motion.div>
+
+          {/* Scroll Indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1.5 }}
+            style={{
+              position: 'absolute',
+              bottom: '5vh',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '12px'
+            }}
+          >
+            <span style={{ 
+              fontFamily: 'var(--font-mono)', 
+              fontSize: '0.65rem', 
+              color: 'var(--text-dim)', 
+              letterSpacing: '3px', 
+              textTransform: 'uppercase',
+              opacity: 0.7
+            }}>
+              Scroll to explore
+            </span>
+            <motion.a
+              href="#about"
+              aria-label="Scroll down"
+              className="interactive"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              style={{
+                width: '26px',
+                height: '42px',
+                border: '2px solid rgba(255,255,255,0.2)',
+                borderRadius: '16px',
+                display: 'flex',
+                justifyContent: 'center',
+                paddingTop: '6px',
+                textDecoration: 'none',
+                transition: 'border-color 0.3s'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+              onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+            >
+              <motion.div
+                animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                style={{
+                  width: '4px',
+                  height: '6px',
+                  backgroundColor: 'var(--accent-primary)',
+                  borderRadius: '2px',
+                  boxShadow: '0 0 8px var(--accent-primary)'
+                }}
+              />
+            </motion.a>
+          </motion.div>
         </div>
       </section>
 
