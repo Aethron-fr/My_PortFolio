@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Float, MeshTransmissionMaterial } from '@react-three/drei';
+import { Environment, Float } from '@react-three/drei';
 import * as THREE from 'three';
 
 function Scene() {
@@ -36,15 +36,16 @@ function Scene() {
     <Float speed={1.5} rotationIntensity={0.5} floatIntensity={2}>
       <mesh ref={meshRef} scale={viewport.width / 6}>
         <torusKnotGeometry args={[1, 0.35, 64, 16]} />
-        <MeshTransmissionMaterial 
-          backside={false}
+        <meshPhysicalMaterial 
+          transmission={1}
+          opacity={1}
+          metalness={0}
+          roughness={0.1}
+          ior={1.5}
           thickness={0.5}
-          chromaticAberration={0.05}
-          anisotropy={0.5}
           clearcoat={1}
           clearcoatRoughness={0.1}
           envMapIntensity={2}
-          resolution={256}
           color="#00f7ff"
         />
       </mesh>

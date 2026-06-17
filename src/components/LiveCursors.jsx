@@ -34,27 +34,26 @@ export default function LiveCursors() {
       }
     });
 
-    let frameId;
+    let lastUpdate = 0;
     const handleMouseMove = (e) => {
       myCursorRef.current = { x: e.clientX, y: e.clientY };
       
-      // Throttle DB updates to ~15fps to save Firebase quota
-      cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(() => {
+      const now = Date.now();
+      if (now - lastUpdate > 66) { // Throttle to ~15fps (1000ms / 15)
+        lastUpdate = now;
         set(myCursorDbRef, {
           x: e.clientX,
           y: e.clientY,
           color: MY_COLOR,
-          timestamp: Date.now()
+          timestamp: now
         });
-      });
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(frameId);
       unsubscribe();
       set(myCursorDbRef, null); // cleanup on unmount
     };
