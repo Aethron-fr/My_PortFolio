@@ -189,7 +189,6 @@ export default function FeaturedSpotlight() {
         overflow: 'hidden',
         cursor: 'default',
         boxShadow: 'var(--shadow-lg)',
-        border: '1px solid rgba(255, 255, 255, 0.15)', // Solid visible border
       }}
     >
       <div style={{
@@ -202,6 +201,18 @@ export default function FeaturedSpotlight() {
         position: 'absolute', inset: 0, backgroundImage: GRAIN,
         opacity: 0.05, mixBlendMode: 'overlay', pointerEvents: 'none',
         zIndex: 1, transform: 'translateZ(0)',
+      }} />
+
+      {/* Vibrant Gradient Border */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(135deg, #00F7FF, #8F00FF, #E1306C)',
+        padding: '2px', // Thicker border
+        borderRadius: 24,
+        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite: 'xor',
+        maskComposite: 'exclude',
+        zIndex: 2, pointerEvents: 'none',
       }} />
 
       <motion.div

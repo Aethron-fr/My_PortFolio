@@ -6,14 +6,14 @@ export default function CanvasBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d'); // Removed { alpha: false } to allow true transparency
 
     let animId;
     let resizeTicking = false;
 
     // ── Configuration ──
-    const STAR_COUNT = Math.floor((window.innerWidth * window.innerHeight) / 3000);
-    const DUST_COUNT = Math.floor((window.innerWidth * window.innerHeight) / 10000);
+    const STAR_COUNT = Math.floor((window.innerWidth * window.innerHeight) / 2000); // More stars
+    const DUST_COUNT = Math.floor((window.innerWidth * window.innerHeight) / 6000); // More dust
     
     const stars = [];
     const dustParticles = [];
@@ -29,10 +29,10 @@ export default function CanvasBackground() {
       reset(init = false) {
         this.x = Math.random() * canvas.width;
         this.y = init ? Math.random() * canvas.height : Math.random() * canvas.height;
-        this.size = Math.random() * 1.2 + 0.1;
-        this.baseAlpha = Math.random() * 0.5 + 0.1;
+        this.size = Math.random() * 1.5 + 0.4; // Larger stars
+        this.baseAlpha = Math.random() * 0.6 + 0.2; // Brighter
         this.alpha = this.baseAlpha;
-        this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+        this.twinkleSpeed = Math.random() * 0.03 + 0.01;
         this.twinkleDir = Math.random() > 0.5 ? 1 : -1;
       }
       update() {
@@ -49,7 +49,10 @@ export default function CanvasBackground() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `rgba(255, 255, 255, ${this.alpha})`;
         ctx.fill();
+        ctx.shadowBlur = 0; // Reset
       }
     }
 
@@ -61,12 +64,12 @@ export default function CanvasBackground() {
       reset(init = false) {
         this.x = Math.random() * canvas.width;
         this.y = init ? Math.random() * canvas.height : Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.vx = (Math.random() - 0.5) * 0.15;
-        this.vy = (Math.random() - 0.5) * 0.15;
-        this.baseAlpha = Math.random() * 0.3 + 0.05;
+        this.size = Math.random() * 3 + 1; // Larger dust
+        this.vx = (Math.random() - 0.5) * 0.2;
+        this.vy = (Math.random() - 0.5) * 0.2;
+        this.baseAlpha = Math.random() * 0.5 + 0.1; // Brighter
         
-        // Slight cyan or purple tint
+        // Vibrant cyan or purple tint
         this.color = Math.random() > 0.5 
           ? `rgba(0, 247, 255, ` // Cyan
           : `rgba(225, 48, 108, `; // Pink/Purple
