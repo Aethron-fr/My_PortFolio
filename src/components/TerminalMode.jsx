@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PhysicsSandbox from './PhysicsSandbox';
+import MatrixRain from './MatrixRain';
 import { sfx } from '../utils/sfx';
 
 const BOOT_SEQUENCE = [
@@ -20,6 +21,10 @@ const COMMANDS = {
     { text: "  contact      - Get email and social links", color: "#e2e8f0" },
     { text: "  sendmail     - Send an interactive email", color: "var(--accent-cyber)" },
     { text: "  gravity      - Enable physics engine", color: "#fbbf24" },
+    { text: "  matrix       - Initialize digital rain overlay", color: "#39d353" },
+    { text: "  hack         - Execute cinematic bypass payload", color: "#ff5f56" },
+    { text: "  selfdestruct - Terminate instance forcefully", color: "#ff5f56" },
+    { text: "  theme [name] - Change color (hacker, cyber, vapor, default)", color: "var(--accent-violet)" },
     { text: "  clear        - Clear terminal output", color: "#e2e8f0" },
     { text: "  exit         - Close the terminal mode", color: "#e2e8f0" }
   ],
@@ -67,6 +72,13 @@ const COMMANDS = {
   ]
 };
 
+const THEMES = {
+  hacker: '#39d353',
+  cyber: '#00f7ff',
+  vapor: '#ff71ce',
+  default: 'var(--accent-primary)'
+};
+
 const TypewriterLine = ({ line, onComplete }) => {
   const [displayedText, setDisplayedText] = useState('');
   
@@ -84,7 +96,7 @@ const TypewriterLine = ({ line, onComplete }) => {
     return () => clearInterval(interval);
   }, [line, onComplete]);
 
-  return <span style={{ color: line.color, whiteSpace: 'pre-wrap' }}>{displayedText}</span>;
+  return <span style={{ color: line.color, whiteSpace: 'pre-wrap', fontWeight: line.bold ? 'bold' : 'normal' }}>{displayedText}</span>;
 };
 
 const ProgressBar = ({ onComplete }) => {
@@ -108,7 +120,7 @@ const ProgressBar = ({ onComplete }) => {
   const emptyLength = 20 - filledLength;
   const bar = '█'.repeat(filledLength) + '░'.repeat(emptyLength);
 
-  return <span style={{ color: "var(--accent-primary)" }}>[ {bar} ] {Math.min(progress, 100)}%</span>;
+  return <span style={{ color: "inherit" }}>[ {bar} ] {Math.min(progress, 100)}%</span>;
 };
 
 export default function TerminalMode({ isOpen, onClose }) {
@@ -118,6 +130,9 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [bootIndex, setBootIndex] = useState(0);
   const [isBooted, setIsBooted] = useState(false);
   const [isGravityActive, setIsGravityActive] = useState(false);
+  const [isMatrixActive, setIsMatrixActive] = useState(false);
+  const [isSelfDestructing, setIsSelfDestructing] = useState(false);
+  const [terminalTheme, setTerminalTheme] = useState('var(--accent-primary)');
   
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -157,6 +172,9 @@ export default function TerminalMode({ isOpen, onClose }) {
       setHistoryIndex(-1);
       setTerminalState('IDLE');
       setIsGravityActive(false);
+      setIsMatrixActive(false);
+      setIsSelfDestructing(false);
+      setTerminalTheme('var(--accent-primary)');
     }
   }, [isOpen, bootIndex, isBooted]);
 
@@ -251,6 +269,52 @@ export default function TerminalMode({ isOpen, onClose }) {
       return;
     }
 
+    if (lowerCmd === 'sudo') {
+      newHistory.push({ type: 'output', lines: [{ text: "Swapnadip is not in the sudoers file. This incident will be reported.", color: "#ff5f56" }] });
+      setHistory(newHistory);
+      return;
+    }
+
+    if (lowerCmd === 'matrix') {
+      setIsMatrixActive(true);
+      newHistory.push({ type: 'output', lines: [{ text: "Wake up, Neo...", color: "#39d353" }] });
+      setHistory(newHistory);
+      return;
+    }
+
+    if (lowerCmd === 'selfdestruct') {
+      setIsTyping(true);
+      setIsSelfDestructing(true);
+      newHistory.push({ type: 'output', lines: [
+        { text: "WARNING: SELF DESTRUCT SEQUENCE INITIATED", color: "#ff5f56", bold: true },
+        { text: "T-MINUS 3 SECONDS...", color: "#ff5f56", delay: 800 }
+      ]});
+      setHistory(newHistory);
+      setTimeout(() => {
+        onClose();
+      }, 3000);
+      return;
+    }
+
+    if (lowerCmd === 'hack') {
+      setIsTyping(true);
+      newHistory.push({ type: 'progress', task: 'hack' });
+      setHistory(newHistory);
+      return;
+    }
+
+    if (lowerCmd.startsWith('theme ')) {
+      const colorName = lowerCmd.split(' ')[1];
+      if (THEMES[colorName]) {
+        setTerminalTheme(THEMES[colorName]);
+        newHistory.push({ type: 'output', lines: [{ text: `Theme successfully updated to ${colorName}`, color: THEMES[colorName] }] });
+      } else {
+        newHistory.push({ type: 'output', lines: [{ text: `Unknown theme. Available: hacker, cyber, vapor, default`, color: "#ff5f56" }] });
+      }
+      setHistory(newHistory);
+      return;
+    }
+
     if (COMMANDS[lowerCmd]) {
       setIsTyping(true);
       newHistory.push({ type: 'output', lines: COMMANDS[lowerCmd] });
@@ -273,6 +337,14 @@ export default function TerminalMode({ isOpen, onClose }) {
           { text: "Message sent successfully.", color: "#27c93f" },
           { text: "Recipient: ghoshswapnadip7@gmail.com", color: "#94a3b8" }
         ]});
+      } else if (lastProgress?.task === 'hack') {
+        const fakeLogs = [];
+        for(let i=0; i<8; i++) {
+          fakeLogs.push({ text: `Bypassing proxy node [${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.1.1]... SUCCESS`, color: "#94a3b8", delay: 10 });
+        }
+        fakeLogs.push({ text: "Payload delivered securely to remote server.", color: "#39d353", delay: 50 });
+        fakeLogs.push({ text: "ACCESS GRANTED", color: "#39d353", bold: true, delay: 100 });
+        updated.push({ type: 'output', lines: fakeLogs });
       } else {
         window.dispatchEvent(new Event('open-resume'));
         updated.push({ type: 'output', lines: [
@@ -291,6 +363,7 @@ export default function TerminalMode({ isOpen, onClose }) {
   return (
     <>
       <PhysicsSandbox active={isGravityActive} onClose={() => setIsGravityActive(false)} />
+      <MatrixRain active={isMatrixActive} />
       <AnimatePresence>
         {isOpen && (
         <motion.div
@@ -321,6 +394,7 @@ export default function TerminalMode({ isOpen, onClose }) {
             exit={{ scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onClick={() => inputRef.current?.focus()}
+            className={isSelfDestructing ? "terminal-self-destruct" : ""}
             style={{
               width: '100%',
               maxWidth: '900px',
@@ -394,12 +468,12 @@ export default function TerminalMode({ isOpen, onClose }) {
                     <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
                       {entry.type === 'input' && (
                         <div style={{ display: 'flex' }}>
-                          <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>{entry.prefix || '~ ❯'}</span>
+                          <span style={{ color: terminalTheme, marginRight: '12px' }}>{entry.prefix || '~ ❯'}</span>
                           <span style={{ color: '#fff' }}>{entry.text}</span>
                         </div>
                       )}
                       {entry.type === 'progress' && (
-                        <div style={{ paddingLeft: '24px', margin: '4px 0' }}>
+                        <div style={{ paddingLeft: '24px', margin: '4px 0', color: terminalTheme }}>
                           <ProgressBar onComplete={finishProgress} />
                         </div>
                       )}
@@ -426,7 +500,7 @@ export default function TerminalMode({ isOpen, onClose }) {
               {/* Input Line */}
               {isBooted && (
                 <form onSubmit={handleCommand} style={{ display: 'flex', marginTop: '4px' }}>
-                  <span style={{ color: 'var(--accent-primary)', marginRight: '12px' }}>
+                  <span style={{ color: terminalTheme, marginRight: '12px', transition: 'color 0.3s' }}>
                     {terminalState === 'IDLE' ? '~ ❯' : '>'}
                   </span>
                   <input
@@ -447,7 +521,8 @@ export default function TerminalMode({ isOpen, onClose }) {
                       flex: 1,
                       fontFamily: 'inherit',
                       fontSize: 'inherit',
-                      caretColor: 'var(--accent-primary)'
+                      caretColor: terminalTheme,
+                      transition: 'caret-color 0.3s'
                     }}
                     autoComplete="off"
                     spellCheck="false"
