@@ -21,6 +21,7 @@ const COMMANDS = {
     { text: "  contact      - Get email and social links", color: "#e2e8f0" },
     { text: "  sendmail     - Send an interactive email", color: "var(--accent-cyber)" },
     { text: "  gravity      - Enable physics engine", color: "#fbbf24" },
+    { text: "  stable       - Restore DOM stability (disable effects)", color: "#39d353" },
     { text: "  matrix       - Initialize digital rain overlay", color: "#39d353" },
     { text: "  hack         - Execute cinematic bypass payload", color: "#ff5f56" },
     { text: "  selfdestruct - Terminate instance forcefully", color: "#ff5f56" },
@@ -266,6 +267,16 @@ export default function TerminalMode({ isOpen, onClose }) {
       ]});
       setHistory(newHistory);
       setTimeout(() => setIsGravityActive(true), 800);
+      return;
+    }
+
+    if (lowerCmd === 'stable' || lowerCmd === 'restore') {
+      setIsGravityActive(false);
+      setIsMatrixActive(false);
+      setIsSelfDestructing(false);
+      setTerminalTheme('var(--accent-primary)');
+      newHistory.push({ type: 'output', lines: [{ text: "System stabilized. All active physics and overrides disabled.", color: "#39d353" }] });
+      setHistory(newHistory);
       return;
     }
 
