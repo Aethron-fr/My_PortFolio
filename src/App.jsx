@@ -196,6 +196,48 @@ function ThemeToggle() {
   );
 }
 
+// ── X-Ray Architecture Mode Toggle ───────────────────────────────────────────
+function XRayToggle() {
+  const [isXRay, setIsXRay] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isXRay) document.body.classList.add('xray-mode');
+    else document.body.classList.remove('xray-mode');
+  }, [isXRay]);
+
+  return (
+    <div style={{ position: 'fixed', bottom: 32, right: 100, zIndex: 9999 }}>
+      <MagneticWrapper intensity={0.3}>
+        <motion.button
+          onClick={() => setIsXRay(!isXRay)}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.1, rotate: -5 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          aria-label="Toggle X-Ray Mode"
+          style={{
+            position: 'relative',
+            width: 52, height: 52, borderRadius: '50%',
+            border: `1px solid ${isHovered || isXRay ? 'rgba(0,247,255,0.8)' : 'rgba(0,247,255,0.2)'}`,
+            outline: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: isXRay ? 'rgba(0,247,255,0.1)' : 'rgba(10,12,22,0.60)',
+            boxShadow: isHovered || isXRay ? '0 8px 24px rgba(0,247,255,0.4)' : '0 4px 12px rgba(0,0,0,0.2)',
+            backdropFilter: 'blur(12px)',
+            color: isHovered || isXRay ? '#00f7ff' : '#475569',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <Code size={20} strokeWidth={2} />
+        </motion.button>
+      </MagneticWrapper>
+    </div>
+  );
+}
 
 
 export default function App() {
@@ -678,7 +720,7 @@ export default function App() {
 
       {/* HERO SECTION */}
       <ScrollSkewWrapper>
-      <section id="home" className="hero-section" style={{ background: 'var(--bg-hero)' }}>
+      <section id="home" className="hero-section" data-component="HeroSection" style={{ background: 'var(--bg-hero)' }}>
         <div className="hero-glow-blob" style={{ background: 'var(--accent-violet)', top: '35%', left: '30%', animationDelay: '0s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: 'min(450px, 60vw)', height: 'min(450px, 60vw)', animationDelay: '-5s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-primary)', top: '50%', left: '50%', width: 'min(650px, 80vw)', height: 'min(650px, 80vw)', opacity: 0.1, animationDelay: '-10s' }} />
@@ -875,7 +917,7 @@ export default function App() {
       </div>
 
       {/* ABOUT SECTION */}
-      <section id="about" style={{
+      <section id="about" data-component="AboutSection" style={{
         position: 'relative', zIndex: 2,
         padding: '80px 0 60px',
         background: 'linear-gradient(to bottom, transparent, var(--bg-section) 15%)',
@@ -907,7 +949,7 @@ export default function App() {
       </section>
 
       {/* FEATURED EXPERIENCE — OneLastSmile */}
-      <section id="experience" style={{
+      <section id="experience" data-component="FeaturedExperience" style={{
         position: 'relative', zIndex: 2,
         padding: '60px 0 80px',
         background: 'var(--bg-section-alt)',
@@ -936,7 +978,7 @@ export default function App() {
       </section>
 
       {/* SELECTED WORK */}
-      <section id="work" style={{
+      <section id="work" data-component="SelectedWork" style={{
         position: 'relative', zIndex: 2,
         padding: '60px 0 80px',
         background: 'var(--bg-section)',
@@ -975,7 +1017,7 @@ export default function App() {
       </Suspense>
 
       {/* DEVELOPER JOURNEY */}
-      <section id="journey" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'var(--bg-section-alt)' }}>
+      <section id="journey" data-component="DeveloperJourney" className="section-padding" style={{ position: 'relative', zIndex: 2, background: 'var(--bg-section-alt)' }}>
         <div className="container">
           {/* Section header */}
           <div style={{ marginBottom: 48 }}>
@@ -1160,7 +1202,7 @@ export default function App() {
       </section>
 
       {/* CONTACT SECTION */}
-      <section id="contact" className="section-padding" style={{
+      <section id="contact" data-component="ContactSection" className="section-padding" style={{
         position: 'relative', zIndex: 2,
         background: 'var(--bg-section)',
       }}>
@@ -1381,7 +1423,7 @@ export default function App() {
         </div>
       </section>
 
-      <footer className="main-footer" style={{ position: 'relative', zIndex: 2, padding: '120px 0 80px', background: 'var(--bg-footer)' }}>
+      <footer className="main-footer" data-component="Footer" style={{ position: 'relative', zIndex: 2, padding: '120px 0 80px', background: 'var(--bg-footer)' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <p style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
@@ -1475,6 +1517,7 @@ export default function App() {
 
       {/* ── Day / Night Mode Toggle ─────────────────────────────────────────── */}
       <ThemeToggle />
+      <XRayToggle />
 
 
       {/* BUG-015: Removed inline <style> block — all styles now live in App.css to avoid
