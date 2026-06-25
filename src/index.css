@@ -533,3 +533,47 @@ p {
     padding-bottom: 120px !important;
   }
 }
+
+/* =========================================================
+   PHASE 6: ELITE X-RAY ARCHITECTURE MODE
+   ========================================================= */
+body.xray-mode * {
+  background: transparent !important;
+  border: 1px solid rgba(0, 247, 255, 0.15) !important;
+  box-shadow: none !important;
+  color: rgba(0, 247, 255, 0.6) !important;
+  backdrop-filter: none !important;
+  text-shadow: none !important;
+  transition: all 0.3s ease !important;
+}
+
+body.xray-mode img, 
+body.xray-mode canvas,
+body.xray-mode svg {
+  opacity: 0.2 !important;
+  filter: grayscale(100%) sepia(100%) hue-rotate(130deg) brightness(1.5) !important;
+}
+
+body.xray-mode [data-component] {
+  position: relative !important;
+  border: 1px dashed rgba(255, 48, 108, 0.8) !important;
+}
+
+body.xray-mode [data-component]::before {
+  content: "<" attr(data-component) " />";
+  position: absolute;
+  top: -12px;
+  left: 10px;
+  background: #050508 !important;
+  color: #ff306c !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 2px 8px !important;
+  border: 1px solid #ff306c !important;
+  border-radius: 4px !important;
+  z-index: 999999 !important;
+  pointer-events: none !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
