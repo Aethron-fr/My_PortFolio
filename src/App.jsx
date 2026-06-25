@@ -1203,59 +1203,115 @@ export default function App() {
           </div>
 
           {/* Bio + Philosophy grid */}
-          <div className="bento-grid" style={{ marginBottom: '52px' }}>
+          <div className="bento-grid" style={{ marginBottom: '40px' }}>
             {/* Panel 1: Bio */}
             <div
               className="glass-panel panel-padding"
-              style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+              style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-cyber)', marginBottom: '14px' }}>
-                <User size={18} />
-                <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Profile</span>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-cyber)', marginBottom: '14px' }}>
+                  <User size={18} />
+                  <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Profile</span>
+                </div>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 500, marginBottom: '16px', color: 'var(--text-primary)' }}>Swapnadip Ghosh</h3>
+                <p style={{ lineHeight: '1.8', marginBottom: '16px', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+                  Full Stack Developer based in West Bengal, India. I work across React, Node, and Python —
+                  writing interfaces that load fast, animate cleanly, and hold up under real conditions.
+                </p>
+                <p style={{ lineHeight: '1.8', color: 'var(--text-dim)', fontSize: '0.92rem' }}>
+                  I&apos;m most interested in the intersection of engineering quality and interaction design —
+                  where the code is invisible and only the experience remains.
+                </p>
               </div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 500, marginBottom: '16px', color: 'var(--text-primary)' }}>Swapnadip Ghosh</h3>
-              <p style={{ lineHeight: '1.8', marginBottom: '16px', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                Full Stack Developer based in West Bengal, India. I work across React, Node, and Python —
-                writing interfaces that load fast, animate cleanly, and hold up under real conditions.
-              </p>
-              <p style={{ lineHeight: '1.8', color: 'var(--text-dim)', fontSize: '0.92rem' }}>
-                I'm most interested in the intersection of engineering quality and interaction design —
-                where the code is invisible and only the experience remains.
-              </p>
-              {/* Feature 4: GitHub Contribution Graph */}
-              <GitHubGraph />
+
+              {/* Stats row */}
+              <div style={{ display: 'flex', gap: '32px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border-glass)' }}>
+                {[
+                  { value: '15+', label: 'Projects Built' },
+                  { value: '2y', label: 'Experience' },
+                  { value: '3k+', label: 'Commits' },
+                  { value: '100%', label: 'Passion' },
+                ].map(({ value, label }) => (
+                  <div key={label}>
+                    <div style={{ fontSize: '1.6rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{value}</div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '1.5px', marginTop: '6px', fontFamily: 'var(--font-mono)' }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* GitHub Contribution Graph */}
+              <div style={{ marginTop: '28px' }}>
+                <GitHubGraph />
+              </div>
             </div>
 
-            {/* Panel 2: Philosophy */}
+            {/* Panel 2: Philosophy + Quick Info */}
             <div
               className="glass-panel panel-padding"
-              style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+              style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '28px' }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-secondary)', marginBottom: '14px' }}>
-                <Award size={18} />
-                <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Philosophy</span>
-              </div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 400, color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.5 }}>
-                "Serious about the craft. Not about the performance of it."
-              </h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', lineHeight: '1.7' }}>
-                Good interfaces feel obvious in hindsight. Getting there takes obsessive iteration.
-              </p>
-              <div style={{ marginTop: '100px' }}>
-                <h3 style={{ 
-                  color: 'var(--accent-primary)', 
-                  textTransform: 'uppercase', 
-                  fontSize: '0.8rem', 
-                  letterSpacing: '2px', 
-                  marginBottom: '20px' 
-                }}>
-                  Core Tech Stack
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-secondary)', marginBottom: '14px' }}>
+                  <Award size={18} />
+                  <span style={{ fontWeight: '600', letterSpacing: '1px', fontSize: '0.78rem', textTransform: 'uppercase', opacity: 0.7 }}>Philosophy</span>
+                </div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 400, color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.6 }}>
+                  &ldquo;Serious about the craft. Not about the performance of it.&rdquo;
                 </h3>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', lineHeight: '1.7' }}>
+                  Good interfaces feel obvious in hindsight. Getting there takes obsessive iteration.
+                </p>
+              </div>
 
-                <TechStackBento />
+              {/* Tech stack pills */}
+              <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '24px' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '2px', color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '14px' }}>
+                  Currently using
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {['React 19', 'Vite', 'Framer', 'GSAP', 'Three.js', 'Node.js', 'MongoDB', 'TypeScript'].map(tech => (
+                    <span key={tech} style={{
+                      padding: '5px 10px',
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid var(--border-glass)',
+                      borderRadius: '6px',
+                      fontSize: '0.73rem',
+                      color: 'var(--text-secondary)',
+                      fontFamily: 'var(--font-mono)',
+                    }}>
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Availability */}
+              <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '24px', marginTop: 'auto' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#39d353', boxShadow: '0 0 10px rgba(57,211,83,0.6)', flexShrink: 0, animation: 'pulse 2s infinite' }} />
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: '#39d353', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    Open to work
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
+                  Available for internships, freelance projects &amp; open-source collaboration.
+                </p>
               </div>
             </div>
           </div>
+
+          {/* Tech Stack Bento — Full Width */}
+          <div style={{ marginBottom: '52px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '4px', color: 'var(--text-dim)', textTransform: 'uppercase' }}>
+                Core Tech Stack
+              </div>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border-glass)' }} />
+            </div>
+            <TechStackBento />
+          </div>
+
 
           {/* 3D Tech Sphere */}
           <TechSphere />
