@@ -202,6 +202,8 @@ function XRayToggle() {
   const [isHovered, setIsHovered] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
 
+  const [devStats, setDevStats] = useState({ w: 0, h: 0, nodes: 0 });
+
   // Show intro hint for 6 seconds on mount
   useEffect(() => {
     const t = setTimeout(() => setShowIntro(false), 6000);
@@ -209,13 +211,60 @@ function XRayToggle() {
   }, []);
 
   useEffect(() => {
-    if (isXRay) document.body.classList.add('xray-mode');
-    else document.body.classList.remove('xray-mode');
-    return () => document.body.classList.remove('xray-mode');
+    if (isXRay) {
+      document.body.classList.add('xray-mode');
+      const updateStats = () => {
+        setDevStats({
+          w: window.innerWidth,
+          h: window.innerHeight,
+          nodes: document.querySelectorAll('*').length
+        });
+      };
+      updateStats();
+      window.addEventListener('resize', updateStats);
+      return () => {
+        window.removeEventListener('resize', updateStats);
+        document.body.classList.remove('xray-mode');
+      };
+    } else {
+      document.body.classList.remove('xray-mode');
+    }
   }, [isXRay]);
 
   return (
-    <div style={{ position: 'fixed', bottom: 32, right: 100, zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+    <>
+      {/* Developer Stats Overlay */}
+      <AnimatePresence>
+        {isXRay && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            style={{
+              position: 'fixed', top: 32, left: 32, zIndex: 99999,
+              background: 'rgba(1, 3, 9, 0.95)',
+              border: '1px solid rgba(0, 247, 255, 0.4)',
+              padding: '16px 20px', borderRadius: '8px',
+              color: '#00f7ff', fontFamily: 'var(--font-mono)', fontSize: '11px',
+              boxShadow: '0 0 30px rgba(0,247,255,0.15), inset 0 0 10px rgba(0,247,255,0.1)',
+              pointerEvents: 'none'
+            }}
+          >
+            <div style={{ marginBottom: 12, borderBottom: '1px dashed rgba(0,247,255,0.3)', paddingBottom: 6, fontWeight: 'bold', letterSpacing: '1px' }}>
+              ► REACT DEVTOOLS :: X-RAY
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '6px 24px', opacity: 0.8 }}>
+              <span>Viewport:</span> <span>{devStats.w} × {devStats.h}</span>
+              <span>DPR:</span> <span>{window.devicePixelRatio}x</span>
+              <span>DOM Nodes:</span> <span>{devStats.nodes}</span>
+              <span>Render Target:</span> <span>60 FPS</span>
+              <span>React Engine:</span> <span>v18.2.0</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
 
       {/* Intro tooltip */}
       <AnimatePresence>
@@ -229,7 +278,7 @@ function XRayToggle() {
             style={{
               position: 'absolute',
               bottom: 64,
-              right: 0,
+              left: 0,
               whiteSpace: 'nowrap',
               background: 'rgba(1, 3, 9, 0.95)',
               border: '1px solid rgba(0,247,255,0.4)',
@@ -245,7 +294,7 @@ function XRayToggle() {
           >
             {isXRay ? '◆ X-RAY ACTIVE — click to restore' : '◆ X-RAY MODE — see the architecture'}
             <div style={{
-              position: 'absolute', bottom: -5, right: 20,
+              position: 'absolute', bottom: -5, left: 20,
               width: 8, height: 8, background: 'rgba(1,3,9,0.95)',
               border: '1px solid rgba(0,247,255,0.4)',
               borderTop: 'none', borderLeft: 'none',
@@ -350,6 +399,7 @@ function XRayToggle() {
         {isXRay ? 'X-RAY ON' : 'X-RAY'}
       </motion.span>
     </div>
+    </>
   );
 }
 
