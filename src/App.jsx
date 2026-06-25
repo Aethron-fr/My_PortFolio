@@ -31,6 +31,7 @@ import ResumeViewer from './components/ResumeViewer';
 import Preloader from './components/Preloader';
 import LiveCursors from './components/LiveCursors';
 import ScrollSkewWrapper from './components/ScrollSkewWrapper';
+import PhysicsSkillsGraph from './components/PhysicsSkillsGraph';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -1240,36 +1241,19 @@ export default function App() {
               <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', lineHeight: '1.7' }}>
                 Good interfaces feel obvious in hindsight. Getting there takes obsessive iteration.
               </p>
-            </div>
-          </div>
+              <div style={{ marginTop: '100px' }}>
+                <h3 style={{ 
+                  color: 'var(--accent-primary)', 
+                  textTransform: 'uppercase', 
+                  fontSize: '0.8rem', 
+                  letterSpacing: '2px', 
+                  marginBottom: '20px' 
+                }}>
+                  Core Tech Stack
+                </h3>
 
-          {/* Skills */}
-          <div style={{ marginBottom: '52px' }}>
-            <div style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-              letterSpacing: '4px', color: 'var(--text-dim)',
-              textTransform: 'uppercase', marginBottom: 28,
-            }}>
-              Core Stack
-            </div>
-            <div className="skills-grid">
-              {skillsList.map((skill, idx) => (
-                <div key={idx} className="skill-card">
-                  <div style={{
-                    width: '48px', height: '48px', borderRadius: '10px',
-                    background: 'var(--bg-card)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '1px solid var(--border-glass)', marginBottom: '10px'
-                  }}>
-                    {skill.icon}
-                  </div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>{skill.name}</h4>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: '1.4', margin: '4px 0 0 0' }}>{skill.desc}</p>
-                  <div style={{ width: '100%', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', marginTop: '8px', overflow: 'hidden' }}>
-                    <div style={{ width: skill.level, height: '100%', background: 'var(--insta-gradient)' }} />
-                  </div>
-                </div>
-              ))}
+                <PhysicsSkillsGraph />
+              </div>
             </div>
           </div>
 
