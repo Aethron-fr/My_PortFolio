@@ -335,19 +335,20 @@ export default function TerminalMode({ isOpen, onClose }) {
       const histLines = commandHistory.length === 0
         ? [{ text: 'No command history yet.', color: '#94a3b8' }]
         : [
-            { text: Recalled +""+    if (lowerCmd === 'play') {"{commandHistory.length}"+""+ commands from memory:, color: 'var(--accent-primary)' },
+            { text: 'Recalled ' + commandHistory.length + ' commands from memory:', color: 'var(--accent-primary)' },
             ...commandHistory.slice(-20).map((cmd, i) => ({
-              text:   +""+    if (lowerCmd === 'play') {"{String(i+1).padStart(3,' ')} "+""+ +""+    if (lowerCmd === 'play') {"{cmd}"+"",
+              text: '  ' + String(i + 1).padStart(3, ' ') + '  ' + cmd,
               color: '#e2e8f0'
             })),
             { text: '', color: '' },
-            { text: "Tip: ?/? to navigate. Type 'clear-history' to wipe memory.", color: 'rgba(255,255,255,0.25)' },
+            { text: "Tip: Arrow Up/Down to navigate. Type 'clear-history' to wipe.", color: 'rgba(255,255,255,0.25)' },
           ];
       setIsTyping(true);
       newHistory.push({ type: 'output', lines: histLines });
       setHistory(newHistory);
       return;
     }
+
     if (lowerCmd === 'clear-history') {
       localStorage.removeItem('terminalCmdHistory');
       setCommandHistory([]);
