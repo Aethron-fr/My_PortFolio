@@ -31,7 +31,6 @@ import ResumeViewer from './components/ResumeViewer';
 import Preloader from './components/Preloader';
 import LiveCursors from './components/LiveCursors';
 import ScrollSkewWrapper from './components/ScrollSkewWrapper';
-import FluidBackground from './components/FluidBackground';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -623,7 +622,6 @@ export default function App() {
 
   return (
     <>
-      <FluidBackground />
       {!isPreloaderDone && <Preloader onComplete={() => setIsPreloaderDone(true)} />}
       
       {isPreloaderDone && (
