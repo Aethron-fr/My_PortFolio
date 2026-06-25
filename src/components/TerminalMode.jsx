@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PhysicsSandbox from './PhysicsSandbox';
 import MatrixRain from './MatrixRain';
+import NeonSnakeGame from './NeonSnakeGame';
 import { sfx } from '../utils/sfx';
 
 const BOOT_SEQUENCE = [
@@ -24,6 +25,7 @@ const COMMANDS = {
     { text: "  stable       - Restore DOM stability (disable effects)", color: "#39d353" },
     { text: "  matrix       - Initialize digital rain overlay", color: "#39d353" },
     { text: "  hack         - Execute cinematic bypass payload", color: "#ff5f56" },
+    { text: "  play         - Initialize Neon Snake Arcade", color: "var(--accent-primary)" },
     { text: "  selfdestruct - Terminate instance forcefully", color: "#ff5f56" },
     { text: "  theme [name] - Change color (hacker, cyber, vapor, default)", color: "var(--accent-violet)" },
     { text: "  clear        - Clear terminal output", color: "#e2e8f0" },
@@ -132,6 +134,7 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [isBooted, setIsBooted] = useState(false);
   const [isGravityActive, setIsGravityActive] = useState(false);
   const [isMatrixActive, setIsMatrixActive] = useState(false);
+  const [isSnakeMode, setIsSnakeMode] = useState(false);
   const [isSelfDestructing, setIsSelfDestructing] = useState(false);
   const [terminalTheme, setTerminalTheme] = useState('var(--accent-primary)');
   
@@ -174,6 +177,7 @@ export default function TerminalMode({ isOpen, onClose }) {
       setTerminalState('IDLE');
       setIsGravityActive(false);
       setIsMatrixActive(false);
+      setIsSnakeMode(false);
       setIsSelfDestructing(false);
       setTerminalTheme('var(--accent-primary)');
     }
@@ -273,6 +277,7 @@ export default function TerminalMode({ isOpen, onClose }) {
     if (lowerCmd === 'stable' || lowerCmd === 'restore') {
       setIsGravityActive(false);
       setIsMatrixActive(false);
+      setIsSnakeMode(false);
       setIsSelfDestructing(false);
       setTerminalTheme('var(--accent-primary)');
       newHistory.push({ type: 'output', lines: [{ text: "System stabilized. All active physics and overrides disabled.", color: "#39d353" }] });
@@ -289,6 +294,13 @@ export default function TerminalMode({ isOpen, onClose }) {
     if (lowerCmd === 'matrix') {
       setIsMatrixActive(true);
       newHistory.push({ type: 'output', lines: [{ text: "Wake up, Neo...", color: "#39d353" }] });
+      setHistory(newHistory);
+      return;
+    }
+
+    if (lowerCmd === 'play') {
+      setIsSnakeMode(true);
+      newHistory.push({ type: 'output', lines: [{ text: "Initializing Neon Snake Arcade...", color: "var(--accent-primary)" }] });
       setHistory(newHistory);
       return;
     }
@@ -443,13 +455,28 @@ export default function TerminalMode({ isOpen, onClose }) {
                 cursor: 'grab'
               }}
             >
-              <div onClick={onClose} style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f56', cursor: 'pointer' }} />
+              <button 
+                onClick={onClose}
+                style={{
+                  background: 'transparent', border: 'none', color: '#94a3b8',
+                  cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center'
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e' }} />
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27c93f' }} />
               <span style={{ marginLeft: '12px', color: '#94a3b8', fontSize: '0.75rem', fontFamily: 'monospace' }}>swapnadip@dev-env:~ (Draggable)</span>
             </div>
 
-            {/* Terminal Content */}
+            {isSnakeMode && (
+              <NeonSnakeGame onExit={() => setIsSnakeMode(false)} />
+            )}
+
+            {/* Terminal Body */}
             <div style={{
               padding: '20px',
               flex: 1,
