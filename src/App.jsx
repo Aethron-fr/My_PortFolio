@@ -354,17 +354,17 @@ function XRayToggle() {
               outline: 'none', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: isXRay
-                ? 'linear-gradient(135deg, rgba(0,247,255,0.15), rgba(255,48,108,0.08))'
+                ? 'var(--bg-card)'
                 : isHovered
-                  ? 'rgba(0,247,255,0.06)'
-                  : 'rgba(10,12,22,0.80)',
+                  ? 'var(--bg-surface)'
+                  : 'var(--bg-card)',
               boxShadow: isXRay
                 ? '0 0 30px rgba(0,247,255,0.5), inset 0 0 20px rgba(0,247,255,0.1)'
                 : isHovered
-                  ? '0 8px 24px rgba(0,247,255,0.25)'
-                  : '0 4px 12px rgba(0,0,0,0.3)',
+                  ? 'var(--shadow-md)'
+                  : 'var(--shadow-sm)',
               backdropFilter: 'blur(12px)',
-              color: isXRay ? '#00f7ff' : isHovered ? '#00f7ff' : '#475569',
+              color: isXRay ? 'var(--accent-cyber)' : isHovered ? 'var(--accent-primary)' : 'var(--text-secondary)',
               transition: 'all 0.3s ease',
             }}
           >
