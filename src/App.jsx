@@ -200,41 +200,155 @@ function ThemeToggle() {
 function XRayToggle() {
   const [isXRay, setIsXRay] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+
+  // Show intro hint for 6 seconds on mount
+  useEffect(() => {
+    const t = setTimeout(() => setShowIntro(false), 6000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (isXRay) document.body.classList.add('xray-mode');
     else document.body.classList.remove('xray-mode');
+    return () => document.body.classList.remove('xray-mode');
   }, [isXRay]);
 
   return (
-    <div style={{ position: 'fixed', bottom: 32, right: 100, zIndex: 9999 }}>
+    <div style={{ position: 'fixed', bottom: 32, right: 100, zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+
+      {/* Intro tooltip */}
+      <AnimatePresence>
+        {(showIntro || isHovered) && (
+          <motion.div
+            key="xray-tooltip"
+            initial={{ opacity: 0, y: 6, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              position: 'absolute',
+              bottom: 64,
+              right: 0,
+              whiteSpace: 'nowrap',
+              background: 'rgba(1, 3, 9, 0.95)',
+              border: '1px solid rgba(0,247,255,0.4)',
+              borderRadius: 8,
+              padding: '8px 14px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.65rem',
+              letterSpacing: '1px',
+              color: '#00f7ff',
+              boxShadow: '0 0 20px rgba(0,247,255,0.2)',
+              pointerEvents: 'none',
+            }}
+          >
+            {isXRay ? '◆ X-RAY ACTIVE — click to restore' : '◆ X-RAY MODE — see the architecture'}
+            <div style={{
+              position: 'absolute', bottom: -5, right: 20,
+              width: 8, height: 8, background: 'rgba(1,3,9,0.95)',
+              border: '1px solid rgba(0,247,255,0.4)',
+              borderTop: 'none', borderLeft: 'none',
+              transform: 'rotate(45deg)',
+            }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <MagneticWrapper intensity={0.3}>
-        <motion.button
-          onClick={() => setIsXRay(!isXRay)}
-          onHoverStart={() => setIsHovered(true)}
-          onHoverEnd={() => setIsHovered(false)}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.1, rotate: -5 }}
-          whileTap={{ scale: 0.9 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          aria-label="Toggle X-Ray Mode"
-          style={{
-            position: 'relative',
-            width: 52, height: 52, borderRadius: '50%',
-            border: `1px solid ${isHovered || isXRay ? 'rgba(0,247,255,0.8)' : 'rgba(0,247,255,0.2)'}`,
-            outline: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: isXRay ? 'rgba(0,247,255,0.1)' : 'rgba(10,12,22,0.60)',
-            boxShadow: isHovered || isXRay ? '0 8px 24px rgba(0,247,255,0.4)' : '0 4px 12px rgba(0,0,0,0.2)',
-            backdropFilter: 'blur(12px)',
-            color: isHovered || isXRay ? '#00f7ff' : '#475569',
-            transition: 'all 0.3s ease',
-          }}
-        >
-          <Code size={20} strokeWidth={2} />
-        </motion.button>
+        <div style={{ position: 'relative' }}>
+          {/* Animated pulse ring when active */}
+          {isXRay && (
+            <>
+              <motion.div
+                animate={{ scale: [1, 1.6], opacity: [0.5, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: 'easeOut' }}
+                style={{
+                  position: 'absolute', inset: -2, borderRadius: '50%',
+                  border: '2px solid rgba(0,247,255,0.6)',
+                  pointerEvents: 'none',
+                }}
+              />
+              <motion.div
+                animate={{ scale: [1, 1.9], opacity: [0.3, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5, delay: 0.4, ease: 'easeOut' }}
+                style={{
+                  position: 'absolute', inset: -2, borderRadius: '50%',
+                  border: '2px solid rgba(0,247,255,0.3)',
+                  pointerEvents: 'none',
+                }}
+              />
+            </>
+          )}
+
+          <motion.button
+            onClick={() => setIsXRay(!isXRay)}
+            onHoverStart={() => setIsHovered(true)}
+            onHoverEnd={() => setIsHovered(false)}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              rotate: isXRay ? 360 : 0,
+            }}
+            whileHover={{ scale: 1.12 }}
+            whileTap={{ scale: 0.88 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            aria-label="Toggle X-Ray Architecture Mode"
+            style={{
+              position: 'relative',
+              width: 52, height: 52, borderRadius: '50%',
+              border: isXRay
+                ? '2px solid rgba(0,247,255,0.9)'
+                : `1px solid ${isHovered ? 'rgba(0,247,255,0.6)' : 'rgba(0,247,255,0.2)'}`,
+              outline: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: isXRay
+                ? 'linear-gradient(135deg, rgba(0,247,255,0.15), rgba(255,48,108,0.08))'
+                : isHovered
+                  ? 'rgba(0,247,255,0.06)'
+                  : 'rgba(10,12,22,0.80)',
+              boxShadow: isXRay
+                ? '0 0 30px rgba(0,247,255,0.5), inset 0 0 20px rgba(0,247,255,0.1)'
+                : isHovered
+                  ? '0 8px 24px rgba(0,247,255,0.25)'
+                  : '0 4px 12px rgba(0,0,0,0.3)',
+              backdropFilter: 'blur(12px)',
+              color: isXRay ? '#00f7ff' : isHovered ? '#00f7ff' : '#475569',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <AnimatePresence mode="wait">
+              {isXRay ? (
+                <motion.div key="active" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <Code size={20} strokeWidth={2.5} />
+                </motion.div>
+              ) : (
+                <motion.div key="inactive" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <Code size={20} strokeWidth={1.5} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </MagneticWrapper>
+
+      {/* Label below button */}
+      <motion.span
+        animate={{ opacity: isHovered || isXRay ? 1 : 0 }}
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.48rem',
+          letterSpacing: '2px',
+          color: isXRay ? '#00f7ff' : 'var(--text-dim)',
+          textTransform: 'uppercase',
+          textShadow: isXRay ? '0 0 8px rgba(0,247,255,0.6)' : 'none',
+          transition: 'all 0.3s ease',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {isXRay ? 'X-RAY ON' : 'X-RAY'}
+      </motion.span>
     </div>
   );
 }

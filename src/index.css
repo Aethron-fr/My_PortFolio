@@ -533,47 +533,181 @@ p {
     padding-bottom: 120px !important;
   }
 }
+
 
-/* =========================================================
-   PHASE 6: ELITE X-RAY ARCHITECTURE MODE
-   ========================================================= */
-body.xray-mode * {
+/* ═══════════════════════════════════════════════════════════
+   PHASE 6: GOD-TIER X-RAY ARCHITECTURE MODE
+   ═══════════════════════════════════════════════════════════ */
+
+/* 1. Animated scanline + dark overlay on body */
+@keyframes xrayScanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+@keyframes xrayFlicker {
+  0%, 97%, 100% { opacity: 1; }
+  98% { opacity: 0.85; }
+  99% { opacity: 1; }
+}
+@keyframes xrayGlow {
+  0%, 100% { box-shadow: 0 0 6px rgba(0,247,255,0.4), inset 0 0 12px rgba(0,247,255,0.05); }
+  50%       { box-shadow: 0 0 18px rgba(0,247,255,0.7), inset 0 0 24px rgba(0,247,255,0.1); }
+}
+@keyframes xrayTagSlide {
+  from { opacity: 0; transform: translateY(-4px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes xrayPulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* ── Global body transformation ── */
+body.xray-mode {
+  background: #010309 !important;
+  animation: xrayFlicker 8s infinite;
+  position: relative;
+}
+
+/* Dark backdrop overlay */
+body.xray-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(0,247,255,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(255,48,108,0.04) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(0,10,20,0.96) 0%, rgba(1,3,9,0.98) 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Moving scanline */
+body.xray-mode::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(0,247,255,0.6), rgba(0,247,255,0.9), rgba(0,247,255,0.6), transparent);
+  box-shadow: 0 0 20px rgba(0,247,255,0.8), 0 0 40px rgba(0,247,255,0.4);
+  z-index: 999998;
+  pointer-events: none;
+  animation: xrayScanline 4s linear infinite;
+}
+
+/* ── Strip all cosmetic styles from every element ── */
+body.xray-mode *:not(body::before):not(body::after) {
   background: transparent !important;
-  border: 1px solid rgba(0, 247, 255, 0.15) !important;
+  background-image: none !important;
   box-shadow: none !important;
-  color: rgba(0, 247, 255, 0.6) !important;
-  backdrop-filter: none !important;
   text-shadow: none !important;
-  transition: all 0.3s ease !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  border-radius: 0 !important;
+  border-color: transparent !important;
+  color: rgba(0, 200, 220, 0.35) !important;
+  transition: all 0.4s ease !important;
 }
 
-body.xray-mode img, 
-body.xray-mode canvas,
-body.xray-mode svg {
-  opacity: 0.2 !important;
-  filter: grayscale(100%) sepia(100%) hue-rotate(130deg) brightness(1.5) !important;
+/* ── Every element gets a subtle wireframe border ── */
+body.xray-mode div,
+body.xray-mode section,
+body.xray-mode header,
+body.xray-mode footer,
+body.xray-mode nav,
+body.xray-mode article,
+body.xray-mode aside {
+  border: 1px solid rgba(0, 247, 255, 0.08) !important;
 }
 
+/* ── Hide images and canvas - show outlines instead ── */
+body.xray-mode img {
+  opacity: 0 !important;
+  border: 1px dashed rgba(0, 247, 255, 0.2) !important;
+  min-height: 40px !important;
+}
+body.xray-mode canvas {
+  opacity: 0.03 !important;
+}
+
+/* ── Main component blocks — highlighted prominently ── */
 body.xray-mode [data-component] {
   position: relative !important;
-  border: 1px dashed rgba(255, 48, 108, 0.8) !important;
+  border: 1.5px solid rgba(0, 247, 255, 0.45) !important;
+  background: rgba(0, 247, 255, 0.02) !important;
+  animation: xrayGlow 3s ease-in-out infinite !important;
+  margin: 2px !important;
 }
 
+/* ── The floating component label tag ── */
 body.xray-mode [data-component]::before {
-  content: "<" attr(data-component) " />";
+  content: "◆  <" attr(data-component) " />";
   position: absolute;
-  top: -12px;
-  left: 10px;
-  background: #050508 !important;
-  color: #ff306c !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 11px !important;
+  top: -14px;
+  left: 0;
+  z-index: 999999;
+  pointer-events: none;
+
+  /* Tag pill styling */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px 3px 8px;
+  border-radius: 0 0 8px 0 !important;
+  background: linear-gradient(135deg, rgba(0,247,255,0.18), rgba(255,48,108,0.10)) !important;
+  border: 1px solid rgba(0,247,255,0.6) !important;
+  border-top: none !important;
+  border-left: none !important;
+
+  /* Typography */
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-size: 10px !important;
   font-weight: 700 !important;
-  padding: 2px 8px !important;
-  border: 1px solid #ff306c !important;
-  border-radius: 4px !important;
-  z-index: 999999 !important;
-  pointer-events: none !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
+  letter-spacing: 0.5px !important;
+  color: #00f7ff !important;
+  text-shadow: 0 0 8px rgba(0,247,255,0.8) !important;
+
+  /* Animate in */
+  animation: xrayTagSlide 0.4s ease forwards !important;
+}
+
+/* ── Corner brackets for component bounding boxes ── */
+body.xray-mode [data-component]::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  border-right: 2px solid rgba(255, 48, 108, 0.7) !important;
+  border-bottom: 2px solid rgba(255, 48, 108, 0.7) !important;
+  z-index: 999999;
+  pointer-events: none;
+  animation: xrayPulse 2s ease infinite !important;
+}
+
+/* ── Text: make it readable and glowing ── */
+body.xray-mode h1,
+body.xray-mode h2,
+body.xray-mode h3 {
+  color: rgba(0, 247, 255, 0.9) !important;
+  text-shadow: 0 0 20px rgba(0,247,255,0.5) !important;
+}
+body.xray-mode p,
+body.xray-mode span,
+body.xray-mode a,
+body.xray-mode li,
+body.xray-mode label {
+  color: rgba(0, 200, 220, 0.5) !important;
+}
+body.xray-mode button {
+  border: 1px solid rgba(0,247,255,0.3) !important;
+  color: rgba(0,247,255,0.7) !important;
+}
+
+/* ── CRT grid overlay on every data-component ── */
+body.xray-mode [data-component] > * {
+  background-image: none !important;
 }
