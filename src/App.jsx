@@ -26,6 +26,7 @@ import KonamiCode from './components/KonamiCode';
 import TechSphere from './components/TechSphere';
 import MagneticWrapper from './components/MagneticWrapper';
 import TerminalMode from './components/TerminalMode';
+import GlobalHackOverlay from './components/GlobalHackOverlay';
 import AmbientBackground from './components/AmbientBackground';
 import ResumeViewer from './components/ResumeViewer';
 import Preloader from './components/Preloader';
@@ -635,6 +636,7 @@ export default function App() {
       <KonamiCode />
       <CanvasBackground />
       <TerminalMode isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
+      <GlobalHackOverlay />
 
       <AnimatePresence>
         {!hasEntered && (

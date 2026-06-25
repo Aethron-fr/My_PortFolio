@@ -155,6 +155,7 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [isSnakeMode, setIsSnakeMode] = useState(false);
   const [isCyberTypeMode, setIsCyberTypeMode] = useState(false);
   const [isSelfDestructing, setIsSelfDestructing] = useState(false);
+  const [fatalError, setFatalError] = useState(null);
   const [terminalTheme, setTerminalTheme] = useState('var(--accent-primary)');
   
   const [commandHistory, setCommandHistory] = useState(() => {
@@ -163,6 +164,10 @@ export default function TerminalMode({ isOpen, onClose }) {
     } catch { return []; }
   });
   const [historyIndex, setHistoryIndex] = useState(-1);
+
+  if (fatalError) {
+    throw fatalError;
+  }
 
   // Email State Machine
   const [terminalState, setTerminalState] = useState('IDLE'); // IDLE, AWAITING_SUBJECT, AWAITING_MESSAGE
@@ -383,7 +388,7 @@ export default function TerminalMode({ isOpen, onClose }) {
       ]});
       setHistory(newHistory);
       setTimeout(() => {
-        onClose();
+        setFatalError(new Error('FATAL: KERNEL PANIC - SYSTEM SELF DESTRUCTED'));
       }, 3000);
       return;
     }
@@ -458,6 +463,9 @@ export default function TerminalMode({ isOpen, onClose }) {
     // Run side effects strictly outside of the state updater
     if (isResume) {
       setTimeout(onClose, 500);
+    }
+    if (lastProgress?.task === 'hack') {
+      window.dispatchEvent(new Event('trigger-hack'));
     }
   };
 
