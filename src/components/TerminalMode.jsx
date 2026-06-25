@@ -154,7 +154,11 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [isSelfDestructing, setIsSelfDestructing] = useState(false);
   const [terminalTheme, setTerminalTheme] = useState('var(--accent-primary)');
   
-  const [commandHistory, setCommandHistory] = useState([]);
+  const [commandHistory, setCommandHistory] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('terminalCmdHistory') || '[]');
+    } catch { return []; }
+  });
   const [historyIndex, setHistoryIndex] = useState(-1);
 
   // Email State Machine
@@ -163,6 +167,8 @@ export default function TerminalMode({ isOpen, onClose }) {
 
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+  const scrollBodyRef = useRef(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     if (isOpen && isBooted && inputRef.current) {
@@ -231,7 +237,10 @@ export default function TerminalMode({ isOpen, onClose }) {
     if (!cmd && terminalState === 'IDLE') return;
 
     if (terminalState === 'IDLE') {
-      setCommandHistory(prev => [...prev, input]);
+      const updated = [...commandHistory, input];
+      setCommandHistory(updated);
+      // Persist to localStorage
+      try { localStorage.setItem('terminalCmdHistory', JSON.stringify(updated.slice(-100))); } catch {}
       setHistoryIndex(-1);
     }
     
@@ -322,6 +331,30 @@ export default function TerminalMode({ isOpen, onClose }) {
       return;
     }
 
+    if (lowerCmd === 'history') {
+      const histLines = commandHistory.length === 0
+        ? [{ text: 'No command history yet.', color: '#94a3b8' }]
+        : [
+            { text: Recalled +""+    if (lowerCmd === 'play') {"{commandHistory.length}"+""+ commands from memory:, color: 'var(--accent-primary)' },
+            ...commandHistory.slice(-20).map((cmd, i) => ({
+              text:   +""+    if (lowerCmd === 'play') {"{String(i+1).padStart(3,' ')} "+""+ +""+    if (lowerCmd === 'play') {"{cmd}"+"",
+              color: '#e2e8f0'
+            })),
+            { text: '', color: '' },
+            { text: "Tip: ?/? to navigate. Type 'clear-history' to wipe memory.", color: 'rgba(255,255,255,0.25)' },
+          ];
+      setIsTyping(true);
+      newHistory.push({ type: 'output', lines: histLines });
+      setHistory(newHistory);
+      return;
+    }
+    if (lowerCmd === 'clear-history') {
+      localStorage.removeItem('terminalCmdHistory');
+      setCommandHistory([]);
+      newHistory.push({ type: 'output', lines: [{ text: '[OK] Command history wiped.', color: '#39d353' }] });
+      setHistory(newHistory);
+      return;
+    }
     if (lowerCmd === 'play') {
       setIsSnakeMode(true);
       newHistory.push({ type: 'output', lines: [{ text: "Initializing Neon Snake Arcade...", color: "var(--accent-primary)" }] });
@@ -519,15 +552,27 @@ export default function TerminalMode({ isOpen, onClose }) {
             )}
 
             {/* Terminal Body */}
-            <div style={{
-              padding: '20px',
-              flex: 1,
-              overflowY: 'auto',
-              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-              fontSize: '0.9rem',
-              position: 'relative',
-              zIndex: 5
-            }}>
+            <div
+              ref={scrollBodyRef}
+              onWheel={(e) => {
+                // Capture scroll inside terminal — don't let it bubble to the page
+                e.stopPropagation();
+                const el = scrollBodyRef.current;
+                if (!el) return;
+                el.scrollTop += e.deltaY;
+                setShowScrollTop(el.scrollTop > 100);
+              }}
+              style={{
+                padding: '20px',
+                flex: 1,
+                overflowY: 'auto',
+                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                fontSize: '0.9rem',
+                position: 'relative',
+                zIndex: 5,
+                scrollBehavior: 'smooth',
+              }}
+            >
               {/* Boot Sequence */}
               {!isBooted && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -617,6 +662,43 @@ export default function TerminalMode({ isOpen, onClose }) {
               )}
               <div ref={bottomRef} style={{ height: '20px' }} />
             </div>
+
+            {/* Scroll-to-Top button — appears when scrolled down */}
+            {showScrollTop && (
+              <button
+                onClick={() => {
+                  if (scrollBodyRef.current) {
+                    scrollBodyRef.current.scrollTop = 0;
+                    setShowScrollTop(false);
+                  }
+                }}
+                title="Scroll to top"
+                style={{
+                  position: 'absolute',
+                  bottom: '72px',
+                  right: '16px',
+                  zIndex: 20,
+                  background: 'rgba(0,247,255,0.08)',
+                  border: '1px solid rgba(0,247,255,0.25)',
+                  borderRadius: '8px',
+                  color: 'rgba(0,247,255,0.8)',
+                  padding: '6px 10px',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.7rem',
+                  letterSpacing: '1px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  backdropFilter: 'blur(8px)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,247,255,0.15)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,247,255,0.08)'}
+              >
+                ↑ TOP
+              </button>
+            )}
           </motion.div>
         </motion.div>
         )}
