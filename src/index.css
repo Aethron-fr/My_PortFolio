@@ -590,7 +590,7 @@ body.xray-mode::after {
 }
 
 /* ── Strip all cosmetic styles from every element ── */
-body.xray-mode *:not(body::before):not(body::after) {
+body.xray-mode * {
   background: transparent !important;
   background-image: none !important;
   box-shadow: none !important;
@@ -616,11 +616,7 @@ body.xray-mode aside {
 }
 
 /* ── Hide images and canvas - show outlines instead ── */
-body.xray-mode img {
-  opacity: 0 !important;
-  border: 1px dashed rgba(0, 247, 255, 0.2) !important;
-  min-height: 40px !important;
-}
+body.xray-mode img { opacity: 0.15 !important; filter: grayscale(1) contrast(1.2) sepia(1) hue-rotate(130deg) !important; border: 1px dashed rgba(0, 247, 255, 0.5) !important; min-height: 40px !important; }
 body.xray-mode canvas {
   opacity: 0.03 !important;
 }
