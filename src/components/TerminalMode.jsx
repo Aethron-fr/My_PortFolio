@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PhysicsSandbox from './PhysicsSandbox';
 import MatrixRain from './MatrixRain';
 import NeonSnakeGame from './NeonSnakeGame';
-import BugSweeper from './BugSweeper';
+import CyberType from './CyberType';
 import { sfx } from '../utils/sfx';
 
 const BOOT_SEQUENCE = [
@@ -33,7 +33,7 @@ const COMMANDS = {
     { text: "  gravity      Physics engine", color: "#fbbf24" },
     { text: "  hack         Cinematic bypass payload", color: "#ff5f56" },
     { text: "  play         Neon Snake Arcade", color: "var(--accent-primary)" },
-    { text: "  sweep        Developer Bug Sweeper", color: "#fbbf24" },
+    { text: "  defend       Cyber-Type Defense", color: "#fbbf24" },
     { text: "  selfdestruct Terminate instance", color: "#ff5f56" },
     { text: "", color: "#94a3b8" },
     { text: "── THEMES ───────────────────────────────", color: "rgba(255,255,255,0.15)" },
@@ -153,7 +153,7 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [isGravityActive, setIsGravityActive] = useState(false);
   const [isMatrixActive, setIsMatrixActive] = useState(false);
   const [isSnakeMode, setIsSnakeMode] = useState(false);
-  const [isBugSweeperMode, setIsBugSweeperMode] = useState(false);
+  const [isCyberTypeMode, setIsCyberTypeMode] = useState(false);
   const [isSelfDestructing, setIsSelfDestructing] = useState(false);
   const [terminalTheme, setTerminalTheme] = useState('var(--accent-primary)');
   
@@ -203,15 +203,15 @@ export default function TerminalMode({ isOpen, onClose }) {
       setIsGravityActive(false);
       setIsMatrixActive(false);
       setIsSnakeMode(false);
-      setIsBugSweeperMode(false);
+      setIsCyberTypeMode(false);
       setIsSelfDestructing(false);
       setTerminalTheme('var(--accent-primary)');
     }
   }, [isOpen, bootIndex, isBooted]);
 
   const handleKeyDown = (e) => {
-    // Don't interfere with snake game arrow keys
-    if (isSnakeMode || isBugSweeperMode) return;
+    // Don't interfere with snake game arrow keys or typing game
+    if (isSnakeMode || isCyberTypeMode) return;
 
     if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -310,7 +310,7 @@ export default function TerminalMode({ isOpen, onClose }) {
       setIsGravityActive(false);
       setIsMatrixActive(false);
       setIsSnakeMode(false);
-      setIsBugSweeperMode(false);
+      setIsCyberTypeMode(false);
       setIsSelfDestructing(false);
       setTerminalTheme('var(--accent-primary)');
       // Remove all global theme classes from body
@@ -367,9 +367,9 @@ export default function TerminalMode({ isOpen, onClose }) {
       setHistory(newHistory);
       return;
     }
-    if (lowerCmd === 'sweep' || lowerCmd === 'mine') {
-      setIsBugSweeperMode(true);
-      newHistory.push({ type: 'output', lines: [{ text: "Initializing Bug Sweeper...", color: "#fbbf24" }] });
+    if (lowerCmd === 'defend' || lowerCmd === 'type') {
+      setIsCyberTypeMode(true);
+      newHistory.push({ type: 'output', lines: [{ text: "Initializing Cyber Defense Module...", color: "#fbbf24" }] });
       setHistory(newHistory);
       return;
     }
@@ -563,8 +563,8 @@ export default function TerminalMode({ isOpen, onClose }) {
               <NeonSnakeGame onExit={() => setIsSnakeMode(false)} />
             )}
             
-            {isBugSweeperMode && (
-              <BugSweeper onExit={() => setIsBugSweeperMode(false)} />
+            {isCyberTypeMode && (
+              <CyberType onExit={() => setIsCyberTypeMode(false)} />
             )}
 
             {/* Terminal Body */}
