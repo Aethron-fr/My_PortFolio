@@ -204,14 +204,7 @@ body {
   color: transparent !important;
 }
 
-[data-theme="light"] .tracking-spotlight {
-  background: radial-gradient(
-    circle 150px at var(--mouse-x) var(--mouse-y),
-    #000000 0%,
-    rgba(0, 0, 0, 0.3) 100%
-  ) !important;
-  background-attachment: fixed !important;
-}
+[data-theme="light"] .tracking-spotlight { background: transparent !important; -webkit-text-fill-color: inherit !important; color: inherit !important; }
 
 /* Typography Utility */
 h1, h2, h3, h4, h5, h6 {
