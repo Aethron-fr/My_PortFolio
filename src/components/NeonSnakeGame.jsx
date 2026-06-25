@@ -1,337 +1,343 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function NeonSnakeGame({ onExit }) {
   const canvasRef = useRef(null);
-  const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(
+
+  // React state ONLY for display — never causes the game loop to restart
+  const [displayScore, setDisplayScore]     = useState(0);
+  const [displayHighScore, setDisplayHighScore] = useState(
     () => parseInt(localStorage.getItem('neonSnakeHighScore')) || 0
   );
-  const [gameOver, setGameOver] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
+
+  // ALL mutable game data lives in refs — immune to React re-renders
+  const gameRef = useRef({
+    snake:        [{ x: 5, y: 10 }, { x: 4, y: 10 }, { x: 3, y: 10 }],
+    velocity:     { x: 1, y: 0 },
+    inputQueue:   [],
+    apple:        { x: 15, y: 10 },
+    particles:    [],
+    score:        0,
+    highScore:    parseInt(localStorage.getItem('neonSnakeHighScore')) || 0,
+    speed:        110,
+    lastTick:     0,
+    applePhase:   0,
+    dead:         false,
+    started:      false,
+    rafId:        null,
+  });
+
+  const resetGame = useCallback(() => {
+    const g = gameRef.current;
+    g.snake      = [{ x: 5, y: 10 }, { x: 4, y: 10 }, { x: 3, y: 10 }];
+    g.velocity   = { x: 1, y: 0 };
+    g.inputQueue = [];
+    g.apple      = spawnApple(g.snake, 25, 20);
+    g.particles  = [];
+    g.score      = 0;
+    g.speed      = 110;
+    g.lastTick   = 0;
+    g.applePhase = 0;
+    g.dead       = false;
+    g.started    = false;
+    setDisplayScore(0);
+    setIsGameOver(false);
+    setGameStarted(false);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
-    // Handle high DPI for crisp rendering
+
     const pixelRatio = window.devicePixelRatio || 1;
-    const cssWidth = 500;
-    const cssHeight = 400;
-    
-    canvas.width = cssWidth * pixelRatio;
-    canvas.height = cssHeight * pixelRatio;
-    canvas.style.width = `${cssWidth}px`;
+    const cssWidth   = 500;
+    const cssHeight  = 400;
+
+    canvas.width        = cssWidth  * pixelRatio;
+    canvas.height       = cssHeight * pixelRatio;
+    canvas.style.width  = `${cssWidth}px`;
     canvas.style.height = `${cssHeight}px`;
 
     const ctx = canvas.getContext('2d');
     ctx.scale(pixelRatio, pixelRatio);
-    
-    // Grid settings
-    const tileCountX = 25;
-    const tileCountY = 20;
-    const gridSize = cssWidth / tileCountX; // 20px
 
-    let snake = [
-      { x: 5, y: 10 },
-      { x: 4, y: 10 },
-      { x: 3, y: 10 }
-    ];
-    let velocity = { x: 1, y: 0 };
-    let inputQueue = []; // Fixes the "double-turn suicide" bug
-    
-    let apple = { x: 15, y: 10 };
-    let particles = [];
-    
-    let currentScore = 0;
-    let gameLoop;
-    let speed = 110; // ms per frame
-    let lastRenderTime = 0;
+    const TILE_X  = 25;
+    const TILE_Y  = 20;
+    const CELL    = cssWidth / TILE_X; // 20px
 
-    // Spawn apple in empty spot
-    const spawnApple = () => {
-      let newApple;
-      while (true) {
-        newApple = {
-          x: Math.floor(Math.random() * tileCountX),
-          y: Math.floor(Math.random() * tileCountY)
-        };
-        if (!snake.some(segment => segment.x === newApple.x && segment.y === newApple.y)) {
-          break;
-        }
-      }
-      apple = newApple;
-    };
+    const g = gameRef.current;
 
-    // Keyboard controls
+    // ── Keyboard handler ──────────────────────────────────────────
     const handleKeyDown = (e) => {
-      if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+      if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) {
         e.preventDefault();
       }
-      
-      if (e.key === 'Escape') {
-        onExit();
+
+      if (e.key === 'Escape') { onExit(); return; }
+
+      // Restart on Enter when dead
+      if (g.dead && e.key === 'Enter') {
+        resetGame();
         return;
       }
 
-      if (gameOver && e.key === 'Enter') {
-        snake = [{ x: 5, y: 10 }, { x: 4, y: 10 }, { x: 3, y: 10 }];
-        velocity = { x: 1, y: 0 };
-        inputQueue = [];
-        currentScore = 0;
-        speed = 110;
-        setScore(0);
-        setGameOver(false);
-        particles = [];
-        spawnApple();
-        return;
-      }
+      if (g.dead) return;
 
-      const lastInput = inputQueue.length > 0 ? inputQueue[inputQueue.length - 1] : velocity;
+      const last = g.inputQueue.length > 0 ? g.inputQueue[g.inputQueue.length - 1] : g.velocity;
 
-      switch(e.key) {
-        case 'ArrowUp':
-        case 'w':
-        case 'W':
-          if (lastInput.y !== 1) inputQueue.push({ x: 0, y: -1 });
+      switch (e.key) {
+        case 'ArrowUp':    case 'w': case 'W':
+          if (last.y !== 1)  { g.started = true; setGameStarted(true); g.inputQueue.push({ x: 0, y: -1 }); }
           break;
-        case 'ArrowDown':
-        case 's':
-        case 'S':
-          if (lastInput.y !== -1) inputQueue.push({ x: 0, y: 1 });
+        case 'ArrowDown':  case 's': case 'S':
+          if (last.y !== -1) { g.started = true; setGameStarted(true); g.inputQueue.push({ x: 0, y:  1 }); }
           break;
-        case 'ArrowLeft':
-        case 'a':
-        case 'A':
-          if (lastInput.x !== 1) inputQueue.push({ x: -1, y: 0 });
+        case 'ArrowLeft':  case 'a': case 'A':
+          if (last.x !== 1)  { g.started = true; setGameStarted(true); g.inputQueue.push({ x: -1, y: 0 }); }
           break;
-        case 'ArrowRight':
-        case 'd':
-        case 'D':
-          if (lastInput.x !== -1) inputQueue.push({ x: 1, y: 0 });
+        case 'ArrowRight': case 'd': case 'D':
+          if (last.x !== -1) { g.started = true; setGameStarted(true); g.inputQueue.push({ x:  1, y: 0 }); }
           break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown, { passive: false });
 
-    // Apple animation properties
-    let applePhase = 0;
+    // ── Main render loop ──────────────────────────────────────────
+    const render = (now) => {
+      g.rafId = requestAnimationFrame(render);
+      if (g.dead) return;
 
-    const render = (currentTime) => {
-      gameLoop = requestAnimationFrame(render);
-      if (gameOver) return;
-      
-      // Update animations every frame
-      applePhase += 0.1;
-      
-      // Update particles
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.05;
-        if (p.life <= 0) particles.splice(i, 1);
+      g.applePhase += 0.1;
+
+      // Particle updates
+      for (let i = g.particles.length - 1; i >= 0; i--) {
+        const p = g.particles[i];
+        p.x   += p.vx;
+        p.y   += p.vy;
+        p.life -= 0.04;
+        if (p.life <= 0) g.particles.splice(i, 1);
       }
 
-      // Game tick (movement)
-      if (currentTime - lastRenderTime >= speed) {
-        lastRenderTime = currentTime;
+      // Game tick — only moves when started and when enough time has passed
+      if (g.started && now - g.lastTick >= g.speed) {
+        g.lastTick = now;
 
-        if (inputQueue.length > 0) {
-          velocity = inputQueue.shift();
-        }
+        if (g.inputQueue.length > 0) g.velocity = g.inputQueue.shift();
 
-        let headX = snake[0].x + velocity.x;
-        let headY = snake[0].y + velocity.y;
+        let hx = g.snake[0].x + g.velocity.x;
+        let hy = g.snake[0].y + g.velocity.y;
 
-        // Wrap around walls (Toroidal)
-        if (headX < 0) headX = tileCountX - 1;
-        if (headX >= tileCountX) headX = 0;
-        if (headY < 0) headY = tileCountY - 1;
-        if (headY >= tileCountY) headY = 0;
+        // Wrap walls
+        if (hx < 0)     hx = TILE_X - 1;
+        if (hx >= TILE_X) hx = 0;
+        if (hy < 0)     hy = TILE_Y - 1;
+        if (hy >= TILE_Y) hy = 0;
 
-        const newHead = { x: headX, y: headY };
+        const newHead = { x: hx, y: hy };
 
-        // Check collision with self
-        if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
-          setGameOver(true);
+        // Self collision
+        if (g.snake.some(s => s.x === newHead.x && s.y === newHead.y)) {
+          g.dead = true;
+          setIsGameOver(true);
+          setDisplayScore(g.score); // ensure final score is shown
           return;
         }
 
-        snake.unshift(newHead);
+        g.snake.unshift(newHead);
 
-        // Check apple collision
-        if (newHead.x === apple.x && newHead.y === apple.y) {
-          currentScore += 10;
-          setScore(currentScore);
-          if (currentScore > highScore) {
-            setHighScore(currentScore);
-            localStorage.setItem('neonSnakeHighScore', currentScore.toString());
+        // Apple eaten
+        if (newHead.x === g.apple.x && newHead.y === g.apple.y) {
+          g.score += 10;
+          setDisplayScore(g.score);
+
+          if (g.score > g.highScore) {
+            g.highScore = g.score;
+            setDisplayHighScore(g.score);
+            localStorage.setItem('neonSnakeHighScore', String(g.score));
           }
-          speed = Math.max(50, speed - 2);
-          
-          // Spawn particles
-          for(let i=0; i<15; i++) {
-            particles.push({
-              x: apple.x * gridSize + gridSize/2,
-              y: apple.y * gridSize + gridSize/2,
-              vx: (Math.random() - 0.5) * 6,
-              vy: (Math.random() - 0.5) * 6,
-              life: 1
+
+          g.speed = Math.max(50, g.speed - 2);
+
+          // Particles
+          for (let i = 0; i < 18; i++) {
+            g.particles.push({
+              x:    g.apple.x * CELL + CELL / 2,
+              y:    g.apple.y * CELL + CELL / 2,
+              vx:   (Math.random() - 0.5) * 7,
+              vy:   (Math.random() - 0.5) * 7,
+              life: 1,
             });
           }
-          spawnApple();
+
+          g.apple = spawnApple(g.snake, TILE_X, TILE_Y);
         } else {
-           snake.pop();
+          g.snake.pop();
         }
       }
 
-      // --- RENDER ---
-      
-      // Clear background
+      // ── Draw ────────────────────────────────────────────────────
       ctx.fillStyle = '#010309';
       ctx.fillRect(0, 0, cssWidth, cssHeight);
 
-      // Draw Apple
-      const pulse = Math.sin(applePhase) * 2;
-      ctx.fillStyle = '#ff306c';
-      ctx.shadowBlur = 20;
+      // Grid dots
+      ctx.fillStyle = 'rgba(0,247,255,0.04)';
+      for (let x = 0; x < TILE_X; x++) {
+        for (let y = 0; y < TILE_Y; y++) {
+          ctx.fillRect(x * CELL + CELL / 2 - 0.5, y * CELL + CELL / 2 - 0.5, 1, 1);
+        }
+      }
+
+      // Apple
+      const pulse = Math.sin(g.applePhase) * 1.5;
+      ctx.fillStyle  = '#ff306c';
+      ctx.shadowBlur = 18;
       ctx.shadowColor = '#ff306c';
       ctx.beginPath();
-      ctx.arc(apple.x * gridSize + gridSize/2, apple.y * gridSize + gridSize/2, (gridSize/2 - 4) + pulse, 0, Math.PI * 2);
+      ctx.arc(g.apple.x * CELL + CELL / 2, g.apple.y * CELL + CELL / 2, CELL / 2 - 3 + pulse, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // Draw Particles
-      ctx.shadowBlur = 10;
+      // Particles
+      ctx.shadowBlur  = 8;
       ctx.shadowColor = '#ff306c';
-      particles.forEach(p => {
-        ctx.fillStyle = `rgba(255, 48, 108, ${p.life})`;
+      g.particles.forEach(p => {
+        ctx.fillStyle = `rgba(255,48,108,${p.life.toFixed(2)})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 2 + p.life * 2, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 1.5 + p.life * 2.5, 0, Math.PI * 2);
         ctx.fill();
       });
       ctx.shadowBlur = 0;
 
-      // Draw Snake as a continuous sleek glowing line
-      ctx.strokeStyle = '#00f7ff';
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00f7ff';
-      ctx.lineWidth = gridSize - 6;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+      // Snake
+      if (g.snake.length > 0) {
+        ctx.strokeStyle = '#00f7ff';
+        ctx.shadowBlur  = 14;
+        ctx.shadowColor = '#00f7ff';
+        ctx.lineWidth   = CELL - 6;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
 
-      ctx.beginPath();
-      for (let i = 0; i < snake.length; i++) {
-        const seg = snake[i];
-        const x = seg.x * gridSize + gridSize / 2;
-        const y = seg.y * gridSize + gridSize / 2;
-        
-        // Handle screen wrapping breaks in the drawing path
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          const prev = snake[i-1];
-          const dist = Math.abs(seg.x - prev.x) + Math.abs(seg.y - prev.y);
-          if (dist > 1) {
-            // It wrapped around the screen, break the continuous line
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
+        ctx.beginPath();
+        for (let i = 0; i < g.snake.length; i++) {
+          const seg = g.snake[i];
+          const sx  = seg.x * CELL + CELL / 2;
+          const sy  = seg.y * CELL + CELL / 2;
+          if (i === 0) {
+            ctx.moveTo(sx, sy);
           } else {
-            ctx.lineTo(x, y);
+            const prev = g.snake[i - 1];
+            const dist = Math.abs(seg.x - prev.x) + Math.abs(seg.y - prev.y);
+            if (dist > 1) {
+              ctx.stroke();
+              ctx.beginPath();
+              ctx.moveTo(sx, sy);
+            } else {
+              ctx.lineTo(sx, sy);
+            }
           }
         }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Head highlight
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(g.snake[0].x * CELL + CELL / 2, g.snake[0].y * CELL + CELL / 2, (CELL - 8) / 2, 0, Math.PI * 2);
+        ctx.fill();
       }
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-      
-      // Draw snake head highlight
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(snake[0].x * gridSize + gridSize/2, snake[0].y * gridSize + gridSize/2, (gridSize-6)/2 - 1, 0, Math.PI * 2);
-      ctx.fill();
+
+      // "Press arrow to start" prompt
+      if (!g.started) {
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font      = '13px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('Press any arrow key to start', cssWidth / 2, cssHeight / 2 + 60);
+        ctx.textAlign = 'left';
+      }
     };
 
-    gameLoop = requestAnimationFrame(render);
+    g.rafId = requestAnimationFrame(render);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      cancelAnimationFrame(gameLoop);
+      if (g.rafId) cancelAnimationFrame(g.rafId);
     };
-  }, [highScore, onExit, gameOver]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ← Empty deps: effect runs ONCE and never restarts
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'rgba(1, 3, 9, 0.98)',
+        position: 'absolute', inset: 0,
+        background: 'rgba(1,3,9,0.98)',
         backdropFilter: 'blur(20px)',
         zIndex: 100,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
         borderRadius: '12px'
       }}
     >
+      {/* HUD */}
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        width: '500px',
-        marginBottom: '20px',
+        display: 'flex', justifyContent: 'space-between',
+        width: '500px', marginBottom: '16px',
         fontFamily: 'var(--font-mono)',
-        color: '#00f7ff',
-        fontSize: '1rem',
-        textTransform: 'uppercase',
-        letterSpacing: '2px'
+        fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px'
       }}>
-        <span>Score: <strong style={{ color: '#fff'}}>{score}</strong></span>
-        <span>High: <strong style={{ color: '#fff'}}>{highScore}</strong></span>
+        <span style={{ color: '#94a3b8' }}>Score: <strong style={{ color: '#00f7ff', fontSize: '1.1rem' }}>{displayScore}</strong></span>
+        <span style={{ color: '#94a3b8' }}>Best: <strong style={{ color: '#ff71ce', fontSize: '1.1rem' }}>{displayHighScore}</strong></span>
+        {!gameStarted && !isGameOver && (
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.7rem', alignSelf: 'center' }}>READY</span>
+        )}
       </div>
 
       <div style={{ position: 'relative' }}>
-        <canvas 
+        <canvas
           ref={canvasRef}
           style={{
-            border: '1px solid rgba(0, 247, 255, 0.2)',
+            border: '1px solid rgba(0,247,255,0.2)',
             borderRadius: '8px',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.5), 0 0 30px rgba(0, 247, 255, 0.05)',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,247,255,0.05)',
             background: '#010309',
             display: 'block'
           }}
         />
 
         <AnimatePresence>
-          {gameOver && (
+          {isGameOver && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'rgba(1, 3, 9, 0.9)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'var(--font-mono)',
-                textAlign: 'center',
+                position: 'absolute', inset: 0,
+                background: 'rgba(1,3,9,0.92)',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'var(--font-mono)', textAlign: 'center',
                 borderRadius: '8px'
               }}
             >
-              <h2 style={{ color: '#ff306c', fontSize: '2.5rem', margin: '0 0 12px 0', textShadow: '0 0 20px rgba(255, 48, 108, 0.6)' }}>
+              <h2 style={{ color: '#ff306c', fontSize: '2.5rem', margin: '0 0 12px 0', textShadow: '0 0 20px rgba(255,48,108,0.7)' }}>
                 SYSTEM FAILURE
               </h2>
-              <p style={{ color: '#94a3b8', margin: '0 0 32px 0', fontSize: '1.2rem' }}>Final Score: <span style={{ color: '#00f7ff', fontWeight: 'bold' }}>{score}</span></p>
-              
-              <div style={{ color: 'var(--text-dim)', fontSize: '0.9rem', lineHeight: '2' }}>
-                [ Press <strong style={{ color: '#00f7ff' }}>ENTER</strong> to Restart ]<br/>
+              <p style={{ color: '#94a3b8', margin: '0 0 8px 0', fontSize: '1.2rem' }}>
+                Final Score: <span style={{ color: '#00f7ff', fontWeight: 'bold' }}>{displayScore}</span>
+              </p>
+              {displayScore > 0 && displayScore >= displayHighScore && (
+                <p style={{ color: '#ff71ce', margin: '0 0 24px 0', fontSize: '0.85rem', letterSpacing: '2px' }}>
+                  ★ NEW HIGH SCORE ★
+                </p>
+              )}
+              {(displayScore === 0 || displayScore < displayHighScore) && <div style={{ marginBottom: '24px' }} />}
+              <div style={{ color: 'var(--text-dim)', fontSize: '0.9rem', lineHeight: '2.2' }}>
+                [ Press <strong style={{ color: '#00f7ff' }}>ENTER</strong> to Restart ]<br />
                 [ Press <strong style={{ color: '#ff306c' }}>ESC</strong> to Exit ]
               </div>
             </motion.div>
@@ -340,15 +346,22 @@ export default function NeonSnakeGame({ onExit }) {
       </div>
 
       <div style={{
-        marginTop: '24px',
+        marginTop: '20px',
         fontFamily: 'var(--font-mono)',
-        color: 'var(--text-dim)',
-        fontSize: '0.8rem',
-        opacity: 0.6,
-        letterSpacing: '1px'
+        color: 'rgba(255,255,255,0.25)',
+        fontSize: '0.75rem', letterSpacing: '1px'
       }}>
-        Use W A S D or Arrow Keys. Press ESC to exit.
+        W A S D / Arrow Keys to move &nbsp;·&nbsp; ESC to exit
       </div>
     </motion.div>
   );
+}
+
+// Pure helper — no React dependency
+function spawnApple(snake, tileX, tileY) {
+  let a;
+  do {
+    a = { x: Math.floor(Math.random() * tileX), y: Math.floor(Math.random() * tileY) };
+  } while (snake.some(s => s.x === a.x && s.y === a.y));
+  return a;
 }
