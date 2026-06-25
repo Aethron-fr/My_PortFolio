@@ -2,15 +2,15 @@ import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const skills = [
-  { name: 'React.js', desc: 'Component Architecture', level: '95%' },
-  { name: 'Node.js', desc: 'Backend Services', level: '85%' },
-  { name: 'TypeScript', desc: 'Type-Safe Logic', level: '90%' },
-  { name: 'MongoDB', desc: 'NoSQL Databases', level: '80%' },
-  { name: 'GSAP', desc: 'Advanced Animations', level: '85%' },
-  { name: 'Three.js', desc: 'WebGL 3D Rendering', level: '70%' },
-  { name: 'Tailwind CSS', desc: 'Utility Styling', level: '95%' },
-  { name: 'Framer Motion', desc: 'React Physics', level: '90%' },
-  { name: 'Vite', desc: 'Build Tooling', level: '85%' },
+  { name: 'React.js',      desc: 'Component Architecture', level: '95%', color: '#61DAFB' },
+  { name: 'Node.js',       desc: 'Backend Services',       level: '85%', color: '#339933' },
+  { name: 'TypeScript',    desc: 'Type-Safe Logic',        level: '90%', color: '#3178C6' },
+  { name: 'MongoDB',       desc: 'NoSQL Databases',        level: '80%', color: '#47A248' },
+  { name: 'GSAP',          desc: 'Advanced Animations',    level: '85%', color: '#88CE02' },
+  { name: 'Three.js',      desc: 'WebGL 3D Rendering',     level: '70%', color: '#ffffff' },
+  { name: 'Tailwind CSS',  desc: 'Utility Styling',        level: '95%', color: '#06B6D4' },
+  { name: 'Framer Motion', desc: 'React Physics',          level: '90%', color: '#FF0055' },
+  { name: 'Vite',          desc: 'Build Tooling',          level: '85%', color: '#646CFF' },
 ];
 
 export default function TechStackBento() {
@@ -28,7 +28,7 @@ export default function TechStackBento() {
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
       style={{
@@ -44,61 +44,62 @@ export default function TechStackBento() {
       <style>{`
         .bento-card {
           position: relative;
-          background: rgba(10, 12, 22, 0.4);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
           border-radius: 16px;
           padding: 28px 24px;
           overflow: hidden;
           cursor: crosshair;
-          transition: transform 0.2s ease, background 0.2s ease;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          min-height: 140px;
+          min-height: 150px;
         }
 
-        /* The glowing border effect tracking the mouse */
+        /* Glowing border that tracks the mouse */
         .bento-card::before {
           content: "";
           position: absolute;
           inset: 0;
           border-radius: 16px;
-          padding: 1px; /* border width */
+          padding: 1px;
           background: radial-gradient(
-            600px circle at var(--mouse-x) var(--mouse-y),
-            rgba(0, 247, 255, 0.4),
+            500px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+            var(--accent-cyber),
             transparent 40%
           );
           -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
           -webkit-mask-composite: xor;
           mask-composite: exclude;
           pointer-events: none;
+          opacity: 0.5;
+          transition: opacity 0.3s;
         }
 
-        /* The soft inner background glow tracking the mouse */
+        /* Soft inner glow that tracks the mouse */
         .bento-card::after {
           content: "";
           position: absolute;
           inset: 0;
+          border-radius: 16px;
           background: radial-gradient(
-            600px circle at var(--mouse-x) var(--mouse-y),
-            rgba(0, 247, 255, 0.05),
+            500px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+            rgba(0, 247, 255, 0.06),
             transparent 40%
           );
-          border-radius: 16px;
           pointer-events: none;
           opacity: 0;
           transition: opacity 0.3s ease;
         }
 
-        .bento-card:hover::after {
-          opacity: 1;
-        }
+        .bento-card:hover::before { opacity: 1; }
+        .bento-card:hover::after  { opacity: 1; }
 
         .bento-card:hover {
-          background: rgba(15, 18, 30, 0.7);
-          transform: translateY(-2px);
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          transform: translateY(-3px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+          border-color: var(--border-hover);
         }
 
         .bento-content {
@@ -109,64 +110,92 @@ export default function TechStackBento() {
           flex-direction: column;
           justify-content: space-between;
         }
+
+        .bento-skill-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          margin-top: 5px;
+        }
+
+        .bento-progress-track {
+          width: 100%;
+          height: 2px;
+          background: var(--border);
+          border-radius: 2px;
+          overflow: hidden;
+        }
+
+        .bento-level-badge {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          letter-spacing: 1px;
+          padding: 3px 8px;
+          border-radius: 6px;
+          border: 1px solid var(--border);
+          color: var(--text-secondary);
+          background: var(--bg-surface);
+          transition: border-color 0.3s, color 0.3s;
+        }
+
+        .bento-card:hover .bento-level-badge {
+          border-color: var(--accent-cyber);
+          color: var(--accent-cyber);
+        }
       `}</style>
 
       {skills.map((skill, index) => (
-        <motion.div 
+        <motion.div
           key={index}
           className="bento-card"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: index * 0.05, duration: 0.5, ease: 'easeOut' }}
+          transition={{ delay: index * 0.06, duration: 0.5, ease: 'easeOut' }}
         >
           <div className="bento-content">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-              <div>
-                <h4 style={{ 
-                  margin: 0, 
-                  fontFamily: 'var(--font-heading)', 
-                  fontSize: '1.25rem', 
-                  color: 'var(--text-primary)',
-                  fontWeight: '600'
-                }}>
-                  {skill.name}
-                </h4>
-                <p style={{ 
-                  margin: '6px 0 0 0', 
-                  fontFamily: 'var(--font-sans)', 
-                  fontSize: '0.85rem', 
-                  color: 'var(--text-dim)' 
-                }}>
-                  {skill.desc}
-                </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <span className="bento-skill-dot" style={{ background: skill.color, boxShadow: `0 0 8px ${skill.color}55` }} />
+                <div>
+                  <h4 style={{
+                    margin: 0,
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: '1.1rem',
+                    color: 'var(--text-primary)',
+                    fontWeight: '600',
+                    lineHeight: 1.2
+                  }}>
+                    {skill.name}
+                  </h4>
+                  <p style={{
+                    margin: '4px 0 0 0',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.72rem',
+                    color: 'var(--text-muted)',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {skill.desc}
+                  </p>
+                </div>
               </div>
-              <span style={{ 
-                fontFamily: 'var(--font-mono)', 
-                fontSize: '0.75rem', 
-                color: 'rgba(0, 247, 255, 0.9)',
-                background: 'rgba(0, 247, 255, 0.08)',
-                border: '1px solid rgba(0, 247, 255, 0.2)',
-                padding: '4px 8px',
-                borderRadius: '6px',
-                letterSpacing: '1px'
-              }}>
-                {skill.level}
-              </span>
+              <span className="bento-level-badge">{skill.level}</span>
             </div>
 
-            {/* Micro progress bar tracking */}
-            <div style={{ width: '100%', height: '2px', background: 'rgba(255, 255, 255, 0.06)', borderRadius: '2px', overflow: 'hidden' }}>
-              <motion.div 
+            {/* Progress bar */}
+            <div className="bento-progress-track">
+              <motion.div
                 initial={{ width: 0 }}
                 whileInView={{ width: skill.level }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.2 + (index * 0.05), duration: 0.8, ease: "easeOut" }}
-                style={{ 
-                  height: '100%', 
-                  background: 'linear-gradient(90deg, rgba(0,247,255,0.4), rgba(255,48,108,0.8))',
-                  boxShadow: '0 0 10px rgba(0, 247, 255, 0.5)'
-                }} 
+                transition={{ delay: 0.2 + index * 0.06, duration: 0.9, ease: 'easeOut' }}
+                style={{
+                  height: '100%',
+                  background: `linear-gradient(90deg, ${skill.color}88, ${skill.color})`,
+                  boxShadow: `0 0 8px ${skill.color}66`,
+                  borderRadius: '2px'
+                }}
               />
             </div>
           </div>
