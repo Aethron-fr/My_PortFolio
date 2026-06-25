@@ -12,24 +12,40 @@ const BOOT_SEQUENCE = [
 
 const COMMANDS = {
   help: [
-    { text: "Swapnadip OS CLI - v2.0.0", color: "var(--accent-primary)" },
-    { text: "Available commands:", color: "#94a3b8" },
-    { text: "  whoami       - View my profile and summary", color: "#e2e8f0" },
-    { text: "  skills       - View technical stack and proficiencies", color: "#e2e8f0" },
-    { text: "  experience   - View professional timeline", color: "#e2e8f0" },
-    { text: "  projects     - List flagship projects", color: "#e2e8f0" },
-    { text: "  resume       - View resume link", color: "#e2e8f0" },
-    { text: "  contact      - Get email and social links", color: "#e2e8f0" },
-    { text: "  sendmail     - Send an interactive email", color: "var(--accent-cyber)" },
-    { text: "  gravity      - Enable physics engine", color: "#fbbf24" },
-    { text: "  stable       - Restore DOM stability (disable effects)", color: "#39d353" },
-    { text: "  matrix       - Initialize digital rain overlay", color: "#39d353" },
-    { text: "  hack         - Execute cinematic bypass payload", color: "#ff5f56" },
-    { text: "  play         - Initialize Neon Snake Arcade", color: "var(--accent-primary)" },
-    { text: "  selfdestruct - Terminate instance forcefully", color: "#ff5f56" },
-    { text: "  theme [name] - Change color (hacker, cyber, vapor, default)", color: "var(--accent-violet)" },
-    { text: "  clear        - Clear terminal output", color: "#e2e8f0" },
-    { text: "  exit         - Close the terminal mode", color: "#e2e8f0" }
+    { text: "╔═══════════════════════════════════════╗", color: "rgba(255,255,255,0.1)" },
+    { text: "  Swapnadip OS  ·  CLI v3.0.0", color: "var(--accent-primary)" },
+    { text: "╚═══════════════════════════════════════╝", color: "rgba(255,255,255,0.1)" },
+    { text: "", color: "#94a3b8" },
+    { text: "── INFO ─────────────────────────────────", color: "rgba(255,255,255,0.15)" },
+    { text: "  whoami       View profile & summary", color: "#e2e8f0" },
+    { text: "  skills       Technical stack", color: "#e2e8f0" },
+    { text: "  experience   Professional timeline", color: "#e2e8f0" },
+    { text: "  projects     Flagship projects", color: "#e2e8f0" },
+    { text: "  contact      Email & socials", color: "#e2e8f0" },
+    { text: "", color: "#94a3b8" },
+    { text: "── ACTIONS ──────────────────────────────", color: "rgba(255,255,255,0.15)" },
+    { text: "  resume       Open interactive resume", color: "var(--accent-cyber)" },
+    { text: "  sendmail     Send me a message", color: "var(--accent-cyber)" },
+    { text: "", color: "#94a3b8" },
+    { text: "── EFFECTS ──────────────────────────────", color: "rgba(255,255,255,0.15)" },
+    { text: "  matrix       Digital rain overlay", color: "#39d353" },
+    { text: "  gravity      Physics engine", color: "#fbbf24" },
+    { text: "  hack         Cinematic bypass payload", color: "#ff5f56" },
+    { text: "  play         Neon Snake Arcade", color: "var(--accent-primary)" },
+    { text: "  selfdestruct Terminate instance", color: "#ff5f56" },
+    { text: "", color: "#94a3b8" },
+    { text: "── THEMES ───────────────────────────────", color: "rgba(255,255,255,0.15)" },
+    { text: "  theme hacker  Matrix green", color: "#39d353" },
+    { text: "  theme cyber   Neon cyan", color: "#00f7ff" },
+    { text: "  theme vapor   Synthwave pink", color: "#ff71ce" },
+    { text: "  theme default Restore original", color: "var(--accent-violet)" },
+    { text: "", color: "#94a3b8" },
+    { text: "── SYSTEM ───────────────────────────────", color: "rgba(255,255,255,0.15)" },
+    { text: "  reset / stable  Kill all effects & themes", color: "#94a3b8" },
+    { text: "  clear           Clear output", color: "#e2e8f0" },
+    { text: "  exit            Close terminal", color: "#e2e8f0" },
+    { text: "", color: "#94a3b8" },
+    { text: "  Tip: ↑ / ↓ arrow keys for command history", color: "rgba(255,255,255,0.25)" },
   ],
   whoami: [
     { text: "{", color: "#94a3b8" },
@@ -184,6 +200,9 @@ export default function TerminalMode({ isOpen, onClose }) {
   }, [isOpen, bootIndex, isBooted]);
 
   const handleKeyDown = (e) => {
+    // Don't interfere with snake game arrow keys
+    if (isSnakeMode) return;
+
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (historyIndex < commandHistory.length - 1) {
@@ -274,13 +293,18 @@ export default function TerminalMode({ isOpen, onClose }) {
       return;
     }
 
-    if (lowerCmd === 'stable' || lowerCmd === 'restore') {
+    if (lowerCmd === 'stable' || lowerCmd === 'restore' || lowerCmd === 'reset' || lowerCmd === 'stop') {
       setIsGravityActive(false);
       setIsMatrixActive(false);
       setIsSnakeMode(false);
       setIsSelfDestructing(false);
       setTerminalTheme('var(--accent-primary)');
-      newHistory.push({ type: 'output', lines: [{ text: "System stabilized. All active physics and overrides disabled.", color: "#39d353" }] });
+      // Remove all global theme classes from body
+      document.body.classList.remove('theme-hacker', 'theme-cyber', 'theme-vapor');
+      newHistory.push({ type: 'output', lines: [
+        { text: "[OK] All effects terminated.", color: "#39d353" },
+        { text: "[OK] Global theme restored to default.", color: "#39d353" },
+      ]});
       setHistory(newHistory);
       return;
     }
@@ -330,7 +354,16 @@ export default function TerminalMode({ isOpen, onClose }) {
       const colorName = lowerCmd.split(' ')[1];
       if (THEMES[colorName]) {
         setTerminalTheme(THEMES[colorName]);
-        newHistory.push({ type: 'output', lines: [{ text: `Theme successfully updated to ${colorName}`, color: THEMES[colorName] }] });
+        // Apply to entire site
+        document.body.classList.remove('theme-hacker', 'theme-cyber', 'theme-vapor');
+        if (colorName !== 'default') {
+          document.body.classList.add(`theme-${colorName}`);
+        }
+        newHistory.push({ type: 'output', lines: [
+          { text: `[GLOBAL] Theme override applied: ${colorName.toUpperCase()}`, color: THEMES[colorName] },
+          { text: `[INFO]  The entire site has been restyled.`, color: "#94a3b8" },
+          { text: `[TIP]   Type 'reset' to restore default theme.`, color: "rgba(255,255,255,0.3)" },
+        ]});
       } else {
         newHistory.push({ type: 'output', lines: [{ text: `Unknown theme. Available: hacker, cyber, vapor, default`, color: "#ff5f56" }] });
       }
@@ -447,29 +480,38 @@ export default function TerminalMode({ isOpen, onClose }) {
             <div 
               className="terminal-handle"
               style={{ 
-                display: 'flex', 
+                display: 'flex',
+                alignItems: 'center',
                 gap: '8px', 
-                padding: '16px 20px', 
-                background: 'rgba(255,255,255,0.03)',
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                cursor: 'grab'
+                padding: '12px 20px', 
+                background: 'rgba(255,255,255,0.025)',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                cursor: 'grab',
+                userSelect: 'none'
               }}
             >
-              <button 
+              {/* Traffic lights */}
+              <div 
                 onClick={onClose}
-                style={{
-                  background: 'transparent', border: 'none', color: '#94a3b8',
-                  cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center'
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e' }} />
-              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27c93f' }} />
-              <span style={{ marginLeft: '12px', color: '#94a3b8', fontSize: '0.75rem', fontFamily: 'monospace' }}>swapnadip@dev-env:~ (Draggable)</span>
+                title="Close"
+                style={{ width: 13, height: 13, borderRadius: '50%', background: '#ff5f57', cursor: 'pointer', flexShrink: 0,
+                  boxShadow: '0 0 6px rgba(255,95,87,0.5)', transition: 'transform 0.15s', }}
+                onMouseEnter={e => e.target.style.transform = 'scale(1.15)'}
+                onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+              />
+              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#febc2e', flexShrink: 0, boxShadow: '0 0 6px rgba(254,188,46,0.4)' }} />
+              <div style={{ width: 13, height: 13, borderRadius: '50%', background: '#28c840', flexShrink: 0, boxShadow: '0 0 6px rgba(40,200,64,0.4)' }} />
+
+              {/* Title */}
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px' }}>
+                  swapnadip@dev-env:~
+                </span>
+                <span style={{ fontSize: '0.6rem', padding: '2px 6px', background: 'rgba(0,247,255,0.08)', border: '1px solid rgba(0,247,255,0.15)', borderRadius: '4px', color: 'rgba(0,247,255,0.6)', fontFamily: 'var(--font-mono)', letterSpacing: '1px' }}>
+                  DRAGGABLE
+                </span>
+              </div>
+              <div style={{ width: 13, height: 13 }} />{/* spacer for symmetry */}
             </div>
 
             {isSnakeMode && (

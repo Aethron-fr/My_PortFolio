@@ -711,3 +711,74 @@ body.xray-mode button {
 body.xray-mode [data-component] > * {
   background-image: none !important;
 }
+
+/* -------------------------------------------------------------------
+   GLOBAL CLI THEMES — injected via TerminalMode `theme` command
+   ------------------------------------------------------------------- */
+body { transition: background-color 0.6s ease; }
+
+/* HACKER: Matrix Green */
+body.theme-hacker {
+  --accent-primary:   #39d353;
+  --accent-secondary: #27ae60;
+  --accent-cyber:     #39d353;
+  --accent-violet:    #00ff88;
+  --bg-base:    #010d04;
+  --bg-surface: #021208;
+  --bg-panel:   rgba(2, 18, 8, 0.9);
+  --bg-card:    rgba(1, 15, 5, 0.85);
+  --bg-section: linear-gradient(to bottom, #010d04, #021208);
+  --border:       rgba(57, 211, 83, 0.12);
+  --border-hover: rgba(57, 211, 83, 0.3);
+  --border-glass: rgba(57, 211, 83, 0.12);
+  --text-primary:   #c8ffd4;
+  --text-secondary: rgba(200, 255, 212, 0.55);
+  --text-muted:     rgba(200, 255, 212, 0.3);
+  --text-dim:       rgba(200, 255, 212, 0.12);
+  --insta-gradient: linear-gradient(135deg, #39d353 0%, #00ff88 100%);
+  --neon-gradient:  linear-gradient(135deg, #39d353 0%, #00ff88 100%);
+}
+
+/* CYBER: Neon Cyan */
+body.theme-cyber {
+  --accent-primary:   #00f7ff;
+  --accent-secondary: #006aff;
+  --accent-cyber:     #00f7ff;
+  --accent-violet:    #006aff;
+  --bg-base:    #010309;
+  --bg-surface: #020512;
+  --bg-panel:   rgba(1, 8, 22, 0.9);
+  --bg-card:    rgba(1, 5, 16, 0.85);
+  --bg-section: linear-gradient(to bottom, #010309, #020512);
+  --border:       rgba(0, 247, 255, 0.1);
+  --border-hover: rgba(0, 247, 255, 0.25);
+  --border-glass: rgba(0, 247, 255, 0.1);
+  --text-primary:   #d0f8ff;
+  --text-secondary: rgba(208, 248, 255, 0.55);
+  --text-muted:     rgba(208, 248, 255, 0.3);
+  --text-dim:       rgba(208, 248, 255, 0.12);
+  --insta-gradient: linear-gradient(135deg, #00f7ff 0%, #006aff 100%);
+  --neon-gradient:  linear-gradient(135deg, #00f7ff 0%, #006aff 100%);
+}
+
+/* VAPOR: Synthwave Pink/Purple */
+body.theme-vapor {
+  --accent-primary:   #ff71ce;
+  --accent-secondary: #b967ff;
+  --accent-cyber:     #05ffa1;
+  --accent-violet:    #b967ff;
+  --bg-base:    #07000e;
+  --bg-surface: #0f0020;
+  --bg-panel:   rgba(15, 0, 32, 0.9);
+  --bg-card:    rgba(10, 0, 20, 0.85);
+  --bg-section: linear-gradient(to bottom, #07000e, #0f0020);
+  --border:       rgba(255, 113, 206, 0.12);
+  --border-hover: rgba(255, 113, 206, 0.3);
+  --border-glass: rgba(255, 113, 206, 0.12);
+  --text-primary:   #ffd6f5;
+  --text-secondary: rgba(255, 214, 245, 0.55);
+  --text-muted:     rgba(255, 214, 245, 0.3);
+  --text-dim:       rgba(255, 214, 245, 0.12);
+  --insta-gradient: linear-gradient(135deg, #ff71ce 0%, #b967ff 50%, #05ffa1 100%);
+  --neon-gradient:  linear-gradient(135deg, #ff71ce 0%, #b967ff 100%);
+}
