@@ -31,7 +31,7 @@ import ResumeViewer from './components/ResumeViewer';
 import Preloader from './components/Preloader';
 import LiveCursors from './components/LiveCursors';
 import ScrollSkewWrapper from './components/ScrollSkewWrapper';
-import PhysicsSkillsGraph from './components/PhysicsSkillsGraph';
+import TechStackBento from './components/TechStackBento';
 const GithubProjects = lazy(() => import('./components/GithubProjects'));
 const DeveloperJourney = lazy(() => import('./components/DeveloperJourney'));
 const FeaturedSpotlight = lazy(() => import('./components/FeaturedSpotlight'));
@@ -1252,7 +1252,7 @@ export default function App() {
                   Core Tech Stack
                 </h3>
 
-                <PhysicsSkillsGraph />
+                <TechStackBento />
               </div>
             </div>
           </div>
