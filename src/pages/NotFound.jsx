@@ -1,155 +1,187 @@
-import { useEffect, useState } from 'react';
-
+import { useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { Terminal, ShieldAlert, Cpu } from 'lucide-react';
 
 export default function NotFound() {
   const navigate = useNavigate();
-  const [input, setInput] = useState('');
+
+  // Generate deterministic random values for particles so they are pure across renders
+  const particles = useMemo(() => {
+    return [...Array(15)].map(() => ({
+      x: Math.random() * 200 - 100,
+      duration: Math.random() * 10 + 10,
+      delay: Math.random() * 5,
+      size: Math.random() * 4 + 1 + 'px',
+      left: `${Math.random() * 100}%`
+    }));
+  }, []);
 
   useEffect(() => {
-    document.title = '404 | SYSTEM FAILURE';
+    document.title = '404 | SIGNAL LOST';
     return () => {
-      document.title = 'Swapnadip Ghosh — Crafted Slowly';
+      document.title = 'Swapnadip Ghosh ?" Crafted Slowly';
     };
   }, []);
 
-  const handleCommand = (e) => {
-    e.preventDefault();
-    if (input.trim().toLowerCase() === 'reboot') {
-      navigate('/');
-    } else {
-      setInput('');
-    }
-  };
-
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#050508',
-        textAlign: 'center',
-        padding: '2rem',
-        fontFamily: 'var(--font-mono, monospace)',
-        overflow: 'hidden',
-        position: 'relative'
-      }}
-    >
-      <style>
-        {`
-          @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-4px, 2px) }
-            40% { transform: translate(4px, -2px) }
-            60% { transform: translate(-2px, 4px) }
-            80% { transform: translate(2px, -4px) }
-            100% { transform: translate(0) }
-          }
-          .glitch-text {
-            position: relative;
-            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-          }
-          .glitch-text::before, .glitch-text::after {
-            content: "404";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.8;
-          }
-          .glitch-text::before {
-            color: #0ff;
-            z-index: -1;
-            transform: translate(-3px, 2px);
-            animation: glitch 0.4s cubic-bezier(.25, .46, .45, .94) both infinite reverse;
-          }
-          .glitch-text::after {
-            color: #f0f;
-            z-index: -2;
-            transform: translate(3px, -2px);
-            animation: glitch 0.2s cubic-bezier(.25, .46, .45, .94) both infinite;
-          }
-        `}
-      </style>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#030712', // Deep space dark blue/black
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+      color: '#fff',
+      padding: '20px',
+      textAlign: 'center'
+    }}>
+      {/* Background Cyber Grid */}
+      <div style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundImage: 'linear-gradient(rgba(0, 247, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 247, 255, 0.05) 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        opacity: 0.6,
+        pointerEvents: 'none',
+        transform: 'perspective(500px) rotateX(60deg) translateY(-100px) scale(2)',
+        transformOrigin: 'top center'
+      }} />
 
-      {/* Heavy Red Overlay & Scanlines */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(circle at center, rgba(255, 0, 60, 0.1) 0%, rgba(10, 0, 0, 0.95) 100%)',
-          pointerEvents: 'none',
-          zIndex: 0
+      {/* Floating Hologram / Broken Server Component */}
+      <motion.div
+        animate={{ 
+          y: [-20, 20, -20],
+          rotateZ: [-5, 5, -5],
+          opacity: [0.7, 1, 0.7],
+          filter: ['drop-shadow(0px 0px 20px rgba(0,247,255,0.3))', 'drop-shadow(0px 0px 50px rgba(0,247,255,0.7))', 'drop-shadow(0px 0px 20px rgba(0,247,255,0.3))']
         }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(transparent 50%, rgba(0, 0, 0, 0.25) 50%)',
-          backgroundSize: '100% 4px',
-          pointerEvents: 'none',
-          zIndex: 1
-        }}
-      />
+        transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+        style={{ position: 'relative', zIndex: 2, marginBottom: '50px' }}
+      >
+        <motion.div
+          animate={{ x: [-5, 5, -5] }}
+          transition={{ repeat: Infinity, duration: 0.2, repeatType: 'mirror' }}
+          style={{ display: 'inline-block' }}
+        >
+          <Cpu size={140} style={{ color: 'var(--accent-primary)', filter: 'drop-shadow(0 0 10px var(--accent-primary))' }} />
+        </motion.div>
+        <ShieldAlert 
+          size={50} 
+          style={{ 
+            color: '#ff5f56', 
+            position: 'absolute', 
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)',
+            filter: 'drop-shadow(0 0 15px #ff5f56)'
+          }} 
+        />
+      </motion.div>
 
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '600px', width: '100%', padding: '0 20px' }}>
-        <h1
-          className="glitch-text"
+      {/* 404 Title */}
+      <motion.h1 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, type: 'spring' }}
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 'clamp(3rem, 8vw, 6rem)',
+          fontWeight: 900,
+          margin: '0 0 10px 0',
+          letterSpacing: '8px',
+          position: 'relative',
+          zIndex: 2,
+          color: 'transparent',
+          WebkitTextStroke: '2px rgba(255,255,255,0.9)',
+          textShadow: '0 0 30px rgba(0,247,255,0.5)'
+        }}
+      >
+        404
+      </motion.h1>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        style={{ position: 'relative', zIndex: 2 }}
+      >
+        <p style={{
+          fontFamily: 'var(--font-mono)',
+          color: 'var(--accent-primary)',
+          fontSize: '1.2rem',
+          textTransform: 'uppercase',
+          letterSpacing: '4px',
+          marginBottom: '15px'
+        }}>
+          Signal Lost in the Void
+        </p>
+        
+        <p style={{
+          color: 'var(--text-dim)',
+          fontSize: '1.1rem',
+          maxWidth: '500px',
+          margin: '0 auto 50px auto',
+          lineHeight: '1.7',
+          opacity: 0.8
+        }}>
+          The architectural coordinates you are seeking have collapsed or never existed in this timeline.
+        </p>
+
+        <motion.button
+          onClick={() => navigate('/')}
+          whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(0,247,255,0.6)' }}
+          whileTap={{ scale: 0.95 }}
+          className="btn-neon-glow interactive"
           style={{
-            fontSize: 'clamp(6rem, 15vw, 12rem)',
-            fontWeight: 900,
+            padding: '18px 46px',
+            fontSize: '1.15rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '16px',
+            border: '1px solid var(--accent-primary)',
+            background: 'rgba(0,247,255,0.05)',
             color: '#fff',
-            margin: '0 0 10px',
-            lineHeight: 1,
-            letterSpacing: '-8px',
-            textShadow: '0 0 20px rgba(255, 0, 60, 0.5)'
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)',
+            textTransform: 'uppercase',
+            letterSpacing: '2px'
           }}
         >
-          404
-        </h1>
+          <Terminal size={22} color="var(--accent-primary)" />
+          ESTABLISH UPLINK
+        </motion.button>
+      </motion.div>
 
-        <div style={{
-          background: 'rgba(20, 10, 10, 0.8)',
-          border: '1px solid #ff003c',
-          padding: '30px',
-          borderRadius: '8px',
-          boxShadow: '0 0 30px rgba(255, 0, 60, 0.2)',
-          textAlign: 'left'
-        }}>
-          <p style={{ color: '#ff003c', margin: '0 0 10px', fontSize: '1rem', textTransform: 'uppercase' }}>
-            [FATAL ERROR] Signal Lost. Route Corrupted.
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.6)', margin: '0 0 30px', fontSize: '0.9rem', lineHeight: 1.5 }}>
-            The memory block you are trying to access has been overwritten or destroyed. <br/>
-            Please initiate a system reboot.
-          </p>
-          
-          <form onSubmit={handleCommand} style={{ display: 'flex', alignItems: 'center' }}>
-            <span style={{ color: '#ff003c', marginRight: '10px' }}>sys_recovery:~#</span>
-            <input
-              autoFocus
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="type 'reboot'"
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#fff',
-                outline: 'none',
-                fontFamily: 'inherit',
-                fontSize: '1rem',
-                width: '100%'
-              }}
-            />
-          </form>
-        </div>
-      </div>
+      {/* Floating Dust Particles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          animate={{
+            y: ['-100vh', '100vh'],
+            x: p.x
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            ease: "linear",
+            delay: p.delay
+          }}
+          style={{
+            position: 'absolute',
+            width: p.size,
+            height: p.size,
+            backgroundColor: 'rgba(0, 247, 255, 0.4)',
+            borderRadius: '50%',
+            left: p.left,
+            top: '-10vh',
+            boxShadow: '0 0 10px rgba(0,247,255,0.8)'
+          }}
+        />
+      ))}
     </div>
   );
 }
