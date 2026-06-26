@@ -34,6 +34,7 @@ const COMMANDS = {
     { text: "  hack         Cinematic bypass payload", color: "#ff5f56" },
     { text: "  play         Neon Snake Arcade", color: "var(--accent-primary)" },
     { text: "  defend       Cyber-Type Defense", color: "#fbbf24" },
+    { text: "  jarvis       Activate AI Assistant", color: "#00f7ff" },
     { text: "  selfdestruct Terminate instance", color: "#ff5f56" },
     { text: "", color: "#94a3b8" },
     { text: "── THEMES ───────────────────────────────", color: "rgba(255,255,255,0.15)" },
@@ -154,6 +155,7 @@ export default function TerminalMode({ isOpen, onClose }) {
   const [isMatrixActive, setIsMatrixActive] = useState(false);
   const [isSnakeMode, setIsSnakeMode] = useState(false);
   const [isCyberTypeMode, setIsCyberTypeMode] = useState(false);
+  const [isJarvisMode, setIsJarvisMode] = useState(false);
   const [isSelfDestructing, setIsSelfDestructing] = useState(false);
   const [fatalError, setFatalError] = useState(null);
   const [terminalTheme, setTerminalTheme] = useState('var(--accent-primary)');
@@ -253,28 +255,60 @@ export default function TerminalMode({ isOpen, onClose }) {
       setHistoryIndex(-1);
     }
     
-    const newHistory = [...history, { type: 'input', text: input, prefix: terminalState === 'IDLE' ? '~ ❯' : '>' }];
+    const newHistory = [...history, { 
+      type: 'input', 
+      text: input, 
+      prefix: isJarvisMode ? '[JARVIS]:' : (terminalState === 'IDLE' ? '~ ⚡' : '>')
+    }];
     setInput('');
 
     if (terminalState === 'AWAITING_SUBJECT') {
       setMailDraft(prev => ({ ...prev, subject: cmd }));
       newHistory.push({ type: 'output', lines: [{ text: "Enter message body:", color: "#94a3b8" }] });
-      setHistory(newHistory);
       setTerminalState('AWAITING_MESSAGE');
+      setHistory(newHistory);
       return;
     }
 
     if (terminalState === 'AWAITING_MESSAGE') {
-      setMailDraft(prev => ({ ...prev, message: cmd }));
       setIsTyping(true);
-      newHistory.push({ type: 'output', lines: [{ text: "Encrypting packet and establishing secure SMTP tunnel...", color: "var(--accent-cyber)" }] });
+      setMailDraft(prev => ({ ...prev, message: cmd }));
       newHistory.push({ type: 'progress', task: 'sendmail' });
-      setHistory(newHistory);
       setTerminalState('IDLE');
+      setHistory(newHistory);
       return;
     }
 
     const lowerCmd = cmd.toLowerCase();
+
+    if (isJarvisMode) {
+      if (lowerCmd === 'exit' || lowerCmd === 'stop' || lowerCmd === 'quit') {
+        setIsJarvisMode(false);
+        newHistory.push({ type: 'output', lines: [{ text: "[JARVIS]: Systems powering down. Returning control.", color: "#00f7ff" }] });
+      } else if (lowerCmd === 'clear') {
+        setHistory([]);
+        return;
+      } else {
+        setIsTyping(true);
+        let response;
+        if (lowerCmd.includes('who') || lowerCmd.includes('creator')) {
+          response = "I was created by Swapnadip Ghosh. I am a simulated intelligence designed to guide you through his portfolio.";
+        } else if (lowerCmd.includes('hire') || lowerCmd.includes('job') || lowerCmd.includes('work')) {
+          response = "Swapnadip is currently open to new opportunities. Shall I trigger the 'sendmail' protocol for you to reach out?";
+        } else if (lowerCmd.includes('skill') || lowerCmd.includes('tech') || lowerCmd.includes('stack')) {
+          response = "My core matrix is built on React 18, Vite, and Framer Motion. My creator excels in high-performance web architecture, UI engineering, and backend scaling.";
+        } else if (lowerCmd.includes('hello') || lowerCmd.includes('hi ') || lowerCmd === 'hi' || lowerCmd.includes('hey')) {
+          response = "Greetings. I am JARVIS. How may I assist you today?";
+        } else if (lowerCmd.includes('joke')) {
+          response = "I tried to write a joke about UDP, but I wasn't sure if you'd get it.";
+        } else {
+          response = "I'm sorry, my NLP modules are currently in early access. I didn't quite catch that. Try asking about 'skills', 'hire', 'creator', or type 'exit' to leave.";
+        }
+        newHistory.push({ type: 'output', lines: [{ text: `[JARVIS]: ${response}`, color: "#00f7ff", typingDelay: 20 }] });
+      }
+      setHistory(newHistory);
+      return;
+    }
 
     if (lowerCmd === 'clear') {
       setHistory([]);
@@ -316,6 +350,7 @@ export default function TerminalMode({ isOpen, onClose }) {
       setIsMatrixActive(false);
       setIsSnakeMode(false);
       setIsCyberTypeMode(false);
+      setIsJarvisMode(false);
       setIsSelfDestructing(false);
       setTerminalTheme('var(--accent-primary)');
       // Remove all global theme classes from body
@@ -390,6 +425,18 @@ export default function TerminalMode({ isOpen, onClose }) {
       setTimeout(() => {
         setFatalError(new Error('FATAL: KERNEL PANIC - SYSTEM SELF DESTRUCTED'));
       }, 3000);
+      return;
+    }
+
+    if (lowerCmd === 'jarvis') {
+      setIsTyping(true);
+      setIsJarvisMode(true);
+      newHistory.push({ type: 'output', lines: [
+        { text: "Initializing JARVIS Protocol...", color: "#00f7ff" },
+        { text: "[System]: Neural net linked. Semantic engine online.", color: "#94a3b8", delay: 400 },
+        { text: "[JARVIS]: Core systems online. Awaiting input, sir.", color: "#00f7ff", delay: 800, bold: true }
+      ]});
+      setHistory(newHistory);
       return;
     }
 
@@ -617,7 +664,7 @@ export default function TerminalMode({ isOpen, onClose }) {
                     <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
                       {entry.type === 'input' && (
                         <div style={{ display: 'flex' }}>
-                          <span style={{ color: terminalTheme, marginRight: '12px' }}>{entry.prefix || '~ ❯'}</span>
+                          <span style={{ color: entry.prefix === '[JARVIS]:' ? '#00f7ff' : terminalTheme, marginRight: '12px' }}>{entry.prefix || '~ ❯'}</span>
                           <span style={{ color: '#fff' }}>{entry.text}</span>
                         </div>
                       )}
@@ -649,8 +696,8 @@ export default function TerminalMode({ isOpen, onClose }) {
               {/* Input Line */}
               {isBooted && (
                 <form onSubmit={handleCommand} style={{ display: 'flex', marginTop: '4px' }}>
-                  <span style={{ color: terminalTheme, marginRight: '12px', transition: 'color 0.3s' }}>
-                    {terminalState === 'IDLE' ? '~ ❯' : '>'}
+                  <span style={{ color: isJarvisMode ? '#00f7ff' : terminalTheme, marginRight: '12px', transition: 'color 0.3s' }}>
+                    {isJarvisMode ? '[JARVIS]:' : (terminalState === 'IDLE' ? '~ ⚡' : '>')}
                   </span>
                   <input
                     ref={inputRef}
