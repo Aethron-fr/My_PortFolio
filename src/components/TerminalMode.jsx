@@ -258,7 +258,7 @@ export default function TerminalMode({ isOpen, onClose }) {
     const newHistory = [...history, { 
       type: 'input', 
       text: input, 
-      prefix: isJarvisMode ? '[JARVIS]:' : (terminalState === 'IDLE' ? '~ ⚡' : '>')
+      prefix: isJarvisMode ? 'You:' : (terminalState === 'IDLE' ? '~ ⚡' : '>')
     }];
     setInput('');
 
@@ -297,6 +297,8 @@ export default function TerminalMode({ isOpen, onClose }) {
           response = "Swapnadip is currently open to new opportunities. Shall I trigger the 'sendmail' protocol for you to reach out?";
         } else if (lowerCmd.includes('skill') || lowerCmd.includes('tech') || lowerCmd.includes('stack')) {
           response = "My core matrix is built on React 18, Vite, and Framer Motion. My creator excels in high-performance web architecture, UI engineering, and backend scaling.";
+        } else if (lowerCmd.includes('website') || lowerCmd.includes('portfolio') || lowerCmd.includes('project')) {
+          response = "This portfolio is a cinematic web experience featuring an interactive CLI, easter eggs, and advanced Framer Motion physics. Type 'projects' in standard mode to view more of his work.";
         } else if (lowerCmd.includes('hello') || lowerCmd.includes('hi ') || lowerCmd === 'hi' || lowerCmd.includes('hey')) {
           response = "Greetings. I am JARVIS. How may I assist you today?";
         } else if (lowerCmd.includes('joke')) {
@@ -697,7 +699,7 @@ export default function TerminalMode({ isOpen, onClose }) {
               {isBooted && (
                 <form onSubmit={handleCommand} style={{ display: 'flex', marginTop: '4px' }}>
                   <span style={{ color: isJarvisMode ? '#00f7ff' : terminalTheme, marginRight: '12px', transition: 'color 0.3s' }}>
-                    {isJarvisMode ? '[JARVIS]:' : (terminalState === 'IDLE' ? '~ ⚡' : '>')}
+                    {isJarvisMode ? 'You:' : (terminalState === 'IDLE' ? '~ ⚡' : '>')}
                   </span>
                   <input
                     ref={inputRef}
@@ -724,6 +726,7 @@ export default function TerminalMode({ isOpen, onClose }) {
                     spellCheck="false"
                     placeholder={
                       isTyping ? "" : 
+                      isJarvisMode ? "Ask JARVIS a question..." :
                       terminalState === 'AWAITING_SUBJECT' ? "Type subject..." : 
                       terminalState === 'AWAITING_MESSAGE' ? "Type message..." : 
                       "Type 'help' to see commands..."
