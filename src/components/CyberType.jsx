@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const WORDS = [
@@ -153,7 +153,6 @@ export default function CyberType({ onExit }) {
 
   useEffect(() => {
     let animationFrameId;
-    let lastTime = performance.now();
 
     const loop = (time) => {
       // Calculate delta if needed, but here we just pass time

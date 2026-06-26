@@ -249,7 +249,7 @@ export default function TerminalMode({ isOpen, onClose }) {
       const updated = [...commandHistory, input];
       setCommandHistory(updated);
       // Persist to localStorage
-      try { localStorage.setItem('terminalCmdHistory', JSON.stringify(updated.slice(-100))); } catch {}
+      try { localStorage.setItem('terminalCmdHistory', JSON.stringify(updated.slice(-100))); } catch (e) { console.warn('Failed to save terminal history', e); }
       setHistoryIndex(-1);
     }
     

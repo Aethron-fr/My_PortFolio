@@ -1,4 +1,46 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+
+class Particle {
+  constructor(x, y, vx, vy) {
+    // Random scatter around the mouse
+    this.x = x + (Math.random() - 0.5) * 30;
+    this.y = y + (Math.random() - 0.5) * 30;
+    // Inherit some mouse velocity + random drift
+    this.vx = vx * 0.05 + (Math.random() - 0.5) * 3;
+    this.vy = vy * 0.05 + (Math.random() - 0.5) * 3;
+    this.life = 1;
+    this.size = Math.random() * 60 + 20; // Large, soft glowing orbs
+    
+    // Cyberpunk colors: Cyan, Magenta, or Deep Blue
+    const rand = Math.random();
+    if (rand > 0.6) this.color = 'rgba(0, 247, 255,';     // Cyan
+    else if (rand > 0.3) this.color = 'rgba(255, 48, 108,'; // Magenta
+    else this.color = 'rgba(112, 0, 255,';                 // Violet/Blue
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    // Add slight upward drift (like smoke)
+    this.vy -= 0.05;
+    // Fade out
+    this.life -= 0.015;
+    // Shrink slightly
+    this.size *= 0.98;
+  }
+
+  draw(ctx) {
+    if (this.life <= 0) return;
+    ctx.beginPath();
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+    gradient.addColorStop(0, `${this.color} ${this.life * 0.4})`);
+    gradient.addColorStop(1, `${this.color} 0)`);
+    
+    ctx.fillStyle = gradient;
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
 
 export default function FluidBackground() {
   const canvasRef = useRef(null);
@@ -41,48 +83,6 @@ export default function FluidBackground() {
     };
 
     window.addEventListener('mousemove', onMouseMove);
-
-    class Particle {
-      constructor(x, y, vx, vy) {
-        // Random scatter around the mouse
-        this.x = x + (Math.random() - 0.5) * 30;
-        this.y = y + (Math.random() - 0.5) * 30;
-        // Inherit some mouse velocity + random drift
-        this.vx = vx * 0.05 + (Math.random() - 0.5) * 3;
-        this.vy = vy * 0.05 + (Math.random() - 0.5) * 3;
-        this.life = 1;
-        this.size = Math.random() * 60 + 20; // Large, soft glowing orbs
-        
-        // Cyberpunk colors: Cyan, Magenta, or Deep Blue
-        const rand = Math.random();
-        if (rand > 0.6) this.color = 'rgba(0, 247, 255,';     // Cyan
-        else if (rand > 0.3) this.color = 'rgba(255, 48, 108,'; // Magenta
-        else this.color = 'rgba(112, 0, 255,';                 // Violet/Blue
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        // Add slight upward drift (like smoke)
-        this.vy -= 0.05;
-        // Fade out
-        this.life -= 0.015;
-        // Shrink slightly
-        this.size *= 0.98;
-      }
-
-      draw(ctx) {
-        if (this.life <= 0) return;
-        ctx.beginPath();
-        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-        gradient.addColorStop(0, `${this.color} ${this.life * 0.4})`);
-        gradient.addColorStop(1, `${this.color} 0)`);
-        
-        ctx.fillStyle = gradient;
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
