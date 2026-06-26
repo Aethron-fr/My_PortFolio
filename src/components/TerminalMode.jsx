@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PhysicsSandbox from './PhysicsSandbox';
+import { askJarvis } from '../utils/jarvisAI';
 import MatrixRain from './MatrixRain';
 import NeonSnakeGame from './NeonSnakeGame';
 import CyberType from './CyberType';
@@ -285,30 +286,21 @@ export default function TerminalMode({ isOpen, onClose }) {
       if (lowerCmd === 'exit' || lowerCmd === 'stop' || lowerCmd === 'quit') {
         setIsJarvisMode(false);
         newHistory.push({ type: 'output', lines: [{ text: "[JARVIS]: Systems powering down. Returning control.", color: "#00f7ff" }] });
+        setHistory(newHistory);
       } else if (lowerCmd === 'clear') {
         setHistory([]);
-        return;
       } else {
         setIsTyping(true);
-        let response;
-        if (lowerCmd.includes('who') || lowerCmd.includes('creator')) {
-          response = "I was created by Swapnadip Ghosh. I am a simulated intelligence designed to guide you through his portfolio.";
-        } else if (lowerCmd.includes('hire') || lowerCmd.includes('job') || lowerCmd.includes('work')) {
-          response = "Swapnadip is currently open to new opportunities. Shall I trigger the 'sendmail' protocol for you to reach out?";
-        } else if (lowerCmd.includes('skill') || lowerCmd.includes('tech') || lowerCmd.includes('stack')) {
-          response = "My core matrix is built on React 18, Vite, and Framer Motion. My creator excels in high-performance web architecture, UI engineering, and backend scaling.";
-        } else if (lowerCmd.includes('website') || lowerCmd.includes('portfolio') || lowerCmd.includes('project')) {
-          response = "This portfolio is a cinematic web experience featuring an interactive CLI, easter eggs, and advanced Framer Motion physics. Type 'projects' in standard mode to view more of his work.";
-        } else if (lowerCmd.includes('hello') || lowerCmd.includes('hi ') || lowerCmd === 'hi' || lowerCmd.includes('hey')) {
-          response = "Greetings. I am JARVIS. How may I assist you today?";
-        } else if (lowerCmd.includes('joke')) {
-          response = "I tried to write a joke about UDP, but I wasn't sure if you'd get it.";
-        } else {
-          response = "I'm sorry, my NLP modules are currently in early access. I didn't quite catch that. Try asking about 'skills', 'hire', 'creator', or type 'exit' to leave.";
-        }
-        newHistory.push({ type: 'output', lines: [{ text: `[JARVIS]: ${response}`, color: "#00f7ff", typingDelay: 20 }] });
+        setHistory(newHistory); // show the user's input immediately
+        
+        // Fetch response from Gemini AI
+        askJarvis(cmd).then(response => {
+          setHistory(prev => [
+            ...prev,
+            { type: 'output', lines: [{ text: `[JARVIS]: ${response}`, color: "#00f7ff", typingDelay: 20 }] }
+          ]);
+        });
       }
-      setHistory(newHistory);
       return;
     }
 
