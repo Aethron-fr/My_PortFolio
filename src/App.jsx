@@ -1000,8 +1000,9 @@ export default function App() {
               </MagneticWrapper>
             ))}
           </motion.div>
+        </div>
 
-          {/* Scroll Indicator */}
+        {/* Scroll Indicator - Moved outside hero-content to prevent overlap with relative container */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1060,7 +1061,6 @@ export default function App() {
               />
             </motion.a>
           </motion.div>
-        </div>
       </section>
 
       {/* SLEEK ANIMATED NEON DIVIDER to blend sections */}
