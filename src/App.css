@@ -10,6 +10,7 @@
   text-align: center;
   overflow: hidden;
   padding-top: 80px;
+  padding-bottom: 120px; /* Prevent overlap with absolute scroll indicator */
   transition: background 3s ease;
 }
 
@@ -512,6 +513,7 @@
   
   .hero-section {
     padding-top: 100px;
+    padding-bottom: 140px;
   }
   
   .hero-content h1 {
