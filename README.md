@@ -1,16 +1,58 @@
-# React + Vite
+# ⚡ Interactive Developer Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An immersive, cinematic, high-performance digital monument built with React and Framer Motion. This is not just a standard portfolio; it's a highly interactive web experience pushing the boundaries of front-end architecture.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* **Cinematic UI/UX:** Built with heavy use of `framer-motion` for buttery smooth spring physics, page transitions, and micro-interactions.
+* **Terminal/CLI Mode:** A fully functioning simulated terminal built directly into the site. Users can type commands to interact with the portfolio.
+* **Interactive Mini-Games:** Hidden within the terminal are playable games:
+  * `> play` : A retro Neon Snake arcade game.
+  * `> sweep` : Bug Sweeper (a developer-themed Minesweeper clone).
+* **Intense Meta-Effects:** Type `> hack` for a terrifying global UI takeover, or `> selfdestruct` to trigger an intentional React Kernel Panic that drops to a custom Error Boundary "Signal Lost" screen.
+* **X-Ray / Wireframe Mode:** A toggleable developer mode that strips away the styling, revealing the structural wireframes and bounding boxes of the site.
+* **High-Performance:** Uses Vite for lightning-fast HMR and optimized production builds.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Core:** React 18, Vite
+* **Styling:** Custom Vanilla CSS with heavy CSS Variables, CSS Grid/Flexbox, and Glassmorphism effects.
+* **Animations:** Framer Motion (Spring physics, layout animations, AnimatePresence).
+* **Icons:** FontAwesome & Lucide React.
+* **Deployment:** GitHub Pages / Vercel (Ready).
 
-## Expanding the ESLint configuration
+## 🎮 Hidden Easter Eggs (Try these in the CLI!)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Open the Terminal (via the `>_ CLI MODE` button) and run these commands:
+- `help` : Lists all available commands.
+- `hack` : Initiates a simulated global system compromise overlay.
+- `selfdestruct` : Forces a fatal React exception and drops you to a custom recovery screen.
+- `play` : Launches Neon Snake.
+- `sweep` : Launches Bug Sweeper.
+
+## 💻 Running Locally
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Aethron-fr/My_PortFolio.git
+   ```
+
+2. **Navigate to the directory**
+   ```bash
+   cd My_PortFolio
+   ```
+
+3. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. Open your browser and visit `http://localhost:5173`
+
+---
+*Built with passion, caffeine, and absolute attention to detail.*
