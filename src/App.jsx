@@ -200,6 +200,7 @@ function ThemeToggle() {
 
 // ── X-Ray Architecture Mode Toggle ───────────────────────────────────────────
 function XRayToggle() {
+  return null; // Temporarily disabled by user request
   const [isXRay, setIsXRay] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
@@ -266,7 +267,7 @@ function XRayToggle() {
         )}
       </AnimatePresence>
 
-      <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+      <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 9999, display: 'none', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
 
       {/* Intro tooltip */}
       <AnimatePresence>
@@ -884,7 +885,9 @@ export default function App() {
         <div className="hero-glow-blob" style={{ background: 'var(--accent-cyber)', top: '65%', left: '70%', width: 'min(450px, 60vw)', height: 'min(450px, 60vw)', animationDelay: '-5s' }} />
         <div className="hero-glow-blob" style={{ background: 'var(--accent-primary)', top: '50%', left: '50%', width: 'min(650px, 80vw)', height: 'min(650px, 80vw)', opacity: 0.1, animationDelay: '-10s' }} />
         
-        <div className="hero-content">
+        <div className="hero-content" style={{ display: 'flex', flexDirection: 'column', minHeight: '80vh', padding: '12vh 0 4vh 0' }}>
+          
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           {/* Time greeting */}
           {timeGreeting && (
             <motion.div
@@ -992,22 +995,21 @@ export default function App() {
               </MagneticWrapper>
             ))}
           </motion.div>
-        </div>
+          </div>
 
-        {/* Scroll Indicator - Moved outside hero-content to prevent overlap with relative container */}
+        {/* Scroll Indicator - Placed at the bottom of the flex column safely */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1.5 }}
             style={{
-              position: 'absolute',
-              bottom: '5vh',
-              left: '50%',
-              transform: 'translateX(-50%)',
+              position: 'relative',
+              width: '100%',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '12px'
+              gap: '12px',
+              marginTop: '40px'
             }}
           >
             <span style={{ 
@@ -1053,6 +1055,7 @@ export default function App() {
               />
             </motion.a>
           </motion.div>
+        </div>
       </section>
 
       {/* SLEEK ANIMATED NEON DIVIDER to blend sections */}

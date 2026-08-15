@@ -29,7 +29,7 @@ export async function askJarvis(userMessage) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const prompt = `System Instructions: ${SYSTEM_PROMPT}\n\nUser: ${userMessage}\nJARVIS:`;
     const result = await model.generateContent(prompt);
     const response = await result.response;
